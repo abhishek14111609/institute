@@ -66,7 +66,13 @@
             <span>{{ $label['subjects'] }}</span>
         </a>
     </li>
-
+    <li class="nav-item">
+        <a href="{{ route('school.teachers.index') }}"
+            class="nav-link {{ request()->routeIs('school.teachers.*') ? 'active' : '' }}">
+            <i class="bi bi-person-badge-fill"></i>
+            <span>{{ $label['teachers'] }}</span>
+        </a>
+    </li>
     <li class="nav-item">
         <a href="{{ route('school.batches.index') }}"
             class="nav-link {{ request()->routeIs('school.batches.*') ? 'active' : '' }}">
@@ -87,13 +93,7 @@
         </a>
     </li>
 
-    <li class="nav-item">
-        <a href="{{ route('school.teachers.index') }}"
-            class="nav-link {{ request()->routeIs('school.teachers.*') ? 'active' : '' }}">
-            <i class="bi bi-person-badge-fill"></i>
-            <span>{{ $label['teachers'] }}</span>
-        </a>
-    </li>
+
 
     <li class="nav-item">
         <a href="{{ route('school.attendance.index') }}"
