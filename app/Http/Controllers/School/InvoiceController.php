@@ -33,7 +33,13 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $invoices = Invoice::with(['student.user', 'fee'])
+        $invoices = Invoice::with([
+            'student.user',
+            'student.batch.class',
+            'student.batches.subject',
+            'fee',
+            'feePayment',
+        ])
             ->latest()
             ->paginate(15);
 

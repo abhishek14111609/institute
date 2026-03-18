@@ -18,7 +18,7 @@ class AttendanceService
     {
         return DB::transaction(function () use ($data) {
             $batch = Batch::findOrFail($data['batch_id']);
-            $attendanceDate = $data['attendance_date'];
+            $attendanceDate = Carbon::parse($data['attendance_date'])->toDateString();
 
             foreach ($data['attendances'] as $attendanceData) {
                 // Check if this is a photo verification (existing pending record)
@@ -47,13 +47,14 @@ class AttendanceService
                     $updateData['reviewed_at'] = Carbon::now();
                 }
 
-                Attendance::updateOrCreate(
-                    [
+                if ($existing) {
+                    $existing->update($updateData);
+                } else {
+                    Attendance::create(array_merge($updateData, [
                         'student_id' => $attendanceData['student_id'],
                         'attendance_date' => $attendanceDate,
-                    ],
-                    $updateData
-                );
+                    ]));
+                }
             }
 
             ActivityLog::logActivity('marked', 'attendance', "Marked attendance for batch: {$batch->name} on {$attendanceDate}");

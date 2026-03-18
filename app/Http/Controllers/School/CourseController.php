@@ -10,6 +10,41 @@ use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
 {
+    private function makeSchoolCodePrefix(?string $schoolName): string
+    {
+        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', (string) $schoolName), 0, 3));
+        return str_pad($prefix ?: 'INS', 3, 'X');
+    }
+
+    private function nextSchoolCourseSequence(int $schoolId, string $prefix): int
+    {
+        $max = 0;
+
+        Course::withTrashed()
+            ->where('school_id', $schoolId)
+            ->where('code', 'like', $prefix . '%')
+            ->pluck('code')
+            ->each(function ($code) use (&$max, $prefix) {
+                if (preg_match('/^' . preg_quote($prefix, '/') . '(\d+)$/', (string) $code, $m)) {
+                    $max = max($max, (int) $m[1]);
+                }
+            });
+
+        return $max + 1;
+    }
+
+    private function buildSchoolSequentialCode(string $prefix, int $sequence): string
+    {
+        return sprintf('%s%03d', $prefix, $sequence);
+    }
+
+    private function generateSchoolSequentialCode(int $schoolId, ?string $schoolName): string
+    {
+        $prefix = $this->makeSchoolCodePrefix($schoolName);
+        $nextSequence = $this->nextSchoolCourseSequence($schoolId, $prefix);
+        return $this->buildSchoolSequentialCode($prefix, $nextSequence);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -24,7 +59,13 @@ class CourseController extends Controller
      */
     public function create()
     {
-        return view('school.courses.create');
+        $school = auth()->user()->school;
+        $schoolId = auth()->user()->school_id;
+        $prefix = $this->makeSchoolCodePrefix($school->name ?? null);
+        $nextSequence = $this->nextSchoolCourseSequence($schoolId, $prefix);
+        $suggestedCode = $this->buildSchoolSequentialCode($prefix, $nextSequence);
+
+        return view('school.courses.create', compact('prefix', 'nextSequence', 'suggestedCode'));
     }
 
     /**
@@ -50,12 +91,10 @@ class CourseController extends Controller
 
         $validated['school_id'] = $schoolId;
 
-        if (empty($validated['code'])) {
-            $schoolName = auth()->user()->school->name ?? 'INS';
-            $schoolPrefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $schoolName), 0, 3));
-            $instituteType = auth()->user()->school->institute_type ?? 'academic';
-            $prefix = $schoolPrefix . ($instituteType === 'sport' ? '-PRO-' : '-CRS-');
-            $validated['code'] = $prefix . strtoupper(\Illuminate\Support\Str::random(5));
+        if (auth()->user()->school->institute_type === 'sport') {
+            $validated['code'] = $this->generateSchoolSequentialCode($schoolId, auth()->user()->school->name ?? null);
+        } elseif (empty($validated['code'])) {
+            $validated['code'] = $this->generateSchoolSequentialCode($schoolId, auth()->user()->school->name ?? null);
         }
 
         $course = Course::create($validated);
@@ -88,7 +127,13 @@ class CourseController extends Controller
      */
     public function edit(Course $course)
     {
-        return view('school.courses.edit', compact('course'));
+        $school = auth()->user()->school;
+        $schoolId = auth()->user()->school_id;
+        $prefix = $this->makeSchoolCodePrefix($school->name ?? null);
+        $nextSequence = $this->nextSchoolCourseSequence($schoolId, $prefix);
+        $suggestedCode = $this->buildSchoolSequentialCode($prefix, $nextSequence);
+
+        return view('school.courses.edit', compact('course', 'prefix', 'nextSequence', 'suggestedCode'));
     }
 
     /**

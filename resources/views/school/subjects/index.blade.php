@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Training Activities & Exercises' : 'Institutional Syllabus & Modules')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Activities & Batch Type' : 'Institutional Syllabus & Modules')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -12,7 +12,7 @@
         <div class="d-flex justify-content-between align-items-center mb-5 pb-2">
             <div>
                 <h3 class="fw-bold mb-1 text-gradient">
-                    {{ auth()->user()->school->institute_type === 'sport' ? 'Activities & Exercises' : 'Syllabus & Subjects' }}
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Activities & Batch Type' : 'Syllabus & Subjects' }}
                 </h3>
                 <p class="text-muted small mb-0">Total of {{ number_format($subjects->total()) }} modules currently active
                     in the
@@ -22,7 +22,7 @@
             <a href="{{ route('school.subjects.create') }}"
                 class="btn btn-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
                 <i class="bi bi-journal-plus me-2"></i>
-                {{ auth()->user()->school->institute_type === 'sport' ? 'Add New Activity' : 'Construct New Module' }}
+                {{ auth()->user()->school->institute_type === 'sport' ? 'Add New Batch Type' : 'Construct New Module' }}
             </a>
         </div>
 
@@ -128,7 +128,7 @@
                                             {{ auth()->user()->school->institute_type === 'sport' ? 'training activities' : 'academic modules' }}
                                             configured yet.</h5>
                                         <a href="{{ route('school.subjects.create') }}"
-                                            class="btn btn-sm btn-primary rounded-pill px-4 mt-2">{{ auth()->user()->school->institute_type === 'sport' ? 'Add First Activity' : 'Create First Subject' }}</a>
+                                            class="btn btn-sm btn-primary rounded-pill px-4 mt-2">{{ auth()->user()->school->institute_type === 'sport' ? 'Add First Batch Type' : 'Create First Subject' }}</a>
                                     </td>
                                 </tr>
                             @endforelse

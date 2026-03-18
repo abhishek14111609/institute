@@ -13,10 +13,11 @@ class SuperAdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Super Admin User
-        $superAdmin = User::create([
-            'name' => 'Super Admin',
+        // Create or update the default super admin user safely for repeatable seeding.
+        $superAdmin = User::updateOrCreate([
             'email' => 'admin@admin.com',
+        ], [
+            'name' => 'Super Admin',
             'password' => Hash::make('password'),
         ]);
 

@@ -81,7 +81,7 @@
                 </button>
             </div>
         @endif
-
+{{--
         @auth
             <div class="px-4 py-3 border-bottom border-secondary border-opacity-10">
                 <div class="d-flex align-items-center">
@@ -101,7 +101,7 @@
                     </div>
                 </div>
             </div>
-        @endauth
+        @endauth --}}
 
         <ul class="sidebar-menu mt-3">
             @yield('sidebar')

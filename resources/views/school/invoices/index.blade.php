@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
                 <i class="bi bi-check-circle-fill fs-5 me-2"></i>
                 <div>{{ session('success') }}</div>
@@ -58,7 +58,18 @@
                                     </td>
                                     <td class="border-0">
                                         <div class="small fw-bold text-dark">{{ $invoice->student->user->name }}</div>
-                                        <small class="text-muted tiny">ROLL: {{ $invoice->student->roll_number }}</small>
+                                        <small class="text-muted tiny d-block">ROLL:
+                                            {{ $invoice->student->roll_number }}</small>
+                                        @php
+                                            $enrollments = $invoice->student->batches
+                                                ->pluck('subject.name')
+                                                ->filter()
+                                                ->take(2)
+                                                ->implode(', ');
+                                        @endphp
+                                        <small class="text-muted tiny d-block">
+                                            {{ $enrollments ? 'Enroll: ' . $enrollments : 'Batch: ' . ($invoice->student->batch->name ?? 'N/A') }}
+                                        </small>
                                     </td>
                                     <td class="border-0">
                                         <div class="small fw-bold text-dark">{{ $invoice->invoice_date->format('d M, Y') }}
@@ -70,6 +81,9 @@
                                         <span class="badge bg-soft-info px-3 py-2 rounded-pill small">
                                             {{ ucfirst($invoice->fee->fee_type) }}
                                         </span>
+                                        <small class="text-muted tiny d-block mt-1">
+                                            {{ strtoupper($invoice->feePayment->payment_method ?? 'cash') }}
+                                        </small>
                                     </td>
                                     <td class="pe-4 border-0 text-end">
                                         <div class="btn-group shadow-sm rounded-pill overflow-hidden border">
@@ -90,7 +104,8 @@
                                         <div class="opacity-25 mb-3"><i class="bi bi-receipt-cutoff"
                                                 style="font-size: 5rem;"></i></div>
                                         <h5 class="text-muted">Institutional Invoice archives are currently empty.</h5>
-                                        <p class="text-muted small">Invoices appear here once fees are marked as fully paid.</p>
+                                        <p class="text-muted small">Invoices appear here once fees are marked as fully paid.
+                                        </p>
                                     </td>
                                 </tr>
                             @endforelse

@@ -1,5 +1,8 @@
 {
     "freesans": {
         "normal": "C:\\laragon\\www\\classes-managment-system\\public\\fonts\/FreeSans"
+    },
+    "invoicefont": {
+        "normal": "invoicefont_normal_797654e3b1b0633e07bd82bebf74a596"
     }
 }

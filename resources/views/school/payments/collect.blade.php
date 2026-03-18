@@ -39,7 +39,7 @@
         <div class="container-fluid py-2 pb-5">
             <div class="row justify-content-center">
                 <div class="col-xl-11">
-                    
+
                     <!-- Enhanced Selection Section -->
                     <div class="card selection-card border-0 shadow-soft rounded-5 mb-5 overflow-hidden animate-zoom-in">
                         <div class="card-body p-5">
@@ -175,7 +175,7 @@
 
                                             <div class="p-4 bg-white">
                                                 <!-- Auto Allocation Tool -->
-                                                <div class="tool-box p-3 rounded-4 bg-light-indigo mb-4 border border-indigo border-opacity-10 shadow-sm animate-fade-in-up delay-100">
+                                                {{-- <div class="tool-box p-3 rounded-4 bg-light-indigo mb-4 border border-indigo border-opacity-10 shadow-sm animate-fade-in-up delay-100">
                                                     <label class="form-label tiny fw-800 text-indigo text-uppercase mb-2">Smart Auto-Allocate</label>
                                                     <div class="input-group rounded-pill overflow-hidden border border-white shadow-sm">
                                                         <span class="input-group-text border-0 bg-white text-muted small">₹</span>
@@ -185,7 +185,7 @@
                                                         </button>
                                                     </div>
                                                     <div class="form-text tiny opacity-75 mt-2 ms-2"><i class="bi bi-info-circle me-1"></i>Distributes across oldest dues.</div>
-                                                </div>
+                                                </div> --}}
 
                                                 <div class="mb-4">
                                                     <label class="form-label tiny fw-800 text-muted text-uppercase mb-2 ms-2">Transaction Medium</label>
@@ -270,7 +270,7 @@
 
             const formattedTotal = total.toLocaleString('en-IN', { minimumFractionDigits: 2 });
             document.getElementById('grand_total').innerText = formattedTotal;
-            
+
             const submitBtn = document.getElementById('submit_btn');
             submitBtn.disabled = total <= 0;
             if (total > 0) {
@@ -283,22 +283,22 @@
         function autoAllocate() {
             let lumpSum = parseFloat(document.getElementById('lump_sum').value) || 0;
             if (lumpSum <= 0) return;
-            
+
             let inputs = document.querySelectorAll('.payment-input');
             inputs.forEach(input => input.value = 0);
-            
+
             inputs.forEach(input => {
                 if (lumpSum <= 0) return;
                 let max = parseFloat(input.dataset.max) || 0;
                 let allocate = Math.min(lumpSum, max);
                 input.value = allocate.toFixed(2);
                 lumpSum -= allocate;
-                
+
                 // Add a little highlight effect
                 input.closest('.input-group-settle').classList.add('allocate-flash');
                 setTimeout(() => input.closest('.input-group-settle').classList.remove('allocate-flash'), 500);
             });
-            
+
             calculateTotal();
         }
 

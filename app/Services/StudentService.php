@@ -10,6 +10,53 @@ use Illuminate\Support\Facades\Hash;
 
 class StudentService
 {
+    private function rollPrefix(): string
+    {
+        $instituteType = auth()->user()->school->institute_type ?? 'academic';
+        $schoolName = auth()->user()->school->name ?? 'INS';
+        $schoolPrefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $schoolName), 0, 3));
+        $schoolPrefix = str_pad($schoolPrefix ?: 'INS', 3, 'X');
+
+        // Keep this distinct from sport/course codes like PAN001.
+        $typePrefix = $instituteType === 'sport' ? 'ATH' : 'STU';
+
+        return $schoolPrefix . '-' . $typePrefix . '-';
+    }
+
+    private function nextRollSequence(string $prefix): int
+    {
+        $max = 0;
+
+        Student::withTrashed()
+            ->where('school_id', auth()->user()->school_id)
+            ->where('roll_number', 'like', $prefix . '%')
+            ->pluck('roll_number')
+            ->each(function ($roll) use (&$max, $prefix) {
+                if (preg_match('/^' . preg_quote($prefix, '/') . '(\d+)$/', (string) $roll, $m)) {
+                    $max = max($max, (int) $m[1]);
+                }
+            });
+
+        return $max + 1;
+    }
+
+    private function buildRollNumber(string $prefix, int $sequence): string
+    {
+        return sprintf('%s%03d', $prefix, $sequence);
+    }
+
+    public function nextRollNumberMeta(): array
+    {
+        $prefix = $this->rollPrefix();
+        $nextSequence = $this->nextRollSequence($prefix);
+
+        return [
+            'prefix' => $prefix,
+            'nextSequence' => $nextSequence,
+            'suggestedRollNumber' => $this->buildRollNumber($prefix, $nextSequence),
+        ];
+    }
+
     /**
      * Create a new student
      */
@@ -35,14 +82,11 @@ class StudentService
 
             $user->assignRole('student');
 
-            // Generate Roll Number if empty
-            $instituteType = auth()->user()->school->institute_type ?? 'academic';
-            $schoolName = auth()->user()->school->name ?? 'INS';
-            $schoolPrefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $schoolName), 0, 3));
+            // Generate sequential roll number if empty, e.g. PANATH001.
             $rollNumber = $data['roll_number'] ?? null;
             if (empty($rollNumber)) {
-                $prefix = $schoolPrefix . ($instituteType === 'sport' ? '-ATH-' : '-STU-');
-                $rollNumber = $prefix . date('y') . strtoupper(\Illuminate\Support\Str::random(4));
+                $meta = $this->nextRollNumberMeta();
+                $rollNumber = $meta['suggestedRollNumber'];
             }
 
             // Create student record

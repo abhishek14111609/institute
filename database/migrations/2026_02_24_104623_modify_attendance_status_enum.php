@@ -11,7 +11,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE attendances MODIFY COLUMN status ENUM('present', 'absent', 'late', 'excused', 'pending') DEFAULT 'present'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE attendances MODIFY COLUMN status ENUM('present', 'absent', 'late', 'excused', 'pending') DEFAULT 'present'");
+        }
     }
 
     /**
@@ -19,6 +21,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE attendances MODIFY COLUMN status ENUM('present', 'absent', 'late', 'excused') DEFAULT 'present'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE attendances MODIFY COLUMN status ENUM('present', 'absent', 'late', 'excused') DEFAULT 'present'");
+        }
     }
 };

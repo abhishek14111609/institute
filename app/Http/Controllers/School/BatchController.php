@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Batch;
 use App\Models\Classes;
 use App\Models\Teacher;
+use App\Models\Student;
 use App\Models\Course;
 use App\Models\Subject;
 use App\Http\Requests\StoreBatchRequest;
@@ -34,10 +35,11 @@ class BatchController extends Controller
         $classes = Classes::active()->get();
         $courses = Course::active()->get();
         $teachers = Teacher::with('user')->active()->get();
+        $students = Student::with('user')->active()->orderBy('id', 'desc')->get();
         $subjects = Subject::with(['level', 'schoolClass'])->active()->get();
         $levels = \App\Models\Level::where('is_active', true)->get();
 
-        return view('school.batches.create', compact('classes', 'courses', 'teachers', 'subjects', 'levels', 'isSport'));
+        return view('school.batches.create', compact('classes', 'courses', 'teachers', 'students', 'subjects', 'levels', 'isSport'));
     }
 
     public function store(StoreBatchRequest $request)
@@ -50,7 +52,7 @@ class BatchController extends Controller
                 if ($subject) {
                     $data['class_id'] = $subject->class_id;
                     $data['sport_level'] = $subject->level->name ?? null;
-                    
+
                     if (empty($data['name'])) {
                         $sportName = $subject->schoolClass->course->name ?? 'Sport';
                         $levelName = $subject->level->name ?? 'Any Level';
@@ -65,6 +67,18 @@ class BatchController extends Controller
                 $batch->teachers()->sync($request->teacher_ids);
             }
 
+            $selectedStudentIds = collect($request->input('student_ids', []))
+                ->filter()
+                ->map(fn($id) => (int) $id)
+                ->unique()
+                ->values();
+
+            if ($selectedStudentIds->isNotEmpty()) {
+                Student::where('school_id', auth()->user()->school_id)
+                    ->whereIn('id', $selectedStudentIds)
+                    ->update(['batch_id' => $batch->id]);
+            }
+
             return redirect()->route('school.batches.index')
                 ->with('success', auth()->user()->school->institute_type === 'sport' ? 'Training session created successfully.' : 'Batch created successfully.');
         });
@@ -76,10 +90,11 @@ class BatchController extends Controller
         $classes = Classes::active()->get();
         $courses = Course::active()->get();
         $teachers = Teacher::with('user')->active()->get();
+        $students = Student::with('user')->active()->orderBy('id', 'desc')->get();
         $subjects = Subject::with(['level', 'schoolClass'])->active()->get();
         $levels = \App\Models\Level::where('is_active', true)->get();
 
-        return view('school.batches.edit', compact('batch', 'classes', 'courses', 'teachers', 'subjects', 'levels', 'isSport'));
+        return view('school.batches.edit', compact('batch', 'classes', 'courses', 'teachers', 'students', 'subjects', 'levels', 'isSport'));
     }
 
     public function update(StoreBatchRequest $request, Batch $batch)
@@ -92,7 +107,7 @@ class BatchController extends Controller
                 if ($subject) {
                     $data['class_id'] = $subject->class_id;
                     $data['sport_level'] = $subject->level->name ?? null;
-                    
+
                     if (empty($data['name'])) {
                         $levelName = $subject->level->name ?? 'Any Level';
                         $data['name'] = "{$subject->name} ({$levelName})";
@@ -106,6 +121,25 @@ class BatchController extends Controller
                 $batch->teachers()->sync($request->teacher_ids);
             } else {
                 $batch->teachers()->sync([]);
+            }
+
+            $selectedStudentIds = collect($request->input('student_ids', []))
+                ->filter()
+                ->map(fn($id) => (int) $id)
+                ->unique()
+                ->values();
+
+            $studentsInBatch = Student::where('school_id', auth()->user()->school_id)
+                ->where('batch_id', $batch->id);
+
+            if ($selectedStudentIds->isEmpty()) {
+                $studentsInBatch->update(['batch_id' => null]);
+            } else {
+                $studentsInBatch->whereNotIn('id', $selectedStudentIds)->update(['batch_id' => null]);
+
+                Student::where('school_id', auth()->user()->school_id)
+                    ->whereIn('id', $selectedStudentIds)
+                    ->update(['batch_id' => $batch->id]);
             }
 
             return redirect()->route('school.batches.index')

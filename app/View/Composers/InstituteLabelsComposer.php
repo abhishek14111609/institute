@@ -35,8 +35,8 @@ class InstituteLabelsComposer
             'my_dashboard' => $isSport ? 'My Dashboard' : 'My Dashboard',
 
             // ── Academic / Training structure ────────────────────
-            'course' => $isSport ? 'Program' : 'Course',
-            'courses' => $isSport ? 'Programs' : 'Courses',
+            'course' => $isSport ? 'Add sport' : 'Course',
+            'courses' => $isSport ? 'Add sports' : 'Courses',
             'class' => $isSport ? 'Team' : 'Class',
             'classes' => $isSport ? 'Teams' : 'Classes',
             'subject' => $isSport ? 'Activity' : 'Subject',

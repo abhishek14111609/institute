@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\Fee;
+use App\Models\FeePayment;
 use App\Models\Expense;
 use App\Models\Attendance;
+use App\Models\Material;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -185,5 +187,96 @@ class ReportService
         return Fee::where('school_id', $schoolId)
             ->where('status', 'overdue')
             ->count();
+    }
+
+    /**
+     * Monthly income trend using actual payment records.
+     */
+    public function getMonthlyIncomeTrend($schoolId, $year)
+    {
+        $labels = [];
+        $amounts = [];
+
+        for ($month = 1; $month <= 12; $month++) {
+            $labels[] = Carbon::create($year, $month)->format('M');
+
+            $amounts[] = (float) FeePayment::whereYear('paid_at', $year)
+                ->whereMonth('paid_at', $month)
+                ->whereHas('fee', function ($query) use ($schoolId) {
+                    $query->where('school_id', $schoolId);
+                })
+                ->sum('amount');
+        }
+
+        return [
+            'labels' => $labels,
+            'amounts' => $amounts,
+            'total' => array_sum($amounts),
+        ];
+    }
+
+    /**
+     * Monthly expense trend for selected year.
+     */
+    public function getMonthlyExpenseTrend($schoolId, $year)
+    {
+        $labels = [];
+        $amounts = [];
+
+        for ($month = 1; $month <= 12; $month++) {
+            $labels[] = Carbon::create($year, $month)->format('M');
+            $amounts[] = (float) Expense::where('school_id', $schoolId)
+                ->whereYear('expense_date', $year)
+                ->whereMonth('expense_date', $month)
+                ->sum('amount');
+        }
+
+        return [
+            'labels' => $labels,
+            'amounts' => $amounts,
+            'total' => array_sum($amounts),
+        ];
+    }
+
+    /**
+     * Student record summary chart data.
+     */
+    public function getStudentRecordBreakdown($schoolId)
+    {
+        $active = Student::where('school_id', $schoolId)->where('is_active', true)->count();
+        $inactive = Student::where('school_id', $schoolId)->where('is_active', false)->count();
+
+        return [
+            'labels' => ['Active', 'Inactive'],
+            'counts' => [$active, $inactive],
+            'total' => $active + $inactive,
+        ];
+    }
+
+    /**
+     * Stock report based on uploaded study materials.
+     */
+    public function getStockReportData($schoolId, $year)
+    {
+        $byType = Material::where('school_id', $schoolId)
+            ->select(DB::raw("COALESCE(NULLIF(file_type, ''), 'other') as type"), DB::raw('COUNT(*) as total'))
+            ->groupBy('type')
+            ->orderByDesc('total')
+            ->get();
+
+        $monthlyUploads = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $monthlyUploads[] = Material::where('school_id', $schoolId)
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->count();
+        }
+
+        return [
+            'type_labels' => $byType->pluck('type')->map(fn($type) => strtoupper($type))->values()->all(),
+            'type_totals' => $byType->pluck('total')->map(fn($count) => (int) $count)->values()->all(),
+            'monthly_uploads' => $monthlyUploads,
+            'total_items' => Material::where('school_id', $schoolId)->count(),
+        ];
     }
 }

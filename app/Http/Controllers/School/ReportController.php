@@ -5,16 +5,29 @@ namespace App\Http\Controllers\School;
 use App\Http\Controllers\Controller;
 use App\Services\ReportService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
-    public function __construct(private ReportService $reportService)
-    {
-    }
+    public function __construct(private ReportService $reportService) {}
 
     public function index()
     {
-        return view('school.reports.index');
+        $schoolId = auth()->user()->school_id;
+        $year = now()->year;
+
+        $studentRecords = $this->reportService->getStudentRecordBreakdown($schoolId);
+        $incomeTrend = $this->reportService->getMonthlyIncomeTrend($schoolId, $year);
+        $expenseTrend = $this->reportService->getMonthlyExpenseTrend($schoolId, $year);
+        $stockReport = $this->reportService->getStockReportData($schoolId, $year);
+
+        return view('school.reports.index', compact(
+            'year',
+            'studentRecords',
+            'incomeTrend',
+            'expenseTrend',
+            'stockReport'
+        ));
     }
 
     public function income(Request $request)
@@ -57,7 +70,7 @@ class ReportController extends Controller
         $query = \App\Models\Fee::where('school_id', $schoolId)
             ->whereIn('status', ['pending', 'partial', 'overdue']);
 
-        $totalOutstanding = $query->sum(\DB::raw('total_amount + late_fee - discount - paid_amount'));
+        $totalOutstanding = $query->sum(DB::raw('total_amount + late_fee - discount - paid_amount'));
 
         $pendingFees = $query->with('student.user', 'student.batch')
             ->latest()

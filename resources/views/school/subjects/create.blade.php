@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Add Activity / Exercise' : 'Add Subject / Syllabus')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Add Activity / Batch Type' : 'Add Subject / Syllabus')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -9,7 +9,7 @@
 @section('content')
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>{{ auth()->user()->school->institute_type === 'sport' ? 'Add Activity / Exercise' : 'Add Subject / Syllabus' }}
+            <h2>{{ auth()->user()->school->institute_type === 'sport' ? 'Add Activity / Batch Type' : 'Add Subject / Syllabus' }}
             </h2>
             <a href="{{ route('school.subjects.index') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back
@@ -60,7 +60,7 @@
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label for="name" class="form-label fw-semibold">Activity Name <span
+                                <label for="name" class="form-label fw-semibold">Batch Name <span
                                         class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
                                     name="name" value="{{ old('name') }}"
@@ -107,7 +107,7 @@
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-plus-circle"></i>
-                            {{ auth()->user()->school->institute_type === 'sport' ? 'Add Activity' : 'Add Subject' }}
+                            {{ auth()->user()->school->institute_type === 'sport' ? 'Add Batch Type' : 'Add Subject' }}
                         </button>
                         <a href="{{ route('school.subjects.index') }}" class="btn btn-secondary">Cancel</a>
                     </div>

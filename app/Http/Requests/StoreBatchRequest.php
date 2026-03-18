@@ -35,6 +35,8 @@ class StoreBatchRequest extends FormRequest
             'is_active' => ['boolean'],
             'teacher_ids' => ['nullable', 'array'],
             'teacher_ids.*' => ['exists:teachers,id'],
+            'student_ids' => ['nullable', 'array'],
+            'student_ids.*' => ['exists:students,id'],
         ];
     }
 }

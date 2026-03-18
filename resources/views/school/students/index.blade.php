@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Athlete Registry' : 'Institutional Student Registry')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Student Registry' : 'Institutional
+    Student Registry')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -12,27 +13,41 @@
         <div class="d-flex justify-content-between align-items-center mb-5 pb-2">
             <div>
                 <h3 class="fw-bold mb-1 text-gradient">
-                    {{ auth()->user()->school->institute_type === 'sport' ? 'Athletes Registry' : 'Students Registry' }}
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Students Registry' : 'Students Registry' }}
                 </h3>
                 <p class="text-muted small mb-0">Total of {{ number_format($students->total()) }}
-                    {{ auth()->user()->school->institute_type === 'sport' ? 'athletes' : 'students' }} registered in the
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Students' : 'students' }} registered in the
                     institution.
                 </p>
             </div>
-            <div class="d-flex gap-3">
+            <div class="d-flex gap-2 align-items-center flex-wrap justify-content-end">
                 <a href="{{ route('school.students.export') }}"
-                    class="btn btn-light border rounded-pill px-4 shadow-sm hover-lift d-flex align-items-center">
-                    <i class="bi bi-file-earmark-excel-fill text-success me-2"></i> Export Data
+                    class="btn btn-sm btn-light border rounded-pill px-3 py-2 shadow-sm hover-lift d-flex align-items-center">
+                    <i class="bi bi-file-earmark-excel-fill text-success me-2"></i> Export Excel
                 </a>
+                <a href="{{ route('school.students.import-template') }}"
+                    class="btn btn-sm btn-light border rounded-pill px-3 py-2 shadow-sm hover-lift d-flex align-items-center">
+                    <i class="bi bi-download text-primary me-2"></i> Template
+                </a>
+                <form action="{{ route('school.students.import') }}" method="POST" enctype="multipart/form-data"
+                    class="d-flex align-items-center gap-2 flex-wrap">
+                    @csrf
+                    <input type="file" name="import_file" class="form-control form-control-sm" style="max-width: 240px;"
+                        accept=".xlsx,.xls" required>
+                    <button type="submit"
+                        class="btn btn-sm btn-success rounded-pill px-3 py-2 shadow-sm border-0 d-flex align-items-center">
+                        <i class="bi bi-upload me-2"></i> Import Excel
+                    </button>
+                </form>
                 <a href="{{ route('school.students.create') }}"
-                    class="btn btn-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
+                    class="btn btn-sm btn-primary rounded-pill px-3 py-2 shadow-sm border-0 d-flex align-items-center">
                     <i class="bi bi-person-plus-fill me-2"></i> Add
-                    {{ auth()->user()->school->institute_type === 'sport' ? 'Athlete' : 'Student' }}
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Student' : 'Student' }}
                 </a>
             </div>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
                 <i class="bi bi-check-circle-fill fs-5 me-2"></i>
                 <div>{{ session('success') }}</div>
@@ -49,7 +64,8 @@
                         <div class="input-group bg-light rounded-pill px-3 py-1 border">
                             <span class="input-group-text bg-transparent border-0"><i
                                     class="bi bi-search text-muted small"></i></span>
-                            <input type="text" name="search" class="form-control bg-transparent border-0 shadow-none tiny"
+                            <input type="text" name="search"
+                                class="form-control bg-transparent border-0 shadow-none tiny"
                                 placeholder="Scan by name, email, or roll number..." value="{{ request('search') }}">
                         </div>
                     </div>
@@ -60,8 +76,9 @@
                                     class="bi bi-collection text-muted small"></i></span>
                             <select name="batch_id" class="form-select bg-transparent border-0 shadow-none tiny fw-bold">
                                 <option value="">Across All Batches</option>
-                                @foreach($batches as $batch)
-                                    <option value="{{ $batch->id }}" {{ request('batch_id') == $batch->id ? 'selected' : '' }}>
+                                @foreach ($batches as $batch)
+                                    <option value="{{ $batch->id }}"
+                                        {{ request('batch_id') == $batch->id ? 'selected' : '' }}>
                                         {{ $batch->name }} ({{ $batch->class->name }})
                                     </option>
                                 @endforeach
@@ -97,10 +114,10 @@
                                     <td class="ps-4 border-0">
                                         <div class="d-flex align-items-center">
                                             <div class="me-3 position-relative">
-                                                @if($student->photo)
+                                                @if ($student->photo)
                                                     <img src="{{ asset('storage/' . $student->photo) }}"
-                                                        class="rounded-circle border-2 border-white shadow-sm" width="50"
-                                                        height="50">
+                                                        class="rounded-circle border-2 border-white shadow-sm"
+                                                        width="50" height="50">
                                                 @else
                                                     <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center fw-bold shadow-sm"
                                                         style="width: 50px; height: 50px; font-size: 1.2rem;">
@@ -125,31 +142,38 @@
                                             Access</small>
                                     </td>
                                     <td class="border-0">
-                                        @if(auth()->user()->school->institute_type === 'sport')
-                                            @if($student->batches->isNotEmpty())
+                                        @if (auth()->user()->school->institute_type === 'sport')
+                                            @if ($student->batches->isNotEmpty())
                                                 <div class="d-flex flex-wrap gap-1">
-                                                    @foreach($student->batches as $batch)
-                                                        <span class="badge bg-soft-success rounded-pill tiny" style="font-size: 0.65rem;">
+                                                    @foreach ($student->batches as $batch)
+                                                        <span class="badge bg-soft-success rounded-pill tiny"
+                                                            style="font-size: 0.65rem;">
                                                             {{ $batch->subject->name ?? 'Activity' }}
                                                         </span>
                                                     @endforeach
                                                 </div>
-                                                <small class="text-muted tiny mt-1 d-block">Enrolled in {{ $student->batches->count() }} sessions</small>
+                                                <small class="text-muted tiny mt-1 d-block">Enrolled in
+                                                    {{ $student->batches->count() }} sessions</small>
                                             @else
-                                                <span class="badge bg-light text-muted border px-2 py-1 rounded-pill tiny">NO SESSION</span>
+                                                <span
+                                                    class="badge bg-light text-muted border px-2 py-1 rounded-pill tiny">NO
+                                                    SESSION</span>
                                             @endif
                                         @else
-                                            @if($student->batch)
+                                            @if ($student->batch)
                                                 <span class="badge bg-soft-info px-3 py-2 rounded-pill small">
                                                     {{ $student->batch->name }} ({{ $student->batch->class->name }})
                                                 </span>
                                             @else
-                                                <span class="badge bg-light text-muted border px-3 py-2 rounded-pill tiny fw-bold">WAITING ASSIGNMENT</span>
+                                                <span
+                                                    class="badge bg-light text-muted border px-3 py-2 rounded-pill tiny fw-bold">WAITING
+                                                    ASSIGNMENT</span>
                                             @endif
                                         @endif
                                     </td>
                                     <td class="border-0">
-                                        <div class="small fw-bold text-dark">{{ $student->admission_date->format('d M, Y') }}
+                                        <div class="small fw-bold text-dark">
+                                            {{ $student->admission_date->format('d M, Y') }}
                                         </div>
                                         <small class="text-muted tiny">Entry recorded by system</small>
                                     </td>
@@ -190,7 +214,8 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
-                                        <div class="opacity-25 mb-3"><i class="bi bi-people-fill" style="font-size: 5rem;"></i>
+                                        <div class="opacity-25 mb-3"><i class="bi bi-people-fill"
+                                                style="font-size: 5rem;"></i>
                                         </div>
                                         <h5 class="text-muted">No
                                             {{ auth()->user()->school->institute_type === 'sport' ? 'athlete' : 'student' }}

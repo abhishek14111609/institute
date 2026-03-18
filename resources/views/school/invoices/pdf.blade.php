@@ -5,6 +5,13 @@
     <meta charset="utf-8">
     <title>Receipt #{{ $invoice->invoice_number }}</title>
     <style>
+        @font-face {
+            font-family: 'InvoiceFont';
+            font-style: normal;
+            font-weight: normal;
+            src: url('{{ public_path('fonts/FreeSans.ttf') }}') format('truetype');
+        }
+
         @page {
             margin: 0;
             size: a4 portrait;
@@ -16,7 +23,7 @@
         }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
+            font-family: 'InvoiceFont', 'DejaVu Sans', sans-serif;
             margin: 0;
             padding: 0;
             color: #1e293b;
@@ -225,7 +232,7 @@
         }
 
         .rupee {
-            font-family: 'FreeSans', 'DejaVu Sans', sans-serif;
+            font-family: 'InvoiceFont', 'DejaVu Sans', sans-serif;
         }
     </style>
 </head>
@@ -263,8 +270,11 @@
                     <span class="section-title">Student Details</span>
                     <div class="info-content">
                         <strong>{{ $invoice->student->user->name }}</strong>
-                        ID: {{ $invoice->student->student_id }}<br>
+                        ID: {{ $invoice->student->id }}<br>
                         Batch: {{ $invoice->student->batch->name ?? 'N/A' }}<br>
+                        Batch Type: {{ $invoice->student->batch?->subject?->name ?? 'N/A' }}<br>
+                        Enrollments:
+                        {{ $invoice->student->batches->pluck('subject.name')->filter()->implode(', ') ?: 'N/A' }}<br>
                         Roll: {{ $invoice->student->roll_number }}
                     </div>
                 </td>
@@ -283,8 +293,8 @@
                 <tr>
                     <td>
                         <div class="item-description">
-                            {{ ucfirst(str_replace('_', '-', $invoice->fee->fee_type)) }} Fee Payment
-                            @if($invoice->fee->sport_level)
+                            {{ $invoice->fee->name ?? ucfirst(str_replace('_', '-', $invoice->fee->fee_type)) . ' Fee Payment' }}
+                            @if ($invoice->fee->sport_level)
                                 <span
                                     style="font-size:10px;background:#e0e7ff;color:#4f46e5;padding:2px 8px;border-radius:4px;margin-left:8px;">
                                     {{ ucfirst($invoice->fee->sport_level) }} Level
@@ -293,11 +303,15 @@
                         </div>
                         <div class="item-details">
                             Payment towards {{ $invoice->fee->name ?? 'fee' }} for the current period.<br>
-                            Due Date: {{ $invoice->fee->due_date->format('d M, Y') }}
+                            Due Date: {{ $invoice->fee->due_date->format('d M, Y') }}<br>
+                            Payment Method: {{ strtoupper($invoice->feePayment->payment_method ?? 'CASH') }}
+                            @if ($invoice->feePayment?->transaction_id)
+                                <br>Transaction ID: {{ $invoice->feePayment->transaction_id }}
+                            @endif
                         </div>
                     </td>
                     <td style="text-align: right; font-weight: bold; font-size: 14px;">
-                        <span class="rupee">&#x20B9;</span>{{ number_format($invoice->amount, 2) }}
+                        <span class="rupee">₹</span>{{ number_format($invoice->amount, 2) }}
                     </td>
                 </tr>
             </tbody>
@@ -315,7 +329,7 @@
             <table class="totals-table">
                 <tr class="grand-total">
                     <td class="total-label">AMOUNT PAID</td>
-                    <td class="total-amount"><span class="rupee">&#x20B9;</span>{{ number_format($invoice->amount, 2) }}
+                    <td class="total-amount"><span class="rupee">₹</span>{{ number_format($invoice->amount, 2) }}
                     </td>
                 </tr>
             </table>

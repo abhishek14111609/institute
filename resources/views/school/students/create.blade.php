@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Add New Athlete' : 'Add New Student')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Add New Student' : 'Add New Student')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="container-fluid">
-        <h2 class="mb-4">{{ auth()->user()->school->institute_type === 'sport' ? 'Add New Athlete' : 'Add New Student' }}
+        <h2 class="mb-4">{{ auth()->user()->school->institute_type === 'sport' ? 'Add New Student' : 'Add New Student' }}
         </h2>
 
         <div class="card">
@@ -21,34 +21,43 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label
-                                class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Athlete Name' : 'Student Name' }}
+                                class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Student Name' : 'Student Name' }}
                                 *</label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                                 value="{{ old('name') }}" required>
-                            @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Email *</label>
                             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                                 value="{{ old('email') }}" required>
-                            @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Username *</label>
-                            <input type="text" name="username" class="form-control @error('username') is-invalid @enderror"
-                                value="{{ old('username') }}" required>
-                            @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <input type="text" name="username"
+                                class="form-control @error('username') is-invalid @enderror" value="{{ old('username') }}"
+                                required>
+                            @error('username')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Phone</label>
                             <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
                                 value="{{ old('phone') }}">
-                            @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('phone')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
@@ -57,7 +66,9 @@
                             <label class="form-label">Password *</label>
                             <input type="password" name="password"
                                 class="form-control @error('password') is-invalid @enderror" required>
-                            @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -77,7 +88,8 @@
                             <h5 class="mb-0 fw-bold"><i class="bi bi-trophy-fill me-2"></i>Sport Enrollments & Fees</h5>
                         </div>
                         <div class="col-md-6 text-end">
-                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm fw-bold"
+                            <button type="button"
+                                class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm fw-bold"
                                 onclick="addEnrollmentRow()">
                                 <i class="bi bi-plus-circle-fill me-1"></i> Enroll in Another Sport
                             </button>
@@ -97,9 +109,18 @@
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">Registration ID / Jersey Number</label>
-                            <input type="text" name="roll_number" class="form-control rounded-3"
-                                value="{{ old('roll_number') }}" placeholder="Auto-generated">
+                            <label class="form-label">Roll No</label>
+                            <div class="input-group">
+                                <input type="text" id="roll_number" name="roll_number" class="form-control rounded-3"
+                                    value="{{ old('roll_number', $rollMeta['suggestedRollNumber'] ?? '') }}" readonly
+                                    placeholder="Auto-generated">
+                                <button class="btn btn-outline-primary" type="button"
+                                    id="generateRollBtn">Generate</button>
+                            </div>
+                            {{-- <small class="text-muted d-block mt-1">
+                                Auto format: {{ $rollMeta['prefix'] ?? 'INS-STU-' }}001,
+                                {{ $rollMeta['prefix'] ?? 'INS-STU-' }}002...
+                            </small> --}}
                         </div>
                     </div>
 
@@ -111,7 +132,9 @@
                             <input type="date" name="birth_date"
                                 class="form-control @error('birth_date') is-invalid @enderror"
                                 value="{{ old('birth_date') }}">
-                            @error('birth_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('birth_date')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -120,7 +143,9 @@
                             <input type="text" name="previous_school"
                                 class="form-control @error('previous_school') is-invalid @enderror"
                                 value="{{ old('previous_school') }}">
-                            @error('previous_school')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('previous_school')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
@@ -134,7 +159,9 @@
                             <input type="text" name="parent_name"
                                 class="form-control @error('parent_name') is-invalid @enderror"
                                 value="{{ old('parent_name') }}">
-                            @error('parent_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('parent_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -142,28 +169,33 @@
                             <input type="text" name="parent_phone"
                                 class="form-control @error('parent_phone') is-invalid @enderror"
                                 value="{{ old('parent_phone') }}">
-                            @error('parent_phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('parent_phone')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Address</label>
-                        <textarea name="address" class="form-control @error('address') is-invalid @enderror"
-                            rows="3">{{ old('address') }}</textarea>
-                        @error('address')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <textarea name="address" class="form-control @error('address') is-invalid @enderror" rows="3">{{ old('address') }}</textarea>
+                        @error('address')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="mb-3">
                         <label
-                            class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Athlete Photo' : 'Student Photo' }}</label>
+                            class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Student Photo' : 'Student Photo' }}</label>
                         <input type="file" name="photo" class="form-control @error('photo') is-invalid @enderror"
                             accept="image/*">
-                        @error('photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        @error('photo')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="d-flex gap-2">
                         <button type="submit"
-                            class="btn btn-primary">{{ auth()->user()->school->institute_type === 'sport' ? 'Register Athlete' : 'Create Student' }}</button>
+                            class="btn btn-primary">{{ auth()->user()->school->institute_type === 'sport' ? 'Register Student' : 'Create Student' }}</button>
                         <a href="{{ route('school.students.index') }}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
@@ -175,7 +207,13 @@
         const allCourses = @json($courses);
         const allBatches = @json($batches);
         const allFeePlans = @json($feePlans);
+        const rollPrefix = @json($rollMeta['prefix'] ?? 'INS-STU-');
+        let nextRollSequence = Number(@json($rollMeta['nextSequence'] ?? 1));
         let rowCount = 0;
+
+        function generateRollNumber(sequence) {
+            return `${rollPrefix}${String(sequence).padStart(3, '0')}`;
+        }
 
         function addEnrollmentRow() {
             const container = document.getElementById('enrollment_rows_container');
@@ -231,40 +269,42 @@
         }
 
         function populateFees(rowId, batchId) {
-        const row = document.getElementById(rowId);
-        const feeContainer = row.querySelector('.fee-checkboxes');
-        
-        if (!batchId) {
-            feeContainer.innerHTML = '<small class="text-muted fst-italic w-100 text-center py-1">Select a sport first...</small>';
-            return;
-        }
+            const row = document.getElementById(rowId);
+            const feeContainer = row.querySelector('.fee-checkboxes');
 
-        const selectedBatch = allBatches.find(b => b.id == batchId);
-        const courseId = selectedBatch ? selectedBatch.class.course_id : null;
+            if (!batchId) {
+                feeContainer.innerHTML =
+                    '<small class="text-muted fst-italic w-100 text-center py-1">Select a sport first...</small>';
+                return;
+            }
 
-        // Filter Fee Plans that match either:
-        // 1. THIS specific batch
-        // 2. THIS course (but no specific batch)
-        // 3. Generic plans (no course/batch)
-        const relevantPlans = allFeePlans.filter(p => {
-            if (p.batch_id == batchId) return true;
-            if (p.course_id == courseId && !p.batch_id) return true;
-            if (!p.course_id && !p.batch_id) return true;
-            return false;
-        });
+            const selectedBatch = allBatches.find(b => b.id == batchId);
+            const courseId = selectedBatch ? selectedBatch.class.course_id : null;
 
-        if (relevantPlans.length === 0) {
-            feeContainer.innerHTML = '<small class="text-danger small w-100 text-center py-1">No fee plans found for this sport.</small>';
-            return;
-        }
+            // Filter Fee Plans that match either:
+            // 1. THIS specific batch
+            // 2. THIS course (but no specific batch)
+            // 3. Generic plans (no course/batch)
+            const relevantPlans = allFeePlans.filter(p => {
+                if (p.batch_id == batchId) return true;
+                if (p.course_id == courseId && !p.batch_id) return true;
+                if (!p.course_id && !p.batch_id) return true;
+                return false;
+            });
 
-        feeContainer.innerHTML = relevantPlans.map(p => `
+            if (relevantPlans.length === 0) {
+                feeContainer.innerHTML =
+                    '<small class="text-danger small w-100 text-center py-1">No fee plans found for this sport.</small>';
+                return;
+            }
+
+            feeContainer.innerHTML = relevantPlans.map(p => `
             <div class="form-check form-check-inline m-0">
                 <input class="form-check-input" type="checkbox" name="batch_fees[${batchId}][]" value="${p.id}" id="fee_${rowId}_${p.id}">
                 <label class="form-check-label small" for="fee_${rowId}_${p.id}">${p.name} (₹${p.amount})</label>
             </div>
         `).join('');
-    }
+        }
 
         function removeRow(rowId) {
             const row = document.getElementById(rowId);
@@ -272,7 +312,19 @@
             setTimeout(() => row.remove(), 300);
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
+            const rollInput = document.getElementById('roll_number');
+            const generateRollBtn = document.getElementById('generateRollBtn');
+
+            if (!rollInput.value) {
+                rollInput.value = generateRollNumber(nextRollSequence);
+            }
+
+            generateRollBtn.addEventListener('click', function() {
+                nextRollSequence += 1;
+                rollInput.value = generateRollNumber(nextRollSequence);
+            });
+
             addEnrollmentRow(); // Add first row by default
         });
     </script>

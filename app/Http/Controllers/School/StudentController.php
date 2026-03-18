@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\School;
 
 use App\Http\Controllers\Controller;
+use App\Exports\StudentsExport;
+use App\Exports\StudentsImportTemplateExport;
+use App\Imports\StudentsImport;
 use App\Models\Student;
 use App\Models\Batch;
 use App\Http\Requests\StoreStudentRequest;
@@ -10,6 +13,7 @@ use App\Http\Requests\UpdateStudentRequest;
 use App\Services\StudentService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -29,9 +33,7 @@ class StudentController extends Controller
         return $pdf->stream("Statement-{$student->roll_number}.pdf");
     }
 
-    public function __construct(private StudentService $studentService)
-    {
-    }
+    public function __construct(private StudentService $studentService) {}
 
     public function index(Request $request)
     {
@@ -68,8 +70,9 @@ class StudentController extends Controller
         $batches = Batch::with(['class', 'subject.level'])->active()->get();
         $courses = \App\Models\Course::active()->get();
         $feePlans = \App\Models\FeePlan::where('is_active', true)->get();
+        $rollMeta = $this->studentService->nextRollNumberMeta();
 
-        return view('school.students.create', compact('batches', 'courses', 'feePlans'));
+        return view('school.students.create', compact('batches', 'courses', 'feePlans', 'rollMeta'));
     }
 
     public function store(StoreStudentRequest $request)
@@ -127,38 +130,42 @@ class StudentController extends Controller
 
     public function export()
     {
-        $students = Student::with(['user', 'batch'])->get();
-        $filename = "students_export_" . date('Y-m-d_H-i-s') . ".csv";
+        $students = Student::with(['user', 'batch', 'batches'])->latest()->get();
+        $filename = 'students_export_' . date('Y-m-d_H-i-s') . '.xlsx';
 
-        $headers = [
-            "Content-type" => "text/csv",
-            "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
-        ];
+        return Excel::download(new StudentsExport($students), $filename);
+    }
 
-        $columns = ['Student ID', 'Name', 'Email', 'Batch', 'Joining Date', 'Status'];
+    public function importTemplate()
+    {
+        return Excel::download(new StudentsImportTemplateExport(), 'students_import_template.xlsx');
+    }
 
-        $callback = function () use ($students, $columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
+    public function import(Request $request)
+    {
+        $request->validate([
+            'import_file' => ['required', 'file', 'mimes:xlsx,xls'],
+        ]);
 
-            foreach ($students as $student) {
-                fputcsv($file, [
-                    $student->roll_number,
-                    $student->user->name,
-                    $student->user->email,
-                    $student->batch->name ?? 'N/A',
-                    $student->admission_date ? $student->admission_date->format('Y-m-d') : 'N/A',
-                    $student->is_active ? 'Active' : 'Inactive'
-                ]);
-            }
+        $import = new StudentsImport($this->studentService, auth()->user()->school_id);
+        Excel::import($import, $request->file('import_file'));
 
-            fclose($file);
-        };
+        $imported = $import->getImportedCount();
+        $failedRows = $import->getFailedRows();
 
-        return response()->stream($callback, 200, $headers);
+        if (!empty($failedRows)) {
+            $errorSummary = collect($failedRows)
+                ->take(5)
+                ->map(fn($row) => 'Row ' . $row['row'] . ': ' . $row['error'])
+                ->implode(' | ');
+
+            return redirect()->route('school.students.index')
+                ->with('success', $imported . ' students imported successfully.')
+                ->with('error', count($failedRows) . ' rows failed. ' . $errorSummary);
+        }
+
+        return redirect()->route('school.students.index')
+            ->with('success', $imported . ' students imported successfully.');
     }
 
     /**

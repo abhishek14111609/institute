@@ -87,6 +87,8 @@ Route::middleware(['auth', 'role:school_admin', 'check.subscription'])->prefix('
 
     // Student Management
     Route::get('students/export', [School\StudentController::class, 'export'])->name('students.export');
+    Route::get('students/import-template', [School\StudentController::class, 'importTemplate'])->name('students.import-template');
+    Route::post('students/import', [School\StudentController::class, 'import'])->name('students.import');
     Route::post('students/{id}/restore', [School\StudentController::class, 'restore'])->name('students.restore');
     Route::get('students/{student}/statement', [School\StudentController::class, 'statement'])->name('students.statement');
     Route::resource('students', School\StudentController::class)->middleware('check.plan.limits:students')->only(['store']);
@@ -221,4 +223,3 @@ Route::middleware(['auth', 'role:student', 'check.subscription'])->prefix('stude
 });
 
 Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
-

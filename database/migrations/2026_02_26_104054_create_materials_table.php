@@ -11,6 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('materials', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('school_id')->constrained()->cascadeOnDelete();
             $table->foreignId('teacher_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('batch_id')->nullable()->constrained()->nullOnDelete();
@@ -19,6 +20,7 @@ return new class extends Migration {
             $table->bigInteger('file_size')->default(0); // stores bytes
             $table->string('file_type')->nullable(); // word, pdf, zip
             $table->string('status')->default('active');
+            $table->timestamps();
         });
     }
 

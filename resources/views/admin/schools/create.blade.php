@@ -13,7 +13,8 @@
         <!-- Structural Header -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5 fade-in">
             <div class="mb-3 mb-md-0">
-                <a href="{{ route('admin.schools.index') }}" class="btn btn-link text-decoration-none p-0 mb-2 text-muted small">
+                <a href="{{ route('admin.schools.index') }}"
+                    class="btn btn-link text-decoration-none p-0 mb-2 text-muted small">
                     <i class="bi bi-arrow-left me-1"></i> Return to Registry
                 </a>
                 <h2 class="fw-bold fs-2 mb-1 text-main font-heading">Institutional Hub Activation</h2>
@@ -26,7 +27,8 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.schools.store') }}" method="POST" enctype="multipart/form-data" class="fade-in" style="animation-delay: 0.1s;">
+        <form action="{{ route('admin.schools.store') }}" method="POST" enctype="multipart/form-data" class="fade-in"
+            style="animation-delay: 0.1s;">
             @csrf
 
             <div class="row g-4">
@@ -40,51 +42,83 @@
                         <div class="card-body p-4">
                             <div class="row g-4">
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-uppercase text-muted">Legal institutional Name</label>
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Legal institutional
+                                        Name</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0"><i class="bi bi-building text-primary"></i></span>
-                                        <input type="text" name="name" class="form-control bg-light border-0 @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="e.g. Springfield Academy" required>
+                                        <span class="input-group-text bg-light border-0"><i
+                                                class="bi bi-building text-primary"></i></span>
+                                        <input type="text" name="name"
+                                            class="form-control bg-light border-0 @error('name') is-invalid @enderror"
+                                            value="{{ old('name') }}" placeholder="e.g. Springfield Academy" required>
                                     </div>
-                                    @error('name')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
+                                    @error('name')
+                                        <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-uppercase text-muted">Core Communication Email</label>
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Core Communication
+                                        Email</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0"><i class="bi bi-envelope-at text-primary"></i></span>
-                                        <input type="email" name="email" class="form-control bg-light border-0 @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="admin@ Springfield.edu" required>
+                                        <span class="input-group-text bg-light border-0"><i
+                                                class="bi bi-envelope-at text-primary"></i></span>
+                                        <input type="email" name="email"
+                                            class="form-control bg-light border-0 @error('email') is-invalid @enderror"
+                                            value="{{ old('email') }}" placeholder="admin@springfield.edu" required>
                                     </div>
-                                    @error('email')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
+                                    @error('email')
+                                        <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-uppercase text-muted">Institutional Line</label>
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Institutional
+                                        Line</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0"><i class="bi bi-telephone text-primary"></i></span>
-                                        <input type="text" name="phone" class="form-control bg-light border-0 @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="+1 (555) 000-0000">
+                                        <span class="input-group-text bg-light border-0"><i
+                                                class="bi bi-telephone text-primary"></i></span>
+                                        <input type="text" name="phone"
+                                            class="form-control bg-light border-0 @error('phone') is-invalid @enderror"
+                                            value="{{ old('phone') }}" placeholder="+91 99999 99999">
                                     </div>
-                                    @error('phone')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
+                                    @error('phone')
+                                        <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-uppercase text-muted">Type of Institute</label>
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Type of
+                                        Institute</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0"><i class="bi bi-building text-primary"></i></span>
-                                        <select name="institute_type" class="form-select bg-light border-0 @error('institute_type') is-invalid @enderror" required>
-                                            <option value="academic" {{ old('institute_type') === 'academic' ? 'selected' : '' }}>Academic</option>
-                                            <option value="sport" {{ old('institute_type') === 'sport' ? 'selected' : '' }}>Sport</option>
+                                        <span class="input-group-text bg-light border-0"><i
+                                                class="bi bi-building text-primary"></i></span>
+                                        <select name="institute_type"
+                                            class="form-select bg-light border-0 @error('institute_type') is-invalid @enderror"
+                                            required>
+                                            <option value="academic"
+                                                {{ old('institute_type') === 'academic' ? 'selected' : '' }}>Academic
+                                            </option>
+                                            <option value="sport"
+                                                {{ old('institute_type') === 'sport' ? 'selected' : '' }}>Sport</option>
                                         </select>
                                     </div>
-                                    @error('institute_type')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
+                                    @error('institute_type')
+                                        <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-uppercase text-muted">Headquarters Address</label>
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Headquarters
+                                        Address</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0 align-items-start pt-2"><i class="bi bi-geo-alt text-primary"></i></span>
-                                        <textarea name="address" class="form-control bg-light border-0 @error('address') is-invalid @enderror" rows="3" placeholder="Full physical locality...">{{ old('address') }}</textarea>
+                                        <span class="input-group-text bg-light border-0 align-items-start pt-2"><i
+                                                class="bi bi-geo-alt text-primary"></i></span>
+                                        <textarea name="address" class="form-control bg-light border-0 @error('address') is-invalid @enderror" rows="3"
+                                            placeholder="Full physical locality...">{{ old('address') }}</textarea>
                                     </div>
-                                    @error('address')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
+                                    @error('address')
+                                        <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -100,35 +134,55 @@
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold text-uppercase text-muted">Executive Name</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0"><i class="bi bi-person-badge text-info"></i></span>
-                                        <input type="text" name="admin_name" class="form-control bg-light border-0 @error('admin_name') is-invalid @enderror" value="{{ old('admin_name') }}" placeholder="Full Operational Name">
+                                        <span class="input-group-text field-icon border-0"><i
+                                                class="bi bi-person-badge"></i></span>
+                                        <input type="text" name="admin_name"
+                                            class="form-control field-shell border-0 @error('admin_name') is-invalid @enderror"
+                                            value="{{ old('admin_name') }}" placeholder="Full Operational Name">
                                     </div>
-                                    @error('admin_name')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
+                                    @error('admin_name')
+                                        <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-uppercase text-muted">Executive Alias / Username</label>
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Executive Alias /
+                                        Username</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0"><i class="bi bi-fingerprint text-info"></i></span>
-                                        <input type="text" name="admin_username" class="form-control bg-light border-0 @error('admin_username') is-invalid @enderror" value="{{ old('admin_username') }}" placeholder="Unique alias...">
+                                        <span class="input-group-text field-icon border-0"><i
+                                                class="bi bi-fingerprint"></i></span>
+                                        <input type="text" name="admin_username"
+                                            class="form-control field-shell border-0 @error('admin_username') is-invalid @enderror"
+                                            value="{{ old('admin_username') }}" placeholder="Unique alias...">
                                     </div>
-                                    @error('admin_username')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
+                                    @error('admin_username')
+                                        <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-uppercase text-muted">Secured Password Access</label>
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Secured Password
+                                        Access</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0"><i class="bi bi-lock-fill text-info"></i></span>
-                                        <input type="password" name="admin_password" class="form-control bg-light border-0 @error('admin_password') is-invalid @enderror" placeholder="••••••••">
+                                        <span class="input-group-text field-icon border-0"><i
+                                                class="bi bi-lock-fill"></i></span>
+                                        <input type="password" name="admin_password"
+                                            class="form-control field-shell border-0 @error('admin_password') is-invalid @enderror"
+                                            placeholder="••••••••">
                                     </div>
-                                    @error('admin_password')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
+                                    @error('admin_password')
+                                        <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-uppercase text-muted">Re-validate Password</label>
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Re-validate
+                                        Password</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0"><i class="bi bi-shield-lock text-info"></i></span>
-                                        <input type="password" name="admin_password_confirmation" class="form-control bg-light border-0" placeholder="••••••••">
+                                        <span class="input-group-text field-icon border-0"><i
+                                                class="bi bi-shield-lock"></i></span>
+                                        <input type="password" name="admin_password_confirmation"
+                                            class="form-control field-shell border-0" placeholder="••••••••">
                                     </div>
                                 </div>
                             </div>
@@ -144,17 +198,22 @@
                         </div>
                         <div class="card-body p-4 text-center">
                             <div class="mb-4">
-                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-inner" style="width: 120px; height: 120px; border: 4px dashed rgba(79, 70, 229, 0.2);">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-inner"
+                                    style="width: 120px; height: 120px; border: 4px dashed rgba(79, 70, 229, 0.2);">
                                     <i class="bi bi-cloud-arrow-up text-primary fs-1"></i>
                                 </div>
                                 <p class="text-muted tiny fw-bold text-uppercase mb-0">Branding Vector</p>
                             </div>
-                            <input type="file" name="logo" class="form-control bg-light border-0 tiny @error('logo') is-invalid @enderror" accept="image/*">
-                            @error('logo')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
+                            <input type="file" name="logo"
+                                class="form-control bg-light border-0 tiny @error('logo') is-invalid @enderror"
+                                accept="image/*">
+                            @error('logo')
+                                <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
-                    <div class="card border-0 shadow-sm rounded-4 bg-dark text-white overflow-hidden">
+                    <div class="card border-0 shadow-sm rounded-4 bg-dark text-white overflow-hidden deployment-panel">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center mb-4">
                                 <div class="bg-primary bg-opacity-20 p-3 rounded-4 me-3">
@@ -167,38 +226,51 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label text-white-50 small fw-bold text-uppercase">Select Strategic Plan</label>
-                                <select name="plan_id" class="form-select bg-white bg-opacity-10 border-0 text-white shadow-none @error('plan_id') is-invalid @enderror" required>
+                                <label class="form-label text-white small fw-bold text-uppercase">Select Strategic
+                                    Plan</label>
+                                <select name="plan_id"
+                                    class="form-select deploy-control shadow-none @error('plan_id') is-invalid @enderror"
+                                    required>
                                     <option value="" class="text-dark">-- Commercial Tier --</option>
-                                    @foreach($plans as $plan)
-                                        <option value="{{ $plan->id }}" class="text-dark" {{ old('plan_id') == $plan->id ? 'selected' : '' }}>
+                                    @foreach ($plans as $plan)
+                                        <option value="{{ $plan->id }}" class="text-dark"
+                                            {{ old('plan_id') == $plan->id ? 'selected' : '' }}>
                                             {{ $plan->name }} (₹{{ number_format($plan->price) }})
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('plan_id')<div class="invalid-feedback d-block mt-1 text-danger">{{ $message }}</div>@enderror
+                                @error('plan_id')
+                                    <div class="invalid-feedback d-block mt-1 text-warning">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mb-5">
-                                <label class="form-label text-white-50 small fw-bold text-uppercase">Initial Duration (Days)</label>
+                                <label class="form-label text-white small fw-bold text-uppercase">Initial Duration
+                                    (Days)</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-white bg-opacity-10 border-0 text-white"><i class="bi bi-calendar-check"></i></span>
-                                    <input type="number" name="subscription_duration" class="form-control bg-white bg-opacity-10 border-0 text-white shadow-none" value="{{ old('subscription_duration', 30) }}" required>
+                                    <span class="input-group-text deploy-control text-white"><i
+                                            class="bi bi-calendar-check"></i></span>
+                                    <input type="number" name="subscription_duration"
+                                        class="form-control deploy-control text-white shadow-none"
+                                        value="{{ old('subscription_duration', 30) }}" min="1" required>
                                 </div>
                             </div>
 
-                            <div class="p-3 bg-white bg-opacity-5 rounded-4 mb-4 border border-white border-opacity-10">
+                            <div class="p-3 rounded-4 mb-4 border deployment-note">
                                 <div class="d-flex align-items-center mb-2">
                                     <i class="bi bi-info-circle-fill text-primary me-2"></i>
                                     <span class="small fw-bold">Pre-deployment Notice</span>
                                 </div>
-                                <p class="text-white-50 tiny mb-0">Initiating this node will trigger automated environment isolation and executive credential hashing.</p>
+                                <p class="text-white-50 tiny mb-0">Initiating this node will trigger automated environment
+                                    isolation and executive credential hashing.</p>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm py-3 mb-2">
+                            <button type="submit"
+                                class="btn activation-btn w-100 rounded-pill fw-bold shadow-sm py-3 mb-2">
                                 <i class="bi bi-lightning-charge-fill me-2"></i> Execute Node Activation
                             </button>
-                            <a href="{{ route('admin.schools.index') }}" class="btn btn-link text-white-50 text-decoration-none w-100 tiny">Abort Deployment</a>
+                            <a href="{{ route('admin.schools.index') }}"
+                                class="btn btn-link text-white-50 text-decoration-none w-100 tiny">Abort Deployment</a>
                         </div>
                     </div>
                 </div>
@@ -207,17 +279,87 @@
     </div>
 
     <style>
+        .field-icon {
+            background-color: #eef2ff;
+            color: #4f46e5;
+            min-width: 46px;
+            justify-content: center;
+        }
+
+        .field-shell {
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .field-shell::placeholder {
+            color: #94a3b8;
+        }
+
+        .deployment-panel {
+            background: linear-gradient(165deg, #111827 0%, #1f2937 52%, #0f172a 100%);
+        }
+
+        .deployment-panel .form-label {
+            letter-spacing: 0.02em;
+        }
+
+        .deploy-control {
+            background-color: rgba(255, 255, 255, 0.16) !important;
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+            color: #f8fafc !important;
+        }
+
+        .deploy-control:focus {
+            background-color: rgba(255, 255, 255, 0.22) !important;
+            border-color: rgba(165, 180, 252, 0.55) !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.24) !important;
+        }
+
+        .deploy-control::placeholder {
+            color: rgba(248, 250, 252, 0.8);
+        }
+
+        .deployment-panel .form-select option {
+            color: #111827;
+        }
+
+        .deployment-note {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.18) !important;
+        }
+
+        .activation-btn {
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+            border: 0;
+        }
+
+        .activation-btn:hover {
+            background: linear-gradient(90deg, #4338ca 0%, #6d28d9 100%);
+        }
+
         .fade-in {
             animation: fadeIn 0.8s ease-out forwards;
             opacity: 0;
             transform: translateY(20px);
         }
+
         @keyframes fadeIn {
-            to { opacity: 1; transform: translateY(0); }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .form-control:focus, .form-select:focus {
+
+        .form-control:focus,
+        .form-select:focus {
             background-color: #fff !important;
             box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
+        }
+
+        .deployment-panel .form-control:focus,
+        .deployment-panel .form-select:focus {
+            background-color: rgba(255, 255, 255, 0.22) !important;
         }
     </style>
 @endsection
