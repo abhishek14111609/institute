@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateStudentRequest extends FormRequest
 {
@@ -33,9 +34,17 @@ class UpdateStudentRequest extends FormRequest
             'course_id' => ['nullable', 'exists:courses,id'],
             'batch_id' => ['nullable', 'exists:batches,id'],
             'batch_ids' => ['nullable', 'array'],
-            'batch_ids.*' => ['exists:batches,id'],
-            'roll_number' => ['nullable', 'string', 'max:50'],
+            'batch_ids.*' => ['distinct', 'exists:batches,id'],
+            'roll_number' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('students', 'roll_number')
+                    ->where('school_id', $this->user()->school_id)
+                    ->ignore($student?->id),
+            ],
             'birth_date' => ['nullable', 'date', 'before:today'],
+            'admission_date' => ['nullable', 'date', 'before_or_equal:today', 'after_or_equal:birth_date'],
             'previous_school' => ['nullable', 'string', 'max:255'],
             'address' => ['nullable', 'string'],
             'parent_name' => ['nullable', 'string', 'max:255'],

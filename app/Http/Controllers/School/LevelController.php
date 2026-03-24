@@ -5,6 +5,7 @@ namespace App\Http\Controllers\School;
 use App\Http\Controllers\Controller;
 use App\Models\Level;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class LevelController extends Controller
 {
@@ -33,8 +34,15 @@ class LevelController extends Controller
      */
     public function store(Request $request)
     {
+        $schoolId = auth()->user()->school_id;
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('levels', 'name')->where('school_id', $schoolId),
+            ],
             'description' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
@@ -69,8 +77,15 @@ class LevelController extends Controller
             abort(403);
         }
 
+        $schoolId = auth()->user()->school_id;
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('levels', 'name')->where('school_id', $schoolId)->ignore($level->id),
+            ],
             'description' => 'nullable|string',
             'is_active' => 'boolean',
         ]);

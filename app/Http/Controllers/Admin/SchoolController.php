@@ -12,9 +12,7 @@ use Illuminate\Http\Request;
 
 class SchoolController extends Controller
 {
-    public function __construct(private SchoolService $schoolService)
-    {
-    }
+    public function __construct(private SchoolService $schoolService) {}
 
     public function index()
     {
@@ -85,9 +83,9 @@ class SchoolController extends Controller
     public function extendSubscription(Request $request, School $school)
     {
         $request->validate([
-            'days' => 'required|integer|min:1',
+            'days' => 'required|integer|min:1|max:3650',
             'plan_id' => 'nullable|exists:plans,id',
-            'amount_paid' => 'nullable|numeric|min:0',
+            'amount_paid' => 'nullable|numeric|min:0|max:99999999.99',
             'payment_method' => 'required|string|in:cash,online,bank_transfer,manual',
         ]);
 

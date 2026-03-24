@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * @property string $name
@@ -38,11 +39,16 @@ class StoreTeacherRequest extends FormRequest
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'phone' => ['nullable', 'string', 'max:20'],
-            'employee_id' => ['nullable', 'string', 'max:50'],
+            'employee_id' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('teachers', 'employee_id')->where('school_id', $this->user()->school_id),
+            ],
             'qualification' => ['nullable', 'string', 'max:255'],
             'specialization' => ['nullable', 'string', 'max:255'],
-            'joining_date' => ['required', 'date'],
-            'salary' => ['nullable', 'numeric', 'min:0'],
+            'joining_date' => ['required', 'date', 'before_or_equal:today'],
+            'salary' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
             'batches' => ['nullable', 'array'],
             'batches.*' => ['exists:batches,id'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],

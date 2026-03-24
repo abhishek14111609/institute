@@ -8,12 +8,11 @@ use App\Http\Requests\StoreFeePaymentRequest;
 use App\Services\FeeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class FeePaymentController extends Controller
 {
-    public function __construct(private FeeService $feeService)
-    {
-    }
+    public function __construct(private FeeService $feeService) {}
 
     public function create(Fee $fee)
     {
@@ -43,16 +42,30 @@ class FeePaymentController extends Controller
      */
     public function bulkStore(Request $request)
     {
+        $schoolId = auth()->user()->school_id;
+
         $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'payments' => 'required|array',
-            'payments.*.fee_id' => 'required|exists:fees,id',
-            'payments.*.amount' => 'required|numeric|min:0',
-            'payment_method' => 'required|string',
-            'paid_at' => 'required|date',
-            'transaction_id' => 'nullable|string',
+            'student_id' => ['required', Rule::exists('students', 'id')->where('school_id', $schoolId)],
+            'payments' => 'required|array|min:1|max:200',
+            'payments.*.fee_id' => ['required', 'distinct', Rule::exists('fees', 'id')->where('school_id', $schoolId)],
+            'payments.*.amount' => 'required|numeric|min:0|max:99999999.99',
+            'payment_method' => 'required|string|in:cash,bank_transfer,card,cheque,upi',
+            'paid_at' => 'required|date|before_or_equal:today',
+            'transaction_id' => 'nullable|string|max:100',
             'notes' => 'nullable|string',
         ]);
+
+        $feeIds = collect($validated['payments'])->pluck('fee_id')->all();
+        $validFeeCount = Fee::whereIn('id', $feeIds)
+            ->where('school_id', $schoolId)
+            ->where('student_id', $validated['student_id'])
+            ->count();
+
+        if ($validFeeCount !== count($feeIds)) {
+            return back()->withErrors([
+                'payments' => 'One or more selected fees do not belong to the chosen student.',
+            ])->withInput();
+        }
 
         try {
             DB::beginTransaction();
@@ -88,7 +101,6 @@ class FeePaymentController extends Controller
             return redirect()->route('school.students.show', $validated['student_id'])
                 ->with('success', "Successfully recorded $paymentCount payments.")
                 ->with('open_invoice_id', $lastInvoiceId);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Error recording bulk payments: ' . $e->getMessage());

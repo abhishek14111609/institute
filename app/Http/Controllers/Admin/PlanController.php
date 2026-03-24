@@ -25,10 +25,10 @@ class PlanController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'student_limit' => 'required|integer|min:1',
-            'batch_limit' => 'required|integer|min:1',
-            'duration_days' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0|max:99999999.99',
+            'student_limit' => 'required|integer|min:1|max:1000000',
+            'batch_limit' => 'required|integer|min:1|max:1000000',
+            'duration_days' => 'required|integer|min:1|max:3650',
             'is_active' => 'boolean',
         ]);
 
@@ -48,10 +48,10 @@ class PlanController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'student_limit' => 'required|integer|min:1',
-            'batch_limit' => 'required|integer|min:1',
-            'duration_days' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0|max:99999999.99',
+            'student_limit' => 'required|integer|min:1|max:1000000',
+            'batch_limit' => 'required|integer|min:1|max:1000000',
+            'duration_days' => 'required|integer|min:1|max:3650',
             'is_active' => 'boolean',
         ]);
 

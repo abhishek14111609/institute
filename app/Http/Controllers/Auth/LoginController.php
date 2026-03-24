@@ -26,8 +26,9 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'username' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string', 'min:8', 'max:255'],
+            'remember' => ['nullable', 'boolean'],
         ]);
 
         // Check if the input is an email or a username

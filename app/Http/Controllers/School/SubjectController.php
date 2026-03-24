@@ -8,6 +8,7 @@ use App\Models\Classes;
 use App\Models\Course;
 use App\Models\Level;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SubjectController extends Controller
 {
@@ -30,6 +31,7 @@ class SubjectController extends Controller
     public function store(Request $request)
     {
         $isSport = auth()->user()->school->institute_type === 'sport';
+        $schoolId = auth()->user()->school_id;
 
         $rules = [
             'name' => 'required|string|max:255',
@@ -38,10 +40,10 @@ class SubjectController extends Controller
         ];
 
         if ($isSport) {
-            $rules['course_id'] = 'required|exists:courses,id';
-            $rules['level_id'] = 'required|exists:levels,id';
+            $rules['course_id'] = ['required', Rule::exists('courses', 'id')->where('school_id', $schoolId)];
+            $rules['level_id'] = ['required', Rule::exists('levels', 'id')->where('school_id', $schoolId)];
         } else {
-            $rules['class_id'] = 'required|exists:classes,id';
+            $rules['class_id'] = ['required', Rule::exists('classes', 'id')->where('school_id', $schoolId)];
         }
 
         $request->validate($rules);
@@ -79,6 +81,7 @@ class SubjectController extends Controller
     public function update(Request $request, Subject $subject)
     {
         $isSport = auth()->user()->school->institute_type === 'sport';
+        $schoolId = auth()->user()->school_id;
 
         $rules = [
             'name' => 'required|string|max:255',
@@ -87,10 +90,10 @@ class SubjectController extends Controller
         ];
 
         if ($isSport) {
-            $rules['course_id'] = 'required|exists:courses,id';
-            $rules['level_id'] = 'required|exists:levels,id';
+            $rules['course_id'] = ['required', Rule::exists('courses', 'id')->where('school_id', $schoolId)];
+            $rules['level_id'] = ['required', Rule::exists('levels', 'id')->where('school_id', $schoolId)];
         } else {
-            $rules['class_id'] = 'required|exists:classes,id';
+            $rules['class_id'] = ['required', Rule::exists('classes', 'id')->where('school_id', $schoolId)];
         }
 
         $request->validate($rules);

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreStudentRequest extends FormRequest
 {
@@ -30,17 +31,22 @@ class StoreStudentRequest extends FormRequest
             'course_id' => ['nullable', 'exists:courses,id'],
             'batch_id' => ['nullable', 'exists:batches,id'],
             'batch_ids' => ['nullable', 'array'],
-            'batch_ids.*' => ['exists:batches,id'],
+            'batch_ids.*' => ['distinct', 'exists:batches,id'],
             'batch_fees' => ['nullable', 'array'],
             'fee_plan_id' => ['nullable', 'exists:fee_plans,id'],
-            'roll_number' => ['nullable', 'string', 'max:50'],
+            'roll_number' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('students', 'roll_number')->where('school_id', $this->user()->school_id),
+            ],
             'birth_date' => ['nullable', 'date', 'before:today'],
             'previous_school' => ['nullable', 'string', 'max:255'],
             'address' => ['nullable', 'string'],
             'parent_name' => ['nullable', 'string', 'max:255'],
             'parent_phone' => ['nullable', 'string', 'max:20'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
-            'admission_date' => ['required', 'date'],
+            'admission_date' => ['required', 'date', 'before_or_equal:today', 'after_or_equal:birth_date'],
         ];
     }
 }

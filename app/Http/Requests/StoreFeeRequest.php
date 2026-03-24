@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreFeeRequest extends FormRequest
 {
@@ -22,21 +23,21 @@ class StoreFeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'fee_plan_id' => ['nullable', 'exists:fee_plans,id'],
-            'student_id' => ['required', 'exists:students,id'],
-            'batch_id' => ['nullable', 'exists:batches,id'],
+            'fee_plan_id' => ['nullable', Rule::exists('fee_plans', 'id')->where('school_id', $this->user()->school_id)],
+            'student_id' => ['required', Rule::exists('students', 'id')->where('school_id', $this->user()->school_id)],
+            'batch_id' => ['nullable', Rule::exists('batches', 'id')->where('school_id', $this->user()->school_id)],
             'fee_type' => ['required', 'string'],
             'duration' => ['nullable', 'string', 'in:monthly,quarterly,half_yearly,annual,one_time'],
             'sport_level' => ['nullable', 'string', 'max:255'],
-            'total_amount' => ['required', 'numeric', 'min:0'],
-            'discount' => ['nullable', 'numeric', 'min:0', 'lte:total_amount'],
-            'late_fee' => ['nullable', 'numeric', 'min:0'],
-            'due_date' => ['required', 'date'],
+            'total_amount' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
+            'discount' => ['nullable', 'numeric', 'min:0', 'max:99999999.99', 'lte:total_amount'],
+            'late_fee' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
+            'due_date' => ['required', 'date', 'after_or_equal:today'],
             'remarks' => ['nullable', 'string'],
             // Initial payment fields
-            'initial_paid_amount' => ['nullable', 'numeric', 'min:0', 'lte:total_amount'],
+            'initial_paid_amount' => ['nullable', 'numeric', 'min:0', 'max:99999999.99', 'lte:total_amount'],
             'payment_method' => ['required_with:initial_paid_amount', 'string', 'in:cash,bank_transfer,card,cheque,upi'],
-            'transaction_id' => ['nullable', 'string'],
+            'transaction_id' => ['nullable', 'string', 'max:100'],
         ];
     }
 

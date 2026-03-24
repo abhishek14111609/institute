@@ -82,11 +82,19 @@ class CourseController extends Controller
                 'max:255',
                 Rule::unique('courses')->where('school_id', $schoolId),
             ],
-            'code' => 'nullable|string|max:50',
+            'code' => [
+                'nullable',
+                'string',
+                'max:50',
+                'regex:/^[A-Za-z0-9_-]+$/',
+                Rule::unique('courses')->where('school_id', $schoolId),
+            ],
             'description' => 'nullable|string',
             'is_active' => 'boolean',
         ], [
             'name.unique' => 'A course with this name already exists in your school.',
+            'code.unique' => 'A course with this code already exists in your school.',
+            'code.regex' => 'Course code can only contain letters, numbers, hyphen, and underscore.',
         ]);
 
         $validated['school_id'] = $schoolId;
@@ -141,11 +149,28 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
+        $schoolId = auth()->user()->school_id;
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('courses')->where('school_id', $schoolId)->ignore($course->id),
+            ],
+            'code' => [
+                'nullable',
+                'string',
+                'max:50',
+                'regex:/^[A-Za-z0-9_-]+$/',
+                Rule::unique('courses')->where('school_id', $schoolId)->ignore($course->id),
+            ],
             'description' => 'nullable|string',
             'is_active' => 'boolean',
+        ], [
+            'name.unique' => 'A course with this name already exists in your school.',
+            'code.unique' => 'A course with this code already exists in your school.',
+            'code.regex' => 'Course code can only contain letters, numbers, hyphen, and underscore.',
         ]);
 
         $course->update($validated);

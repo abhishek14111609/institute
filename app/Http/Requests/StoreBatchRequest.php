@@ -30,7 +30,7 @@ class StoreBatchRequest extends FormRequest
             'name' => [$isSport ? 'nullable' : 'required', 'string', 'max:255'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-            'capacity' => ['required', 'integer', 'min:1'],
+            'capacity' => ['required', 'integer', 'min:1', 'max:10000'],
             'sport_level' => ['nullable', 'string', 'max:255'],
             'is_active' => ['boolean'],
             'teacher_ids' => ['nullable', 'array'],

@@ -7,6 +7,7 @@ use App\Models\SportsEvent;
 use App\Models\Student;
 use App\Models\EventParticipant;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class EventController extends Controller
 {
@@ -51,9 +52,21 @@ class EventController extends Controller
      */
     public function addParticipants(Request $request, SportsEvent $event)
     {
+        $teacher = auth()->user()->teacher;
+        if ($event->coach_id !== $teacher->id) {
+            abort(403, 'Unauthorized access to this event.');
+        }
+
+        $teacherBatchIds = $teacher->batches()->pluck('batches.id');
+
         $request->validate([
             'student_ids' => 'required|array',
-            'student_ids.*' => 'exists:students,id'
+            'student_ids.*' => [
+                'distinct',
+                Rule::exists('students', 'id')->where(function ($query) use ($teacherBatchIds) {
+                    $query->whereIn('batch_id', $teacherBatchIds);
+                }),
+            ]
         ]);
 
         foreach ($request->student_ids as $studentId) {
@@ -74,6 +87,11 @@ class EventController extends Controller
      */
     public function removeParticipant(SportsEvent $event, Student $student)
     {
+        $teacher = auth()->user()->teacher;
+        if ($event->coach_id !== $teacher->id) {
+            abort(403, 'Unauthorized access to this event.');
+        }
+
         EventParticipant::where('sports_event_id', $event->id)
             ->where('student_id', $student->id)
             ->delete();
@@ -86,8 +104,13 @@ class EventController extends Controller
      */
     public function updateResult(Request $request, SportsEvent $event, Student $student)
     {
+        $teacher = auth()->user()->teacher;
+        if ($event->coach_id !== $teacher->id) {
+            abort(403, 'Unauthorized access to this event.');
+        }
+
         $request->validate([
-            'rank' => 'nullable|integer|min:1',
+            'rank' => 'nullable|integer|min:1|max:1000000',
             'participation_status' => 'required|in:registered,participated,withdrawn',
             'notes' => 'nullable|string|max:500'
         ]);

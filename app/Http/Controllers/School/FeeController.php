@@ -9,12 +9,11 @@ use App\Models\Student;
 use App\Http\Requests\StoreFeeRequest;
 use App\Services\FeeService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class FeeController extends Controller
 {
-    public function __construct(private FeeService $feeService)
-    {
-    }
+    public function __construct(private FeeService $feeService) {}
 
     public function index(Request $request)
     {
@@ -86,13 +85,15 @@ class FeeController extends Controller
 
     public function update(Request $request, Fee $fee)
     {
+        $schoolId = auth()->user()->school_id;
+
         $validated = $request->validate([
-            'total_amount' => 'required|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0|lte:total_amount',
-            'late_fee' => 'nullable|numeric|min:0',
-            'batch_id' => 'nullable|exists:batches,id',
+            'total_amount' => 'required|numeric|min:0|max:99999999.99',
+            'discount' => 'nullable|numeric|min:0|max:99999999.99|lte:total_amount',
+            'late_fee' => 'nullable|numeric|min:0|max:99999999.99',
+            'batch_id' => ['nullable', Rule::exists('batches', 'id')->where('school_id', $schoolId)],
             'sport_level' => 'nullable|string|max:255',
-            'due_date' => 'required|date',
+            'due_date' => 'required|date|after_or_equal:today',
             'remarks' => 'nullable|string',
         ]);
 

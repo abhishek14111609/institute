@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * @property int $fee_id
@@ -30,12 +31,12 @@ class StoreFeePaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'fee_id' => ['required', 'exists:fees,id'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
+            'fee_id' => ['required', Rule::exists('fees', 'id')->where('school_id', $this->user()->school_id)],
+            'amount' => ['required', 'numeric', 'min:0.01', 'max:99999999.99'],
             'payment_method' => ['required', 'in:cash,bank_transfer,card,cheque,upi'],
             'transaction_id' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],
-            'paid_at' => ['nullable', 'date'],
+            'paid_at' => ['nullable', 'date', 'before_or_equal:today'],
         ];
     }
 }
