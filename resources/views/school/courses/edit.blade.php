@@ -22,7 +22,9 @@
                             <label for="name"
                                 class="form-label">{{ $isSport ? __('Sport Name') : __('Course Name') }}</label>
                             <input id="name" type="text" class="form-control @error('name') is-invalid @enderror"
-                                name="name" value="{{ old('name', $course->name) }}" required autofocus>
+                                name="name" value="{{ old('name', $course->name) }}" required autofocus
+                                data-ajax-validate="true" data-table="courses" data-rules="required"
+                                data-ignore-id="{{ $course->id }}">
                             @error('name')
                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                             @enderror
@@ -31,19 +33,9 @@
                         <div class="mb-3">
                             <label for="code"
                                 class="form-label">{{ $isSport ? __('Sport Code') : __('Course Code') }}</label>
-                            @if ($isSport)
-                                <div class="input-group">
-                                    <input id="code" type="text"
-                                        class="form-control @error('code') is-invalid @enderror" name="code"
-                                        value="{{ old('code', $course->code ?: $suggestedCode ?? '') }}" readonly>
-                                    <button class="btn btn-outline-primary" type="button"
-                                        id="generateCodeBtn">Generate</button>
-                                </div>
-                            @else
-                                <input id="code" type="text"
-                                    class="form-control @error('code') is-invalid @enderror" name="code"
-                                    value="{{ old('code', $course->code) }}">
-                            @endif
+                            <input id="code" type="text"
+                                class="form-control bg-light @error('code') is-invalid @enderror" name="code"
+                                value="{{ old('code', $course->code ?: $suggestedCode ?? '') }}" readonly>
                             @if ($isSport)
                                 <small class="text-muted d-block mt-1">Generated format: {{ $prefix ?? 'INS' }}001,
                                     {{ $prefix ?? 'INS' }}002...</small>
@@ -84,7 +76,6 @@
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const codeInput = document.getElementById('code');
-                const generateBtn = document.getElementById('generateCodeBtn');
                 const codePrefix = @json($prefix ?? 'INS');
                 let nextSequence = Number(@json($nextSequence ?? 1));
 
@@ -93,18 +84,12 @@
                 }
 
                 function syncSportCode() {
-                    const generated = generateSportCode(nextSequence);
-                    codeInput.value = generated;
+                    if (!codeInput.value) {
+                        codeInput.value = generateSportCode(nextSequence);
+                    }
                 }
 
-                if (!codeInput.value) {
-                    syncSportCode();
-                }
-
-                generateBtn.addEventListener('click', function() {
-                    nextSequence += 1;
-                    syncSportCode();
-                });
+                syncSportCode();
             });
         </script>
     @endif

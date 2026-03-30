@@ -44,7 +44,7 @@
                                     {{ auth()->user()->school->institute_type === 'sport' ? 'Sport & Activity' : 'Module & Nomenclature' }}
                                 </th>
                                 <th class="py-3 border-0">
-                                    {{ auth()->user()->school->institute_type === 'sport' ? 'Sports Level' : 'Institutional Level' }}
+                                    {{ auth()->user()->school->institute_type === 'sport' ? 'Sports Level' : 'Class / Grade' }}
                                 </th>
                                 <th class="py-3 border-0">Classification</th>
                                 <th class="py-3 border-0 text-center">Description</th>
@@ -80,7 +80,7 @@
                                                 {{ $subject->schoolClass->name }}
                                             @endif
                                         </div>
-                                        <small class="text-muted tiny">Level Category</small>
+                                        <small class="text-muted tiny">{{ auth()->user()->school->institute_type === 'sport' ? 'Level Category' : 'Grade Classification' }}</small>
                                     </td>
                                     <td class="border-0">
                                         <span

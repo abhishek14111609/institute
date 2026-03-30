@@ -175,7 +175,7 @@
                                         <small class="text-muted tiny text-uppercase">TIMESTAMP: {{ $invoice->created_at->format('d M, Y • H:i') }}</small>
                                     </div>
                                 </div>
-                                <a href="{{ route('school.invoices.download', $invoice->id) }}" class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm">
+                                <a href="{{ route('student.invoices.download', $invoice->id) }}" class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm">
                                     <i class="bi bi-download me-1"></i> PDF
                                 </a>
                             </div>

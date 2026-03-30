@@ -6,6 +6,9 @@ use App\Models\School;
 use App\Models\SchoolSubscription;
 use App\Models\Plan;
 use App\Models\User;
+use App\Models\FeePayment;
+use App\Models\Expense;
+use App\Models\InventorySale;
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -167,6 +170,36 @@ class SchoolService
     public function getDashboardStats()
     {
         return \Illuminate\Support\Facades\Cache::remember('admin_dashboard_stats', 300, function () {
+            $instituteFinancials = collect(['sport', 'academic'])->mapWithKeys(function ($type) {
+                $schoolIds = School::where('institute_type', $type)->pluck('id');
+
+                $feeRevenue = (float) FeePayment::query()
+                    ->whereHas('fee', function ($query) use ($schoolIds) {
+                        $query->whereIn('school_id', $schoolIds);
+                    })
+                    ->sum('amount');
+
+                $salesRevenue = (float) InventorySale::query()
+                    ->whereIn('school_id', $schoolIds)
+                    ->where('payment_status', 'paid')
+                    ->sum('total_amount');
+
+                $expenses = (float) Expense::query()
+                    ->whereIn('school_id', $schoolIds)
+                    ->sum('amount');
+
+                return [
+                    $type => [
+                        'school_count' => $schoolIds->count(),
+                        'fee_revenue' => $feeRevenue,
+                        'sales_revenue' => $salesRevenue,
+                        'total_revenue' => $feeRevenue + $salesRevenue,
+                        'expenses' => $expenses,
+                        'net' => ($feeRevenue + $salesRevenue) - $expenses,
+                    ],
+                ];
+            })->all();
+
             return [
                 'total_schools' => School::count(),
                 'active_schools' => School::where('status', 'active')->count(),
@@ -190,6 +223,7 @@ class SchoolService
                     ->latest('subscription_expires_at')
                     ->take(5)
                     ->get(),
+                'institute_financials' => $instituteFinancials,
                 'latest_logs' => ActivityLog::with(['user.roles', 'school'])->latest()->take(8)->get(),
                 'recent_users' => User::with('roles', 'school')->latest()->take(5)->get(),
             ];

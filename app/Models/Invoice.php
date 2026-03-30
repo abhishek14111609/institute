@@ -74,6 +74,14 @@ class Invoice extends Model
     }
 
     /**
+     * Get the linked inventory sale (if generated from a store-room sale).
+     */
+    public function inventorySale()
+    {
+        return $this->hasOne(InventorySale::class, 'invoice_id');
+    }
+
+    /**
      * Generate unique invoice number
      */
     public static function generateInvoiceNumber($schoolId)

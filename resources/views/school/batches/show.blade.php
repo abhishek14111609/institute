@@ -33,9 +33,15 @@
                     <div class="card-body">
                         <table class="table table-borderless">
                             <tr>
-                                <th>Class:</th>
+                                <th>{{ $isSport ? 'Team:' : 'Class:' }}</th>
                                 <td>{{ $batch->class->name }}</td>
                             </tr>
+                            @if($isSport && $batch->sport_level)
+                            <tr>
+                                <th>Sport Level:</th>
+                                <td>{{ $batch->sport_level }}</td>
+                            </tr>
+                            @endif
                             <tr>
                                 <th>Type:</th>
                                 <td>

@@ -39,7 +39,7 @@
                                     CLASS:</span>
                                 <select name="class_id" class="form-select bg-transparent border-0 shadow-none tiny fw-bold"
                                     onchange="this.form.submit()">
-                                    <option value="">All Institutional Levels</option>
+                                    <option value="">{{ auth()->user()->school->institute_type === 'sport' ? 'All Institutional Levels' : 'All Classes' }}</option>
                                     @foreach($classes as $class)
                                         <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>
                                             {{ $class->name }}
@@ -57,7 +57,7 @@
                         <thead class="bg-light">
                             <tr class="small text-muted text-uppercase fw-bold">
                                 <th class="ps-4 py-3 border-0">{{ auth()->user()->school->institute_type === 'sport' ? 'Sport & Session' : 'Batch Reference' }}</th>
-                                <th class="py-3 border-0">{{ auth()->user()->school->institute_type === 'sport' ? 'Activity & Level' : 'Class Level' }}</th>
+                                <th class="py-3 border-0">{{ auth()->user()->school->institute_type === 'sport' ? 'Activity & Level' : 'Class Assignment' }}</th>
                                 <th class="py-3 border-0">Operational Window</th>
                                 <th class="py-3 border-0 text-center">{{ auth()->user()->school->institute_type === 'sport' ? 'Allocation Status' : 'Enrollment Status' }}</th>
                                 <th class="py-3 border-0 text-center">{{ auth()->user()->school->institute_type === 'sport' ? 'Coaches' : 'Faculties' }}</th>
@@ -90,7 +90,7 @@
                                                     {{ $batch->subject->name ?? 'N/A' }}
                                                 </span>
                                             </div>
-                                            <small class="text-muted mt-1 d-block">{{ $batch->subject->level->name ?? 'Any Level' }}</small>
+                                            <small class="text-muted mt-1 d-block">{{ $batch->sport_level ?? ($batch->subject->level->name ?? 'Any Level') }}</small>
                                         @else
                                             <span class="badge bg-soft-info px-3 py-2 rounded-pill small">
                                                 {{ $batch->class->name }}

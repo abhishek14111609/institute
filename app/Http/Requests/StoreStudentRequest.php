@@ -27,7 +27,7 @@ class StoreStudentRequest extends FormRequest
             'email' => ['required', 'email', 'unique:users,email'],
             'username' => ['required', 'string', 'max:100', 'unique:users,username'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['nullable', 'string', 'size:10'],
             'course_id' => ['nullable', 'exists:courses,id'],
             'batch_id' => ['nullable', 'exists:batches,id'],
             'batch_ids' => ['nullable', 'array'],
@@ -44,7 +44,7 @@ class StoreStudentRequest extends FormRequest
             'previous_school' => ['nullable', 'string', 'max:255'],
             'address' => ['nullable', 'string'],
             'parent_name' => ['nullable', 'string', 'max:255'],
-            'parent_phone' => ['nullable', 'string', 'max:20'],
+            'parent_phone' => ['nullable', 'string', 'size:10'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'admission_date' => ['required', 'date', 'before_or_equal:today', 'after_or_equal:birth_date'],
         ];

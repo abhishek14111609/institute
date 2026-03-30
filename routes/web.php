@@ -137,6 +137,17 @@ Route::middleware(['auth', 'role:school_admin', 'check.subscription'])->prefix('
     Route::get('reports/income', [School\ReportController::class, 'income'])->name('reports.income');
     Route::get('reports/expenses', [School\ReportController::class, 'expenses'])->name('reports.expenses');
     Route::get('reports/attendance', [School\ReportController::class, 'attendance'])->name('reports.attendance');
+
+    // Materials / Resources (Stock) management (Digital)
+    Route::resource('materials', School\MaterialController::class);
+    Route::get('materials/{material}/download', [School\MaterialController::class, 'download'])->name('materials.download');
+
+    // Physical Inventory & Kit/Book/Dress Management (Store Room)
+    Route::resource('inventory', School\InventoryController::class);
+    Route::post('inventory/issue', [School\InventoryController::class, 'issueItem'])->name('inventory.issue');
+
+    // Field Validation API
+    Route::post('validate-field', [School\ValidationController::class, 'validateField'])->name('validate-field');
 });
 
 // Teacher Routes
@@ -195,6 +206,9 @@ Route::middleware(['auth', 'role:student', 'check.subscription'])->prefix('stude
     // Fees
     Route::get('fees', [Student\FeeController::class, 'index'])->name('fees.index');
     Route::get('fees/{fee}', [Student\FeeController::class, 'show'])->name('fees.show');
+    Route::get('purchases', [Student\PurchaseController::class, 'index'])->name('purchases.index');
+    Route::get('invoices/{invoice}/download', [Student\InvoiceController::class, 'download'])->name('invoices.download');
+    Route::get('invoices/{invoice}/stream', [Student\InvoiceController::class, 'stream'])->name('invoices.stream');
 
     // Events
     Route::get('events', [Student\EventController::class, 'index'])->name('events.index');

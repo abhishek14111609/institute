@@ -8,15 +8,14 @@
 
 @section('content')
     <div class="container-fluid py-4">
-        <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-5 pb-2">
             <div>
                 <h3 class="fw-bold mb-1 text-gradient">Official Invoices</h3>
                 <p class="text-muted small mb-0">Total of {{ number_format($invoices->total()) }} financial documents
-                    generated for settled fees.</p>
+                    generated for fees and store-room sales.</p>
             </div>
             <div class="bg-white p-2 px-3 rounded-pill shadow-sm border small fw-bold text-muted d-flex align-items-center">
-                <i class="bi bi-info-circle-fill me-2 text-info"></i> Invoices are auto-generated upon full settlement.
+                <i class="bi bi-info-circle-fill me-2 text-info"></i> Invoices are auto-generated for fee payments and cash inventory sales.
             </div>
         </div>
 
@@ -44,6 +43,19 @@
                         </thead>
                         <tbody>
                             @forelse($invoices as $invoice)
+                                @php
+                                    $inventorySale = $invoice->inventorySale;
+                                    $isInventoryInvoice = !is_null($inventorySale);
+                                    $typeLabel = $isInventoryInvoice
+                                        ? 'Inventory Sale'
+                                        : ucfirst(str_replace('_', ' ', $invoice->fee->fee_type ?? 'Fee Payment'));
+                                    $paymentMethod = strtoupper($invoice->feePayment->payment_method ?? ($isInventoryInvoice ? 'cash' : 'cash'));
+                                    $enrollments = $invoice->student->batches
+                                        ->pluck('subject.name')
+                                        ->filter()
+                                        ->take(2)
+                                        ->implode(', ');
+                                @endphp
                                 <tr class="hover-lift transition-all">
                                     <td class="ps-4 border-0">
                                         <div class="d-flex align-items-center">
@@ -58,31 +70,25 @@
                                     </td>
                                     <td class="border-0">
                                         <div class="small fw-bold text-dark">{{ $invoice->student->user->name }}</div>
-                                        <small class="text-muted tiny d-block">ROLL:
-                                            {{ $invoice->student->roll_number }}</small>
-                                        @php
-                                            $enrollments = $invoice->student->batches
-                                                ->pluck('subject.name')
-                                                ->filter()
-                                                ->take(2)
-                                                ->implode(', ');
-                                        @endphp
+                                        <small class="text-muted tiny d-block">ROLL: {{ $invoice->student->roll_number }}</small>
                                         <small class="text-muted tiny d-block">
                                             {{ $enrollments ? 'Enroll: ' . $enrollments : 'Batch: ' . ($invoice->student->batch->name ?? 'N/A') }}
                                         </small>
                                     </td>
                                     <td class="border-0">
-                                        <div class="small fw-bold text-dark">{{ $invoice->invoice_date->format('d M, Y') }}
-                                        </div>
+                                        <div class="small fw-bold text-dark">{{ $invoice->invoice_date->format('d M, Y') }}</div>
                                         <small class="text-muted tiny">Recorded at midnight</small>
                                     </td>
-                                    <td class="border-0 text-dark fw-bold">₹{{ number_format($invoice->amount, 0) }}</td>
+                                    <td class="border-0 text-dark fw-bold">&#8377;{{ number_format($invoice->amount, 0) }}</td>
                                     <td class="border-0">
                                         <span class="badge bg-soft-info px-3 py-2 rounded-pill small">
-                                            {{ ucfirst($invoice->fee->fee_type) }}
+                                            {{ $typeLabel }}
                                         </span>
                                         <small class="text-muted tiny d-block mt-1">
-                                            {{ strtoupper($invoice->feePayment->payment_method ?? 'cash') }}
+                                            {{ $paymentMethod }}
+                                            @if($isInventoryInvoice && $inventorySale?->item)
+                                                • {{ $inventorySale->quantity }}x {{ $inventorySale->item->name }}
+                                            @endif
                                         </small>
                                     </td>
                                     <td class="pe-4 border-0 text-end">
@@ -101,11 +107,9 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
-                                        <div class="opacity-25 mb-3"><i class="bi bi-receipt-cutoff"
-                                                style="font-size: 5rem;"></i></div>
+                                        <div class="opacity-25 mb-3"><i class="bi bi-receipt-cutoff" style="font-size: 5rem;"></i></div>
                                         <h5 class="text-muted">Institutional Invoice archives are currently empty.</h5>
-                                        <p class="text-muted small">Invoices appear here once fees are marked as fully paid.
-                                        </p>
+                                        <p class="text-muted small">Invoices appear here once fees are paid or inventory sales are completed.</p>
                                     </td>
                                 </tr>
                             @endforelse

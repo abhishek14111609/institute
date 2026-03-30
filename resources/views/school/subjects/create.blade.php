@@ -68,27 +68,44 @@
                                 @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                         @else
-                            <div class="col-md-6 mb-3">
-                                <label for="name" class="form-label fw-semibold">Subject Name <span
+                            <div class="col-md-4 mb-3">
+                                <label for="course_id" class="form-label fw-semibold">Course <span
                                         class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
-                                    name="name" value="{{ old('name') }}" placeholder="e.g. Mathematics, Science" required>
-                                @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                <select class="form-select @error('course_id') is-invalid @enderror" id="course_id"
+                                    name="course_id" required>
+                                    <option value="">— Select Course —</option>
+                                    @foreach($courses as $course)
+                                        <option value="{{ $course->id }}" {{ old('course_id') == $course->id ? 'selected' : '' }}>
+                                            {{ $course->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('course_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="class_id" class="form-label fw-semibold">Class / Grade <span
                                         class="text-danger">*</span></label>
                                 <select class="form-select @error('class_id') is-invalid @enderror" id="class_id"
                                     name="class_id" required>
-                                    <option value="">— Select Class —</option>
+                                    <option value="" data-course="">— Select Class —</option>
                                     @foreach($classes as $class)
-                                        <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
+                                        <option value="{{ $class->id }}" data-course="{{ $class->course_id }}"
+                                            {{ old('class_id') == $class->id ? 'selected' : '' }}
+                                            @if(old('course_id') && old('course_id') != $class->course_id) style="display:none" @endif>
                                             {{ $class->name }}
                                         </option>
                                     @endforeach
                                 </select>
                                 @error('class_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="name" class="form-label fw-semibold">Subject Name <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
+                                    name="name" value="{{ old('name') }}" placeholder="e.g. Mathematics, Science" required>
+                                @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                         @endif
                     </div>
@@ -115,4 +132,28 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const courseSelect = document.getElementById('course_id');
+            const classSelect = document.getElementById('class_id');
+            const classOptions = classSelect ? classSelect.querySelectorAll('option') : [];
+
+            if (courseSelect && classSelect) {
+                courseSelect.addEventListener('change', function() {
+                    const courseId = this.value;
+                    classSelect.value = '';
+
+                    classOptions.forEach(option => {
+                        const optionCourseId = option.getAttribute('data-course');
+                        if (courseId === '' || optionCourseId === '' || optionCourseId === courseId) {
+                            option.style.display = '';
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 @endsection

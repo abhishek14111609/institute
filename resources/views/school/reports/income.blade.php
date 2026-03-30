@@ -11,14 +11,13 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h2>Income Report</h2>
-                <p class="text-muted mb-0">Fee collections and payment summary</p>
+                <p class="text-muted mb-0">Fee revenue, inventory sales, and net finance summary</p>
             </div>
             <a href="{{ route('school.reports.index') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Reports
             </a>
         </div>
 
-        {{-- Filters --}}
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
                 <form method="GET" action="{{ route('school.reports.income') }}" class="row g-3 align-items-end">
@@ -50,52 +49,87 @@
             </div>
         </div>
 
-        {{-- Summary Cards --}}
-        <div class="row mb-4">
+        <div class="row mb-4 g-4">
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm text-center">
+                <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
-                        <div class="text-muted small mb-1">Total Fees Generated</div>
-                        <h4 class="text-dark fw-bold">₹{{ number_format($report['total_generated'], 2) }}</h4>
+                        <div class="text-muted small mb-1">Fees Generated</div>
+                        <h4 class="text-dark fw-bold">&#8377;{{ number_format($report['fee_generated'], 2) }}</h4>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm text-center">
+                <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
-                        <div class="text-muted small mb-1">Total Collected</div>
-                        <h4 class="text-success fw-bold">₹{{ number_format($report['total_collected'], 2) }}</h4>
+                        <div class="text-muted small mb-1">Fee Revenue</div>
+                        <h4 class="text-primary fw-bold">&#8377;{{ number_format($report['fee_collected'], 2) }}</h4>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm text-center">
+                <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
-                        <div class="text-muted small mb-1">Still Pending</div>
-                        <h4 class="text-warning fw-bold">₹{{ number_format($report['total_pending'], 2) }}</h4>
+                        <div class="text-muted small mb-1">Selling Revenue</div>
+                        <h4 class="text-success fw-bold">&#8377;{{ number_format($report['sales_collected'], 2) }}</h4>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm text-center">
+                <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
-                        <div class="text-muted small mb-1">Total Discounts Given</div>
-                        <h4 class="text-info fw-bold">₹{{ number_format($report['total_discount'], 2) }}</h4>
+                        <div class="text-muted small mb-1">Total Revenue</div>
+                        <h4 class="text-info fw-bold">&#8377;{{ number_format($report['total_revenue'], 2) }}</h4>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Collection Rate Bar --}}
+        <div class="row mb-4 g-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-1">Pending Fees</div>
+                        <h4 class="text-warning fw-bold">&#8377;{{ number_format($report['total_pending'], 2) }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-1">Discounts</div>
+                        <h4 class="text-secondary fw-bold">&#8377;{{ number_format($report['total_discount'], 2) }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-1">{{ $label['expenses'] }}</div>
+                        <h4 class="text-danger fw-bold">&#8377;{{ number_format($report['total_expenses'], 2) }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-1">Net Balance</div>
+                        <h4 class="fw-bold {{ $report['net_income'] >= 0 ? 'text-success' : 'text-danger' }}">
+                            &#8377;{{ number_format($report['net_income'], 2) }}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @php
-            $rate = $report['total_generated'] > 0
-                ? round(($report['total_collected'] / $report['total_generated']) * 100, 1)
+            $rate = $report['fee_generated'] > 0
+                ? round(($report['fee_collected'] / $report['fee_generated']) * 100, 1)
                 : 0;
         @endphp
         <div class="card shadow-sm border-0">
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
-                    <strong>Collection Rate</strong>
+                    <strong>Fee Collection Rate</strong>
                     <strong>{{ $rate }}%</strong>
                 </div>
                 <div class="progress" style="height:20px;">

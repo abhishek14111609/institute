@@ -93,6 +93,93 @@
             </div>
         </div>
 
+        <!-- Institute Finance Snapshot -->
+        <div class="row g-4 mb-4 fade-in" style="animation-delay: 0.12s;">
+            @php
+                $sportFinance = $stats['institute_financials']['sport'] ?? null;
+                $academicFinance = $stats['institute_financials']['academic'] ?? null;
+            @endphp
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 pt-4 pb-2 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold text-main mb-1">Sports Institutes</h5>
+                            <small class="text-muted">Operational finance across all sports institutes</small>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">{{ $sportFinance['school_count'] ?? 0 }} schools</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <div class="small text-muted mb-1">Fee Revenue</div>
+                                    <div class="fw-bold text-primary">&#8377;{{ number_format($sportFinance['fee_revenue'] ?? 0, 2) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <div class="small text-muted mb-1">Selling Revenue</div>
+                                    <div class="fw-bold text-success">&#8377;{{ number_format($sportFinance['sales_revenue'] ?? 0, 2) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <div class="small text-muted mb-1">Expenses</div>
+                                    <div class="fw-bold text-danger">&#8377;{{ number_format($sportFinance['expenses'] ?? 0, 2) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <div class="small text-muted mb-1">Net</div>
+                                    <div class="fw-bold {{ ($sportFinance['net'] ?? 0) >= 0 ? 'text-info' : 'text-danger' }}">&#8377;{{ number_format($sportFinance['net'] ?? 0, 2) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 pt-4 pb-2 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold text-main mb-1">Academic Institutes</h5>
+                            <small class="text-muted">Operational finance across all academic institutes</small>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary">{{ $academicFinance['school_count'] ?? 0 }} schools</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <div class="small text-muted mb-1">Fee Revenue</div>
+                                    <div class="fw-bold text-primary">&#8377;{{ number_format($academicFinance['fee_revenue'] ?? 0, 2) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <div class="small text-muted mb-1">Selling Revenue</div>
+                                    <div class="fw-bold text-success">&#8377;{{ number_format($academicFinance['sales_revenue'] ?? 0, 2) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <div class="small text-muted mb-1">Expenses</div>
+                                    <div class="fw-bold text-danger">&#8377;{{ number_format($academicFinance['expenses'] ?? 0, 2) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <div class="small text-muted mb-1">Net</div>
+                                    <div class="fw-bold {{ ($academicFinance['net'] ?? 0) >= 0 ? 'text-info' : 'text-danger' }}">&#8377;{{ number_format($academicFinance['net'] ?? 0, 2) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Operations Snapshot -->
         <div class="row g-4 mb-4 fade-in" style="animation-delay: 0.15s;">
             <div class="col-xl-4 col-md-6">
@@ -354,15 +441,17 @@
                                     @foreach ($stats['recent_subscriptions'] as $sub)
                                         <tr>
                                             <td class="ps-4">
-                                                <div class="fw-semibold">{{ $sub->school->name }}</div>
-                                                <small class="text-muted">{{ $sub->invoice_date->format('d M') }}</small>
+                                                <div class="fw-semibold">
+                                                    {{ optional($sub->school)->name ?? 'Unknown School' }}</div>
+                                                <small
+                                                    class="text-muted">{{ optional($sub->invoice_date)->format('d M') ?? 'N/A' }}</small>
                                             </td>
                                             <td><span
                                                     class="fw-bold text-success">₹{{ number_format($sub->amount_paid, 2) }}</span>
                                             </td>
                                             <td class="text-end pe-4">
                                                 <span
-                                                    class="badge bg-primary bg-opacity-10 text-primary">{{ $sub->plan->name }}</span>
+                                                    class="badge bg-primary bg-opacity-10 text-primary">{{ optional($sub->plan)->name ?? 'No Plan' }}</span>
                                             </td>
                                         </tr>
                                     @endforeach

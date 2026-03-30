@@ -38,7 +38,9 @@
                         <div class="mb-3">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                   id="email" name="email" value="{{ old('email', $teacher->user->email) }}" required>
+                                   id="email" name="email" value="{{ old('email', $teacher->user->email) }}" required
+                                   data-ajax-validate="true" data-table="users" data-rules="required|email"
+                                   data-user-id="{{ $teacher->user_id }}">
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -49,9 +51,25 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="mb-3">
+                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('username') is-invalid @enderror"
+                                   id="username" name="username" value="{{ old('username', $teacher->user->username) }}" required
+                                   data-ajax-validate="true" data-table="users" data-rules="required|alpha_dash|min:3"
+                                   data-user-id="{{ $teacher->user_id }}">
+                            @error('username')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mb-3">
                             <label for="phone" class="form-label">Phone</label>
-                            <input type="text" class="form-control @error('phone') is-invalid @enderror"
-                                   id="phone" name="phone" value="{{ old('phone', $teacher->user->phone) }}">
+                            <input type="tel" class="form-control @error('phone') is-invalid @enderror"
+                                   id="phone" name="phone" value="{{ old('phone', $teacher->user->phone) }}"
+                                   data-ajax-validate="true" data-table="users" data-rules="nullable|numeric|max:15"
+                                   data-user-id="{{ $teacher->user_id }}"
+                                   placeholder="e.g. 9876543210">
                             @error('phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -85,8 +103,8 @@
                     <div class="col-md-4">
                         <div class="mb-3">
                             <label for="employee_id" class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Staff/Coach ID' : 'Employee ID' }}</label>
-                            <input type="text" class="form-control @error('employee_id') is-invalid @enderror"
-                                   id="employee_id" name="employee_id" value="{{ old('employee_id', $teacher->employee_id) }}">
+                            <input type="text" class="form-control bg-light"
+                                   id="employee_id" name="employee_id" value="{{ old('employee_id', $teacher->employee_id) }}" readonly>
                             @error('employee_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -191,4 +209,56 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Phone number numeric validation
+        const phoneInput = document.querySelector('input[name="phone"]');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length > 15) this.value = this.value.slice(0, 15);
+            });
+        }
+
+        // Password matching validation
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('password_confirmation');
+        
+        function validatePasswords() {
+            if (confirmInput.value && passwordInput.value !== confirmInput.value) {
+                confirmInput.classList.add('is-invalid');
+                if (!confirmInput.nextElementSibling || !confirmInput.nextElementSibling.classList.contains('password-error')) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback password-error';
+                    errorDiv.innerText = 'Passwords do not match.';
+                    confirmInput.parentNode.appendChild(errorDiv);
+                }
+                return false;
+            } else {
+                confirmInput.classList.remove('is-invalid');
+                const errorMsg = confirmInput.parentNode.querySelector('.password-error');
+                if (errorMsg) errorMsg.remove();
+                return true;
+            }
+        }
+
+        if (passwordInput && confirmInput) {
+            passwordInput.addEventListener('input', validatePasswords);
+            confirmInput.addEventListener('input', validatePasswords);
+        }
+
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (!validatePasswords()) {
+                    e.preventDefault();
+                    alert('Passwords do not match. Please correct them.');
+                }
+            });
+        }
+    });
+</script>
 @endsection

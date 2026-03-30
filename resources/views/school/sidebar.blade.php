@@ -43,12 +43,14 @@
             <span>{{ $label['courses'] }}</span>
         </a>
     </li>
+    @if ($isSport)
         <li class="nav-item">
-        <a href="{{ route('school.levels.index') }}"
-            class="nav-link {{ request()->routeIs('school.levels.*') ? 'active' : '' }}">
-            <i class="bi bi-bar-chart-steps"></i> <span>Add Levels</span>
-        </a>
-    </li>
+            <a href="{{ route('school.levels.index') }}"
+                class="nav-link {{ request()->routeIs('school.levels.*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart-steps"></i> <span>Add Levels</span>
+            </a>
+        </li>
+    @endif
     @if (!$isSport)
         <li class="nav-item">
             <a href="{{ route('school.classes.index') }}"
@@ -139,6 +141,22 @@
             class="nav-link {{ request()->routeIs('school.expenses.*') ? 'active' : '' }}">
             <i class="bi bi-arrow-down-circle"></i>
             <span>{{ $label['expenses'] }}</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a href="{{ route('school.materials.index') }}"
+            class="nav-link {{ request()->routeIs('school.materials.*') ? 'active' : '' }}">
+            <i class="bi bi-file-earmark-pdf-fill"></i>
+            <span>{{ $label['materials'] }}</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a href="{{ route('school.inventory.index') }}"
+            class="nav-link {{ request()->routeIs('school.inventory.*') ? 'active' : '' }}">
+            <i class="bi bi-box-fill"></i>
+            <span>{{ $isSport ? 'Kits & Equipment' : 'Inventory / Stock' }}</span>
         </a>
     </li>
 

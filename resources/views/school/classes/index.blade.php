@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Levels & Teams' : 'Institutional Levels & Classes')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Levels & Teams' : 'Class Management')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -13,8 +13,7 @@
             <div>
                 <h3 class="fw-bold mb-1 text-gradient">
                     {{ auth()->user()->school->institute_type === 'sport' ? 'Team Management' : 'Class Management' }}</h3>
-                <p class="text-muted small mb-0">Define organizational levels and track student distribution across
-                    {{ auth()->user()->school->institute_type === 'sport' ? 'teams.' : 'classes.' }}
+                <p class="text-muted small mb-0">{{ auth()->user()->school->institute_type === 'sport' ? 'Define organizational levels and track student distribution across teams.' : 'Manage student distribution and organizational structure across classes.' }}
                 </p>
             </div>
             <a href="{{ route('school.classes.create') }}"

@@ -4,28 +4,12 @@ namespace App\Http\Controllers\School;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
+use App\Services\InvoicePdfService;
 
 class InvoiceController extends Controller
 {
-    /**
-     * Build a configured Dompdf instance with FreeSans font registered.
-     */
-    private function buildPdf(Invoice $invoice): \Barryvdh\DomPDF\PDF
+    public function __construct(private InvoicePdfService $invoicePdfService)
     {
-        $pdf = Pdf::loadView('school.invoices.pdf', compact('invoice'));
-
-        // Directly register FreeSans in DomPDF's font lookup table.
-        // setFontFamily() maps the CSS family name -> local TTF path,
-        // no .ufm generation or download needed.
-        $fontPath = public_path('fonts/FreeSans');   // DomPDF appends .ttf/.ufm itself
-
-        $pdf->getDomPDF()
-            ->getFontMetrics()
-            ->setFontFamily('FreeSans', ['normal' => $fontPath]);
-
-        return $pdf;
     }
 
     /**
@@ -39,6 +23,7 @@ class InvoiceController extends Controller
             'student.batches.subject',
             'fee',
             'feePayment',
+            'inventorySale.item',
         ])
             ->latest()
             ->paginate(15);
@@ -55,7 +40,7 @@ class InvoiceController extends Controller
             abort(403);
         }
 
-        $pdf = $this->buildPdf($invoice);
+        $pdf = $this->invoicePdfService->build($invoice);
 
         return $pdf->download("Invoice-{$invoice->invoice_number}.pdf");
     }
@@ -69,7 +54,7 @@ class InvoiceController extends Controller
             abort(403);
         }
 
-        $pdf = $this->buildPdf($invoice);
+        $pdf = $this->invoicePdfService->build($invoice);
 
         return $pdf->stream("Invoice-{$invoice->invoice_number}.pdf");
     }

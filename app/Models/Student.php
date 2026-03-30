@@ -142,6 +142,14 @@ class Student extends Model
     }
 
     /**
+     * Get all physical inventory purchases.
+     */
+    public function inventorySales()
+    {
+        return $this->hasMany(InventorySale::class);
+    }
+
+    /**
      * Calculate attendance percentage
      */
     public function getAttendancePercentage()

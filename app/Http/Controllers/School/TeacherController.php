@@ -97,6 +97,7 @@ class TeacherController extends Controller
                 $userData = [
                     'name' => $request->name,
                     'email' => $request->email,
+                    'username' => $request->username,
                     'phone' => $request->phone,
                     'is_active' => $request->boolean('is_active', true),
                 ];

@@ -75,18 +75,26 @@
                                 </div>
                             </div>
                         @else
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Batch Name <span
+                                    <label for="course_id" class="form-label">Course <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                        id="name" name="name" value="{{ old('name', $batch->name) }}" required>
-                                    @error('name')
+                                    <select class="form-select @error('course_id') is-invalid @enderror" id="course_id"
+                                        name="course_id" required>
+                                        <option value="">Select Course</option>
+                                        @foreach ($courses as $course)
+                                            <option value="{{ $course->id }}"
+                                                {{ old('course_id', $batch->class->course_id ?? '') == $course->id ? 'selected' : '' }}>
+                                                {{ $course->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('course_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="class_id" class="form-label">Class <span
                                             class="text-danger">*</span></label>
@@ -95,12 +103,44 @@
                                         <option value="">Select Class</option>
                                         @foreach ($classes as $class)
                                             <option value="{{ $class->id }}"
+                                                data-course="{{ $class->course_id ?? '' }}"
                                                 {{ old('class_id', $batch->class_id) == $class->id ? 'selected' : '' }}>
                                                 {{ $class->name }}
                                             </option>
                                         @endforeach
                                     </select>
                                     @error('class_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="subject_id" class="form-label">Subject <span
+                                            class="text-danger">*</span></label>
+                                    <select class="form-select @error('subject_id') is-invalid @enderror" id="subject_id"
+                                        name="subject_id" required>
+                                        <option value="">Select Subject</option>
+                                        @foreach ($subjects as $subject)
+                                            <option value="{{ $subject->id }}"
+                                                data-class="{{ $subject->class_id }}"
+                                                {{ old('subject_id', $batch->subject_id) == $subject->id ? 'selected' : '' }}>
+                                                {{ $subject->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('subject_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Batch Name <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name', $batch->name) }}" required>
+                                    @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -146,7 +186,7 @@
                             </div>
                         </div>
 
-                        @if (!$isSport)
+                        @if ($isSport)
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="sport_level" class="form-label">Sport Level</label>
@@ -236,36 +276,110 @@
         </div>
     </div>
 
-    @if ($isSport)
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const courseSelect = document.getElementById('course_id');
-                const subjectSelect = document.getElementById('subject_id');
-                const allSubjects = Array.from(subjectSelect.options);
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const courseSelect = document.getElementById('course_id');
+            const subjectSelect = document.getElementById('subject_id');
+            const classSelect = document.getElementById('class_id');
 
-                function filterSubjects() {
+            const allSubjects = subjectSelect ? Array.from(subjectSelect.options) : [];
+            const allClasses = classSelect ? Array.from(classSelect.options) : [];
+
+            function filterClasses() {
+                if (!classSelect || !courseSelect) return;
+                const selectedCourseId = courseSelect.value;
+                const currentClassId = classSelect.value;
+                
+                classSelect.innerHTML = '';
+                allClasses.forEach(option => {
+                    if (option.value === "" || option.getAttribute('data-course') === selectedCourseId) {
+                        classSelect.appendChild(option.cloneNode(true));
+                    }
+                });
+                classSelect.value = currentClassId;
+                filterSubjects(); // Filter subjects whenever classes are filtered
+            }
+
+            function filterSubjects() {
+                if (!subjectSelect) return;
+                const currentSubjectId = subjectSelect.value;
+                subjectSelect.innerHTML = '';
+
+                if (@json($isSport)) {
+                    // Sport mode: filter subjects by Course
                     const selectedCourseId = courseSelect.value;
-                    const currentSubjectId = subjectSelect.value;
-
-                    // Reset subjects
-                    subjectSelect.innerHTML = '';
-
-                    // Add back everything that matches
                     allSubjects.forEach(option => {
                         if (option.value === "" || option.getAttribute('data-course') === selectedCourseId) {
                             subjectSelect.appendChild(option.cloneNode(true));
                         }
                     });
-
-                    // Restore selection if possible
-                    subjectSelect.value = currentSubjectId;
+                } else {
+                    // Academic mode: filter subjects by Class
+                    const selectedClassId = classSelect.value;
+                    allSubjects.forEach(option => {
+                        if (option.value === "" || option.getAttribute('data-class') === selectedClassId) {
+                            subjectSelect.appendChild(option.cloneNode(true));
+                        }
+                    });
                 }
+                subjectSelect.value = currentSubjectId;
+            }
 
-                courseSelect.addEventListener('change', filterSubjects);
+            if (courseSelect) {
+                courseSelect.addEventListener('change', filterClasses);
+            }
+            if (classSelect) {
+                classSelect.addEventListener('change', filterSubjects);
+            }
 
-                // Initial run if course is already selected
-                if (courseSelect.value) filterSubjects();
-            });
-        </script>
-    @endif
+            // Initial run
+            if (courseSelect) filterClasses();
+            else if (classSelect) filterSubjects();
+
+            // Time validation logic
+            const startTimeInput = document.getElementById('start_time');
+            const endTimeInput = document.getElementById('end_time');
+
+            function validateTimes() {
+                const startTime = startTimeInput.value;
+                const endTime = endTimeInput.value;
+
+                // Clear previous validation states
+                startTimeInput.classList.remove('is-invalid');
+                endTimeInput.classList.remove('is-invalid');
+                
+                // Remove existing custom error messages
+                const existingErrors = document.querySelectorAll('.time-error-msg');
+                existingErrors.forEach(err => err.remove());
+
+                if (startTime && endTime) {
+                    if (endTime <= startTime) {
+                        endTimeInput.classList.add('is-invalid');
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'invalid-feedback time-error-msg';
+                        errorDiv.innerText = 'End time must be after start time.';
+                        endTimeInput.parentNode.appendChild(errorDiv);
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            if (startTimeInput && endTimeInput) {
+                startTimeInput.addEventListener('change', validateTimes);
+                endTimeInput.addEventListener('change', validateTimes);
+            }
+
+            // Also check on form submit to prevent invalid submission
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!validateTimes()) {
+                        e.preventDefault();
+                        alert('Please fix the errors before submitting.');
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

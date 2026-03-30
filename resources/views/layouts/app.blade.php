@@ -261,6 +261,60 @@
                 sessionStorage.setItem('window_scroll_' + currentPath, window.scrollY);
             });
         });
+
+        /**
+         * Real-time AJAX Field Validation System
+         * Handles immediate feedback for unique constraints and format rules.
+         */
+        async function handleAjaxValidation(input) {
+            const field = input.name;
+            const value = input.value;
+            const table = input.dataset.table;
+            const rules = input.dataset.rules;
+            const ignoreId = input.dataset.ignoreId;
+            const userId = input.dataset.userId;
+
+            if (!field || !value) return;
+
+            try {
+                const response = await fetch("{{ route('school.validate-field') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ field, value, table, rules, ignore_id: ignoreId, user_id: userId })
+                });
+
+                const data = await response.json();
+                
+                // Remove existing feedback
+                input.classList.remove('is-invalid', 'is-valid');
+                const existingFeedback = input.parentNode.querySelector('.ajax-feedback');
+                if (existingFeedback) existingFeedback.remove();
+
+                if (!data.valid) {
+                    input.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback ajax-feedback';
+                    feedback.innerText = data.message;
+                    input.parentNode.appendChild(feedback);
+                } else if (value.length > 0) {
+                    input.classList.add('is-valid');
+                }
+            } catch (error) {
+                console.error('Validation error:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Attach listeners to all inputs marked for AJAX validation
+            document.querySelectorAll('[data-ajax-validate="true"]').forEach(input => {
+                input.addEventListener('blur', function() {
+                    handleAjaxValidation(this);
+                });
+            });
+        });
     </script>
 
     @stack('scripts')

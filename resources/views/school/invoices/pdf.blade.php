@@ -3,6 +3,16 @@
 
 <head>
     <meta charset="utf-8">
+    @php
+        $inventorySale = $invoice->inventorySale;
+        $fee = $invoice->fee;
+        $isInventoryInvoice = !is_null($inventorySale);
+        $documentLabel = $isInventoryInvoice ? 'CASH SALE RECEIPT' : 'FEE RECEIPT';
+        $paymentMethod = strtoupper($invoice->feePayment->payment_method ?? ($isInventoryInvoice ? 'cash' : 'cash'));
+        $description = $isInventoryInvoice
+            ? (($inventorySale->item->name ?? 'Inventory Item') . ' Cash Sale')
+            : ($fee->name ?? ucfirst(str_replace('_', '-', $fee->fee_type ?? 'fee')) . ' Fee Payment');
+    @endphp
     <title>Receipt #{{ $invoice->invoice_number }}</title>
     <style>
         @font-face {
@@ -42,7 +52,6 @@
             width: 100%;
         }
 
-        /* Centered Header */
         .receipt-header {
             text-align: center;
             margin-bottom: 40px;
@@ -78,7 +87,6 @@
             padding: 10px 0;
         }
 
-        /* Info Grid */
         .info-table {
             width: 100%;
             border-collapse: collapse;
@@ -112,7 +120,6 @@
             margin-bottom: 4px;
         }
 
-        /* Items Table */
         .items-table {
             width: 100%;
             border-collapse: collapse;
@@ -149,7 +156,6 @@
             margin-top: 5px;
         }
 
-        /* Totals Area */
         .totals-container {
             width: 100%;
             margin-top: 20px;
@@ -197,7 +203,6 @@
             color: #4f46e5;
         }
 
-        /* Status Badge */
         .receipt-status {
             float: left;
             margin-top: 20px;
@@ -216,7 +221,6 @@
             letter-spacing: 2px;
         }
 
-        /* Footer */
         .page-footer {
             clear: both;
             margin-top: 100px;
@@ -232,7 +236,8 @@
         }
 
         .rupee {
-            font-family: 'InvoiceFont', 'DejaVu Sans', sans-serif;
+            font-family: 'DejaVu Sans', 'InvoiceFont', sans-serif;
+            font-weight: normal;
         }
     </style>
 </head>
@@ -240,14 +245,12 @@
 <body>
     <div class="top-accent"></div>
     <div class="page-wrapper">
-        <!-- Centered Header -->
         <div class="receipt-header">
             <h1 class="school-name">{{ $invoice->school->name }}</h1>
             <span class="school-sub">Education Management System</span>
-            <div class="receipt-label">FEE RECEIPT</div>
+            <div class="receipt-label">{{ $documentLabel }}</div>
         </div>
 
-        <!-- Info Grid -->
         <table class="info-table">
             <tr>
                 <td>
@@ -255,7 +258,8 @@
                     <div class="info-content">
                         <strong>#{{ $invoice->invoice_number }}</strong>
                         Date: {{ $invoice->invoice_date->format('d M, Y') }}<br>
-                        Session: {{ date('Y') }}-{{ date('Y') + 1 }}
+                        Session: {{ date('Y') }}-{{ date('Y') + 1 }}<br>
+                        Mode: {{ $paymentMethod }}
                     </div>
                 </td>
                 <td>
@@ -281,7 +285,6 @@
             </tr>
         </table>
 
-        <!-- Items Table -->
         <table class="items-table">
             <thead>
                 <tr>
@@ -293,31 +296,36 @@
                 <tr>
                     <td>
                         <div class="item-description">
-                            {{ $invoice->fee->name ?? ucfirst(str_replace('_', '-', $invoice->fee->fee_type)) . ' Fee Payment' }}
-                            @if ($invoice->fee->sport_level)
-                                <span
-                                    style="font-size:10px;background:#e0e7ff;color:#4f46e5;padding:2px 8px;border-radius:4px;margin-left:8px;">
-                                    {{ ucfirst($invoice->fee->sport_level) }} Level
+                            {{ $description }}
+                            @if (!$isInventoryInvoice && $fee?->sport_level)
+                                <span style="font-size:10px;background:#e0e7ff;color:#4f46e5;padding:2px 8px;border-radius:4px;margin-left:8px;">
+                                    {{ ucfirst($fee->sport_level) }} Level
                                 </span>
                             @endif
                         </div>
                         <div class="item-details">
-                            Payment towards {{ $invoice->fee->name ?? 'fee' }} for the current period.<br>
-                            Due Date: {{ $invoice->fee->due_date->format('d M, Y') }}<br>
-                            Payment Method: {{ strtoupper($invoice->feePayment->payment_method ?? 'CASH') }}
-                            @if ($invoice->feePayment?->transaction_id)
-                                <br>Transaction ID: {{ $invoice->feePayment->transaction_id }}
+                            @if ($isInventoryInvoice)
+                                Item Category: {{ $inventorySale->item->category ?? 'Inventory' }}<br>
+                                Quantity: {{ $inventorySale->quantity }}<br>
+                                Unit Price: &#8377;{{ number_format($inventorySale->unit_price, 2) }}<br>
+                                Payment Method: {{ $paymentMethod }}
+                            @else
+                                Payment towards {{ $fee->name ?? 'fee' }} for the current period.<br>
+                                Due Date: {{ $fee?->due_date?->format('d M, Y') ?? 'N/A' }}<br>
+                                Payment Method: {{ $paymentMethod }}
+                                @if ($invoice->feePayment?->transaction_id)
+                                    <br>Transaction ID: {{ $invoice->feePayment->transaction_id }}
+                                @endif
                             @endif
                         </div>
                     </td>
                     <td style="text-align: right; font-weight: bold; font-size: 14px;">
-                        <span class="rupee">₹</span>{{ number_format($invoice->amount, 2) }}
+                        <span class="rupee">&#8377;</span>{{ number_format($invoice->amount, 2) }}
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- Totals and Payment Area -->
         <div class="totals-container">
             <div class="receipt-status">
                 <span class="status-text">PAID</span>
@@ -329,16 +337,14 @@
             <table class="totals-table">
                 <tr class="grand-total">
                     <td class="total-label">AMOUNT PAID</td>
-                    <td class="total-amount"><span class="rupee">₹</span>{{ number_format($invoice->amount, 2) }}
-                    </td>
+                    <td class="total-amount"><span class="rupee">&#8377;</span>{{ number_format($invoice->amount, 2) }}</td>
                 </tr>
             </table>
         </div>
 
-        <!-- Footer -->
         <div class="page-footer">
             <p class="footer-note">This is an electronically generated document. No signature required.</p>
-            <p class="footer-note">Thank you for your payment!</p>
+            <p class="footer-note">{{ $isInventoryInvoice ? 'Thank you for your purchase!' : 'Thank you for your payment!' }}</p>
         </div>
     </div>
 </body>

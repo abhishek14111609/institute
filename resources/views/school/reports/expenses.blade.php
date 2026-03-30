@@ -11,14 +11,13 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h2>Expense Analysis</h2>
-                <p class="text-muted mb-0">School expenditure broken down by category</p>
+                <p class="text-muted mb-0">{{ $label['expenses'] }} broken down by category</p>
             </div>
             <a href="{{ route('school.reports.index') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Reports
             </a>
         </div>
 
-        {{-- Filters --}}
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
                 <form method="GET" action="{{ route('school.reports.expenses') }}" class="row g-3 align-items-end">
@@ -55,7 +54,6 @@
                 No expenses recorded for the selected period.
             </div>
         @else
-            {{-- Expense Table --}}
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <table class="table table-hover">
@@ -71,14 +69,14 @@
                                     <td>
                                         <span class="badge bg-secondary me-2">{{ ucfirst($row->category) }}</span>
                                     </td>
-                                    <td class="text-end fw-semibold text-danger">₹{{ number_format($row->total, 2) }}</td>
+                                    <td class="text-end fw-semibold text-danger">&#8377;{{ number_format($row->total, 2) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                         <tfoot class="table-warning fw-bold">
                             <tr>
                                 <td>Total</td>
-                                <td class="text-end">₹{{ number_format($report->sum('total'), 2) }}</td>
+                                <td class="text-end">&#8377;{{ number_format($report->sum('total'), 2) }}</td>
                             </tr>
                         </tfoot>
                     </table>

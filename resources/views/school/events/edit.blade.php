@@ -225,6 +225,54 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startTimeInput = document.getElementById('start_time');
+            const endTimeInput = document.getElementById('end_time');
+
+            function validateTimes() {
+                const startTime = startTimeInput.value;
+                const endTime = endTimeInput.value;
+
+                // Clear previous validation states
+                startTimeInput.classList.remove('is-invalid');
+                endTimeInput.classList.remove('is-invalid');
+                
+                // Remove existing custom error messages
+                const existingErrors = document.querySelectorAll('.time-error-msg');
+                existingErrors.forEach(err => err.remove());
+
+                if (startTime && endTime) {
+                    if (endTime <= startTime) {
+                        endTimeInput.classList.add('is-invalid');
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'text-danger tiny fw-bold mt-2 ms-3 time-error-msg';
+                        errorDiv.innerText = 'End time must be after start time.';
+                        endTimeInput.parentNode.parentNode.appendChild(errorDiv);
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            if (startTimeInput && endTimeInput) {
+                startTimeInput.addEventListener('change', validateTimes);
+                endTimeInput.addEventListener('change', validateTimes);
+            }
+
+            // Also check on form submit to prevent invalid submission
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!validateTimes()) {
+                        e.preventDefault();
+                        alert('Please fix the errors before submitting.');
+                    }
+                });
+            }
+        });
+    </script>
+
     <style>
         .text-gradient {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);

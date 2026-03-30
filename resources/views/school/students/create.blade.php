@@ -24,7 +24,8 @@
                                 class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Student Name' : 'Student Name' }}
                                 *</label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                value="{{ old('name') }}" required>
+                                value="{{ old('name') }}" required
+                                data-ajax-validate="true" data-table="users" data-rules="required|string|max:255">
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -33,7 +34,8 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Email *</label>
                             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                value="{{ old('email') }}" required>
+                                value="{{ old('email') }}" required
+                                data-ajax-validate="true" data-table="users" data-rules="required|email|email">
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -45,7 +47,8 @@
                             <label class="form-label">Username *</label>
                             <input type="text" name="username"
                                 class="form-control @error('username') is-invalid @enderror" value="{{ old('username') }}"
-                                required>
+                                required
+                                data-ajax-validate="true" data-table="users" data-rules="required|alpha_dash|min:3">
                             @error('username')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -53,8 +56,10 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Phone</label>
-                            <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
-                                value="{{ old('phone') }}">
+                            <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror"
+                                value="{{ old('phone') }}"
+                                data-ajax-validate="true" data-table="users" data-rules="nullable|numeric|min:10|max:10"
+                                placeholder="e.g. 9876543210 (10 digits)">
                             @error('phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -109,18 +114,11 @@
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">Roll No</label>
-                            <div class="input-group">
-                                <input type="text" id="roll_number" name="roll_number" class="form-control rounded-3"
-                                    value="{{ old('roll_number', $rollMeta['suggestedRollNumber'] ?? '') }}" readonly
-                                    placeholder="Auto-generated">
-                                <button class="btn btn-outline-primary" type="button"
-                                    id="generateRollBtn">Generate</button>
-                            </div>
-                            {{-- <small class="text-muted d-block mt-1">
-                                Auto format: {{ $rollMeta['prefix'] ?? 'INS-STU-' }}001,
-                                {{ $rollMeta['prefix'] ?? 'INS-STU-' }}002...
-                            </small> --}}
+                            <label class="form-label">Roll No (Auto-generated)</label>
+                            <input type="text" id="roll_number" name="roll_number" class="form-control rounded-3 bg-light"
+                                value="{{ old('roll_number', $rollMeta['suggestedRollNumber'] ?? '') }}" readonly
+                                placeholder="Auto-generated"
+                                data-ajax-validate="true" data-table="students" data-rules="nullable|string|unique:students,roll_number">
                         </div>
                     </div>
 
@@ -166,9 +164,11 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Parent Phone</label>
-                            <input type="text" name="parent_phone"
+                            <input type="tel" name="parent_phone"
                                 class="form-control @error('parent_phone') is-invalid @enderror"
-                                value="{{ old('parent_phone') }}">
+                                value="{{ old('parent_phone') }}"
+                                data-ajax-validate="true" data-table="students" data-rules="nullable|numeric|min:10|max:10"
+                                placeholder="e.g. 9876543210 (10 digits)">
                             @error('parent_phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -215,16 +215,16 @@
             return `${rollPrefix}${String(sequence).padStart(3, '0')}`;
         }
 
-        function addEnrollmentRow() {
+        function addEnrollmentRow(existingId = null) {
             const container = document.getElementById('enrollment_rows_container');
-            const rowId = `row_${rowCount++}`;
+            const rowId = existingId || `row_${rowCount++}`;
 
             const rowHtml = `
                 <div class="card border-0 shadow-sm rounded-4 mb-3 p-3 enrollment-card animate-fade-in" id="${rowId}">
                     <div class="row g-3 align-items-end">
                         <div class="col-md-3">
                             <label class="form-label small fw-bold text-muted">1. Select Course</label>
-                            <select onchange="populateBatches('${rowId}', this.value)" class="form-select rounded-pill bg-light border-0 shadow-none px-3">
+                            <select onchange="populateBatches('${rowId}', this.value)" class="form-select rounded-pill bg-light border-0 shadow-none px-3 course-select">
                                 <option value="">— Select Course —</option>
                                 ${allCourses.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
                             </select>
@@ -320,12 +320,106 @@
                 rollInput.value = generateRollNumber(nextRollSequence);
             }
 
-            generateRollBtn.addEventListener('click', function() {
-                nextRollSequence += 1;
-                rollInput.value = generateRollNumber(nextRollSequence);
-            });
+            // --- Old Input Preservation Logic ---
+            const oldBatchIds = @json(old('batch_ids', []));
+            const oldBatchFees = @json(old('batch_fees', []));
 
-            addEnrollmentRow(); // Add first row by default
+            if (oldBatchIds && oldBatchIds.length > 0) {
+                oldBatchIds.forEach((batchId, index) => {
+                    const batchIdVal = batchId;
+                    const rowId = `row_${rowCount++}`;
+                    
+                    // Add row
+                    addEnrollmentRow(rowId);
+                    
+                    // We need to wait for the DOM to update or manually trigger population
+                    const row = document.getElementById(rowId);
+                    const batchSelect = row.querySelector('.batch-select');
+                    const courseSelectInRow = row.querySelector('.course-select');
+                    
+                    // Find course for this batch
+                    const selectedBatch = allBatches.find(b => b.id == batchIdVal);
+                    if (selectedBatch) {
+                        const courseId = selectedBatch.class.course_id;
+                        courseSelectInRow.value = courseId;
+                        populateBatches(rowId, courseId);
+                        batchSelect.value = batchIdVal;
+                        populateFees(rowId, batchIdVal);
+                        
+                        // Set specific fees if any were selected
+                        if (oldBatchFees && oldBatchFees[batchIdVal]) {
+                            const feesForBatch = oldBatchFees[batchIdVal];
+                            feesForBatch.forEach(feePlanId => {
+                                const feeCheckbox = row.querySelector(`input[id="fee_${rowId}_${feePlanId}"]`);
+                                if (feeCheckbox) feeCheckbox.checked = true;
+                            });
+                        }
+                    }
+                });
+            } else {
+                addEnrollmentRow(); // Add first row by default only if no old data
+            }
+
+            // Password matching validation
+            const passwordInput = document.querySelector('input[name="password"]');
+            const confirmInput = document.querySelector('input[name="password_confirmation"]');
+            
+            function validatePasswords() {
+                if (confirmInput.value && passwordInput.value !== confirmInput.value) {
+                    confirmInput.classList.add('is-invalid');
+                    if (!confirmInput.nextElementSibling || !confirmInput.nextElementSibling.classList.contains('password-error')) {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'invalid-feedback password-error';
+                        errorDiv.innerText = 'Passwords do not match.';
+                        confirmInput.parentNode.appendChild(errorDiv);
+                    }
+                    return false;
+                } else {
+                    confirmInput.classList.remove('is-invalid');
+                    const errorMsg = confirmInput.parentNode.querySelector('.password-error');
+                    if (errorMsg) errorMsg.remove();
+                    return true;
+                }
+            }
+
+            if (passwordInput && confirmInput) {
+                passwordInput.addEventListener('input', validatePasswords);
+                confirmInput.addEventListener('input', validatePasswords);
+            }
+
+            // Phone number numeric validation
+            const phoneInput = document.querySelector('input[name="phone"]');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    // Remove any non-numeric characters
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    
+                    if (this.value.length > 15) {
+                        this.value = this.value.slice(0, 15);
+                    }
+                });
+            }
+
+            // Parent Phone number numeric validation
+            const parentPhoneInput = document.querySelector('input[name="parent_phone"]');
+            if (parentPhoneInput) {
+                parentPhoneInput.addEventListener('input', function(e) {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    if (this.value.length > 15) {
+                        this.value = this.value.slice(0, 15);
+                    }
+                });
+            }
+
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!validatePasswords()) {
+                        e.preventDefault();
+                        alert('Passwords do not match. Please correct them.');
+                    }
+                });
+            }
         });
     </script>
 

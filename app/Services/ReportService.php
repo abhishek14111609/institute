@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\Fee;
 use App\Models\FeePayment;
 use App\Models\Expense;
+use App\Models\InventorySale;
 use App\Models\Attendance;
 use App\Models\Material;
 use Carbon\Carbon;
@@ -14,12 +15,60 @@ use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
+    private function feeRevenueQuery($schoolId)
+    {
+        return FeePayment::query()->whereHas('fee', function ($query) use ($schoolId) {
+            $query->where('school_id', $schoolId);
+        });
+    }
+
+    private function salesRevenueQuery($schoolId)
+    {
+        return InventorySale::query()
+            ->where('school_id', $schoolId)
+            ->where('payment_status', 'paid');
+    }
+
+    private function expenseQuery($schoolId)
+    {
+        return Expense::query()->where('school_id', $schoolId);
+    }
+
+    private function outstandingFeesQuery($schoolId)
+    {
+        return Fee::query()
+            ->where('school_id', $schoolId)
+            ->whereIn('status', ['pending', 'partial', 'overdue']);
+    }
+
     /**
      * Get school dashboard statistics
      */
     public function getSchoolDashboardStats($schoolId)
     {
         $school = School::findOrFail($schoolId);
+        $currentYear = Carbon::now()->year;
+        $currentMonth = Carbon::now()->month;
+
+        $monthlyFeeRevenue = (float) $this->feeRevenueQuery($schoolId)
+            ->whereYear('paid_at', $currentYear)
+            ->whereMonth('paid_at', $currentMonth)
+            ->sum('amount');
+
+        $monthlySalesRevenue = (float) $this->salesRevenueQuery($schoolId)
+            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->sum('total_amount');
+
+        $monthlyExpenses = (float) $this->expenseQuery($schoolId)
+            ->whereYear('expense_date', $currentYear)
+            ->whereMonth('expense_date', $currentMonth)
+            ->sum('amount');
+
+        $totalFeeRevenue = (float) $this->feeRevenueQuery($schoolId)->sum('amount');
+        $totalSalesRevenue = (float) $this->salesRevenueQuery($schoolId)->sum('total_amount');
+        $pendingFees = (float) $this->outstandingFeesQuery($schoolId)
+            ->sum(DB::raw('total_amount + late_fee - discount - paid_amount'));
 
         return [
             'total_students' => $school->students()->active()->count(),
@@ -30,16 +79,19 @@ class ReportService
             // Fee statistics
             'total_fees' => Fee::where('school_id', $schoolId)->sum('total_amount'),
             'collected_fees' => Fee::where('school_id', $schoolId)->sum('paid_amount'),
-            'pending_fees' => Fee::where('school_id', $schoolId)->pending()->sum('total_amount'),
-            'monthly_collection' => Fee::where('school_id', $schoolId)
-                ->whereMonth('created_at', Carbon::now()->month)
-                ->sum('paid_amount'),
+            'pending_fees' => $pendingFees,
+            'monthly_collection' => $monthlyFeeRevenue + $monthlySalesRevenue,
+            'monthly_fee_revenue' => $monthlyFeeRevenue,
+            'monthly_sales_revenue' => $monthlySalesRevenue,
+            'monthly_total_revenue' => $monthlyFeeRevenue + $monthlySalesRevenue,
+            'monthly_net' => ($monthlyFeeRevenue + $monthlySalesRevenue) - $monthlyExpenses,
+            'total_fee_revenue' => $totalFeeRevenue,
+            'total_sales_revenue' => $totalSalesRevenue,
+            'total_operational_revenue' => $totalFeeRevenue + $totalSalesRevenue,
 
             // Expense statistics
             'total_expenses' => Expense::where('school_id', $schoolId)->sum('amount'),
-            'monthly_expenses' => Expense::where('school_id', $schoolId)
-                ->whereMonth('expense_date', Carbon::now()->month)
-                ->sum('amount'),
+            'monthly_expenses' => $monthlyExpenses,
 
             // Subscription info
             'subscription_expires_at' => $school->subscription_expires_at,
@@ -55,21 +107,43 @@ class ReportService
      */
     public function getMonthlyIncomeReport($schoolId, $year, $month = null)
     {
-        $query = Fee::where('school_id', $schoolId)
+        $feeQuery = Fee::where('school_id', $schoolId)
             ->whereYear('created_at', $year);
 
         if ($month) {
-            $query->whereMonth('created_at', $month);
+            $feeQuery->whereMonth('created_at', $month);
         }
 
-        $fees = $query->get();
+        $fees = $feeQuery->get();
+        $feeCollected = (float) $this->feeRevenueQuery($schoolId)
+            ->whereYear('paid_at', $year)
+            ->when($month, fn($query) => $query->whereMonth('paid_at', $month))
+            ->sum('amount');
+
+        $salesCollected = (float) $this->salesRevenueQuery($schoolId)
+            ->whereYear('created_at', $year)
+            ->when($month, fn($query) => $query->whereMonth('created_at', $month))
+            ->sum('total_amount');
+
+        $expenses = (float) $this->expenseQuery($schoolId)
+            ->whereYear('expense_date', $year)
+            ->when($month, fn($query) => $query->whereMonth('expense_date', $month))
+            ->sum('amount');
 
         return [
             'total_generated' => $fees->sum('total_amount'),
-            'total_collected' => $fees->sum('paid_amount'),
-            'total_pending' => $fees->where('status', '!=', 'paid')->sum('total_amount'),
+            'fee_generated' => $fees->sum('total_amount'),
+            'total_collected' => $feeCollected + $salesCollected,
+            'fee_collected' => $feeCollected,
+            'sales_collected' => $salesCollected,
+            'total_revenue' => $feeCollected + $salesCollected,
+            'total_pending' => $fees->sum(function ($fee) {
+                return $fee->total_amount + $fee->late_fee - $fee->discount - $fee->paid_amount;
+            }),
             'total_discount' => $fees->sum('discount'),
             'total_late_fee' => $fees->sum('late_fee'),
+            'total_expenses' => $expenses,
+            'net_income' => ($feeCollected + $salesCollected) - $expenses,
         ];
     }
 
@@ -115,7 +189,9 @@ class ReportService
     public function getFeeCollectionChartData($schoolId, $year)
     {
         $months = [];
-        $collected = [];
+        $feeRevenue = [];
+        $salesRevenue = [];
+        $totalRevenue = [];
         $pending = [];
 
         for ($month = 1; $month <= 12; $month++) {
@@ -127,13 +203,27 @@ class ReportService
                 ->whereMonth('created_at', $month)
                 ->get();
 
-            $collected[] = $monthlyFees->sum('paid_amount');
+            $monthlyFeeRevenue = (float) $this->feeRevenueQuery($schoolId)
+                ->whereYear('paid_at', $year)
+                ->whereMonth('paid_at', $month)
+                ->sum('amount');
+
+            $monthlySalesRevenue = (float) $this->salesRevenueQuery($schoolId)
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->sum('total_amount');
+
+            $feeRevenue[] = $monthlyFeeRevenue;
+            $salesRevenue[] = $monthlySalesRevenue;
+            $totalRevenue[] = $monthlyFeeRevenue + $monthlySalesRevenue;
             $pending[] = $monthlyFees->sum('total_amount') - $monthlyFees->sum('paid_amount');
         }
 
         return [
             'labels' => $months,
-            'collected' => $collected,
+            'collected' => $feeRevenue,
+            'sales' => $salesRevenue,
+            'total' => $totalRevenue,
             'pending' => $pending,
         ];
     }
@@ -195,23 +285,34 @@ class ReportService
     public function getMonthlyIncomeTrend($schoolId, $year)
     {
         $labels = [];
-        $amounts = [];
+        $feeAmounts = [];
+        $salesAmounts = [];
+        $totalAmounts = [];
 
         for ($month = 1; $month <= 12; $month++) {
             $labels[] = Carbon::create($year, $month)->format('M');
 
-            $amounts[] = (float) FeePayment::whereYear('paid_at', $year)
+            $monthlyFee = (float) $this->feeRevenueQuery($schoolId)
+                ->whereYear('paid_at', $year)
                 ->whereMonth('paid_at', $month)
-                ->whereHas('fee', function ($query) use ($schoolId) {
-                    $query->where('school_id', $schoolId);
-                })
                 ->sum('amount');
+
+            $monthlySales = (float) $this->salesRevenueQuery($schoolId)
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->sum('total_amount');
+
+            $feeAmounts[] = $monthlyFee;
+            $salesAmounts[] = $monthlySales;
+            $totalAmounts[] = $monthlyFee + $monthlySales;
         }
 
         return [
             'labels' => $labels,
-            'amounts' => $amounts,
-            'total' => array_sum($amounts),
+            'fee_amounts' => $feeAmounts,
+            'sales_amounts' => $salesAmounts,
+            'amounts' => $totalAmounts,
+            'total' => array_sum($totalAmounts),
         ];
     }
 

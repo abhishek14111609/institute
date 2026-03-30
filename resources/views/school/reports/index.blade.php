@@ -11,11 +11,51 @@
         <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
             <div>
                 <h3 class="fw-bold mb-1 text-gradient">Reports Dashboard</h3>
-                <p class="text-muted small mb-0">Student records, monthly finance trends, and stock analytics in one place.
-                </p>
+                <p class="text-muted small mb-0">Student records, split revenue, expenses, and stock analytics in one place.</p>
             </div>
             <div class="bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill small fw-bold">
                 <i class="bi bi-graph-up-arrow me-2"></i> Year {{ $year }}
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="text-muted small mb-1">Fee Revenue</div>
+                        <h4 class="fw-bold text-primary">&#8377;{{ number_format(array_sum($incomeTrend['fee_amounts'] ?? []), 0) }}</h4>
+                        <small class="text-muted">Collected this year</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="text-muted small mb-1">Selling Revenue</div>
+                        <h4 class="fw-bold text-success">&#8377;{{ number_format(array_sum($incomeTrend['sales_amounts'] ?? []), 0) }}</h4>
+                        <small class="text-muted">Inventory sales this year</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="text-muted small mb-1">{{ $label['expenses'] }}</div>
+                        <h4 class="fw-bold text-danger">&#8377;{{ number_format($expenseTrend['total'], 0) }}</h4>
+                        <small class="text-muted">Recorded this year</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="text-muted small mb-1">Net Balance</div>
+                        <h4 class="fw-bold {{ ($incomeTrend['total'] - $expenseTrend['total']) >= 0 ? 'text-info' : 'text-danger' }}">
+                            &#8377;{{ number_format($incomeTrend['total'] - $expenseTrend['total'], 0) }}
+                        </h4>
+                        <small class="text-muted">Revenue minus expenses</small>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -42,11 +82,10 @@
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
-                                <h5 class="fw-bold mb-1">Monthly Income</h5>
-                                <p class="text-muted small mb-0">Fee payments collected month-wise.</p>
+                                <h5 class="fw-bold mb-1">Monthly Revenue Split</h5>
+                                <p class="text-muted small mb-0">Fee revenue vs inventory selling revenue month-wise.</p>
                             </div>
-                            <span
-                                class="badge bg-success-subtle text-success">₹{{ number_format($incomeTrend['total'], 0) }}</span>
+                            <span class="badge bg-success-subtle text-success">&#8377;{{ number_format($incomeTrend['total'], 0) }}</span>
                         </div>
                         <div class="chart-wrap">
                             <canvas id="monthlyIncomeChart"></canvas>
@@ -65,8 +104,7 @@
                                 <h5 class="fw-bold mb-1">Monthly Expense</h5>
                                 <p class="text-muted small mb-0">Expense outflow month-wise.</p>
                             </div>
-                            <span
-                                class="badge bg-danger-subtle text-danger">₹{{ number_format($expenseTrend['total'], 0) }}</span>
+                            <span class="badge bg-danger-subtle text-danger">&#8377;{{ number_format($expenseTrend['total'], 0) }}</span>
                         </div>
                         <div class="chart-wrap">
                             <canvas id="monthlyExpenseChart"></canvas>
@@ -94,14 +132,11 @@
         </div>
 
         <div class="d-flex flex-wrap gap-2">
-            <a href="{{ route('school.reports.income') }}" class="btn btn-outline-success btn-sm rounded-pill px-3">Detailed
-                Income</a>
-            <a href="{{ route('school.reports.expenses') }}"
-                class="btn btn-outline-danger btn-sm rounded-pill px-3">Detailed Expenses</a>
-            <a href="{{ route('school.reports.attendance') }}"
-                class="btn btn-outline-primary btn-sm rounded-pill px-3">Attendance Report</a>
-            <a href="{{ route('school.reports.pending-fees') }}"
-                class="btn btn-outline-warning btn-sm rounded-pill px-3">Pending Fees</a>
+            <a href="{{ route('school.reports.income') }}" class="btn btn-outline-success btn-sm rounded-pill px-3">Detailed Income</a>
+            <a href="{{ route('school.reports.expenses') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Detailed Expenses</a>
+            <a href="{{ route('school.reports.attendance') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">Attendance Report</a>
+            <a href="{{ route('school.materials.index') }}" class="btn btn-outline-info btn-sm rounded-pill px-3">Detailed Stock</a>
+            <a href="{{ route('school.reports.pending-fees') }}" class="btn btn-outline-warning btn-sm rounded-pill px-3">Pending Fees</a>
         </div>
     </div>
 
@@ -139,22 +174,32 @@
             data: {
                 labels: incomeData.labels,
                 datasets: [{
-                    label: 'Income',
-                    data: incomeData.amounts,
+                    label: 'Fee Revenue',
+                    data: incomeData.fee_amounts,
                     fill: true,
                     tension: 0.35,
                     borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.12)',
+                    backgroundColor: 'rgba(13, 110, 253, 0.08)',
                     pointRadius: 3,
+                }, {
+                    label: 'Selling Revenue',
+                    data: incomeData.sales_amounts,
+                    fill: true,
+                    tension: 0.35,
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.08)',
+                    pointRadius: 3,
+                }, {
+                    label: 'Total Revenue',
+                    data: incomeData.amounts,
+                    tension: 0.35,
+                    borderColor: '#6610f2',
+                    borderDash: [6, 4],
+                    pointRadius: 2,
                 }]
             },
             options: {
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
                 scales: {
                     y: {
                         ticks: {

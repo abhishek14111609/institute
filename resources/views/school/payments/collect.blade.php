@@ -17,7 +17,9 @@
                             <i class="bi bi-lightning-charge-fill me-1"></i> FINANCE CENTER
                         </div>
                         <h1 class="display-5 fw-800 text-white mb-2 tracking-tight animate-fade-in-up">Unified Collection Hub</h1>
-                        <p class="text-white opacity-70 lead mb-0 animate-fade-in-up delay-100">Scan, retrieve, and process multiple athletic fees in a single high-speed transaction.</p>
+                        <p class="text-white opacity-70 lead mb-0 animate-fade-in-up delay-100">
+                            Scan, retrieve, and process multiple {{ $isSport ? 'athletic' : 'educational' }} fees in a single high-speed transaction.
+                        </p>
                     </div>
                     <div class="col-lg-4 text-lg-end mt-4 mt-lg-0 animate-fade-in-right delay-200">
                         <div class="btn-group glass-group p-1 rounded-pill border border-white border-opacity-10 shadow-lg">
@@ -25,7 +27,7 @@
                                 <i class="bi bi-list-columns-reverse me-2"></i> All Fees
                             </a>
                             <a href="{{ route('school.students.index') }}" class="btn btn-glass-light rounded-pill px-4 border-0 fw-bold">
-                                <i class="bi bi-people me-2"></i> Athletes
+                                <i class="bi bi-people me-2"></i> {{ $isSport ? 'Athletes' : 'Students' }}
                             </a>
                         </div>
                     </div>
@@ -45,8 +47,8 @@
                         <div class="card-body p-5">
                             <div class="row align-items-center">
                                 <div class="col-lg-6 mb-4 mb-lg-0 text-center text-lg-start">
-                                    <h4 class="fw-800 text-dark mb-2">Member Ledger Retrieval</h4>
-                                    <p class="text-muted mb-0">Select an athlete profile below to view active memberships and outstanding dues.</p>
+                                    <h4 class="fw-800 text-dark mb-2">{{ $isSport ? 'Member' : 'Student' }} Ledger Retrieval</h4>
+                                    <p class="text-muted mb-0">Select a {{ $isSport ? 'athlete' : 'student' }} profile below to view active {{ $isSport ? 'memberships' : 'enrollments' }} and outstanding dues.</p>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="custom-select-wrapper position-relative">
@@ -56,7 +58,7 @@
                                         <select id="student_select"
                                             class="form-select form-select-xl hub-select rounded-pill ps-5 pe-4 shadow-sm fw-bold border-2"
                                             onchange="window.location.href='/school/payments/collect/' + this.value">
-                                            <option value="">— Search Athlete Profile / Registration —</option>
+                                            <option value="">— Search {{ $isSport ? 'Athlete' : 'Student' }} Profile / Registration —</option>
                                             @foreach($students as $s)
                                                 <option value="{{ $s->id }}" {{ $student && $student->id == $s->id ? 'selected' : '' }}>
                                                     {{ $s->user->name }} (Roll: {{ $s->roll_number }})
@@ -85,7 +87,7 @@
                                                 </div>
                                                 <div>
                                                     <h6 class="fw-800 text-dark mb-0">Active Ledger Items</h6>
-                                                    <small class="text-muted">Breakdown of pending session & kit fees</small>
+                                                    <small class="text-muted">Breakdown of pending {{ $isSport ? 'session & kit' : 'tuition & academic' }} fees</small>
                                                 </div>
                                             </div>
                                             <span class="badge bg-soft-rose text-rose rounded-pill px-3 py-2 fw-bold border border-rose border-opacity-10">
@@ -97,7 +99,7 @@
                                                 <thead class="bg-light-indigo text-indigo opacity-80">
                                                     <tr class="small fw-800 text-uppercase tracking-wider">
                                                         <th class="ps-4 py-3">Fee Specification</th>
-                                                        <th>Member Group / Session</th>
+                                                        <th>{{ $isSport ? 'Member Group / Session' : 'Class Group / Batch' }}</th>
                                                         <th>Balance Due</th>
                                                         <th class="pe-4" style="width: 200px;">Settling Amount</th>
                                                     </tr>
@@ -107,7 +109,7 @@
                                                         @php $remaining = $fee->getRemainingAmount(); @endphp
                                                         <tr class="ledger-row transition-base">
                                                             <td class="ps-4 py-4">
-                                                                <div class="d-flex align-items-center">
+                                                                 <div class="d-flex align-items-center">
                                                                     <div class="fee-icon me-3 bg-light rounded-3 d-flex align-items-center justify-content-center text-primary border border-white border-opacity-10 shadow-sm" style="width: 45px; height: 45px;">
                                                                         <i class="bi bi-{{ $fee->fee_type == 'monthly' ? 'calendar-event' : 'check-square-fill' }}"></i>
                                                                     </div>
@@ -150,7 +152,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <h5 class="fw-800 text-dark mb-1">Clear Balance!</h5>
-                                                                <p class="text-muted px-5">This athlete has settled all active institutional dues. No current financial action required.</p>
+                                                                <p class="text-muted px-5">This {{ $isSport ? 'athlete' : 'student' }} has settled all active institutional dues. No current financial action required.</p>
                                                             </td>
                                                         </tr>
                                                     @endforelse

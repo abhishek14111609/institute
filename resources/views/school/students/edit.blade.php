@@ -45,7 +45,9 @@
                         <div class="mb-3">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                   id="email" name="email" value="{{ old('email', $student->user->email) }}" required>
+                                   id="email" name="email" value="{{ old('email', $student->user->email) }}" required
+                                   data-ajax-validate="true" data-table="users" data-rules="required|email"
+                                   data-user-id="{{ $student->user_id }}">
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -57,8 +59,11 @@
                     <div class="col-md-4">
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone</label>
-                            <input type="text" class="form-control @error('phone') is-invalid @enderror"
-                                   id="phone" name="phone" value="{{ old('phone', $student->user->phone) }}">
+                            <input type="tel" class="form-control @error('phone') is-invalid @enderror"
+                                   id="phone" name="phone" value="{{ old('phone', $student->user->phone) }}"
+                                   data-ajax-validate="true" data-table="users" data-rules="nullable|numeric|min:10|max:10"
+                                   data-user-id="{{ $student->user_id }}"
+                                   placeholder="e.g. 9876543210 (10 digits)">
                             @error('phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -69,7 +74,9 @@
                         <div class="mb-3">
                             <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('username') is-invalid @enderror"
-                                   id="username" name="username" value="{{ old('username', $student->user->username) }}" required>
+                                   id="username" name="username" value="{{ old('username', $student->user->username) }}" required
+                                   data-ajax-validate="true" data-table="users" data-rules="required|alpha_dash|min:3"
+                                   data-user-id="{{ $student->user_id }}">
                             @error('username')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -126,9 +133,9 @@
 
                     <div class="col-md-4">
                         <div class="mb-3">
-                            <label for="roll_number" class="form-label">Roll Number <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('roll_number') is-invalid @enderror"
-                                   id="roll_number" name="roll_number" value="{{ old('roll_number', $student->roll_number) }}" required>
+                            <label for="roll_number" class="form-label">Roll Number</label>
+                            <input type="text" class="form-control bg-light"
+                                   id="roll_number" name="roll_number" value="{{ old('roll_number', $student->roll_number) }}" readonly>
                             @error('roll_number')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -165,8 +172,10 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="parent_phone" class="form-label">Parent Phone</label>
-                            <input type="text" class="form-control @error('parent_phone') is-invalid @enderror"
-                                   id="parent_phone" name="parent_phone" value="{{ old('parent_phone', $student->parent_phone) }}">
+                            <input type="tel" class="form-control @error('parent_phone') is-invalid @enderror"
+                                   id="parent_phone" name="parent_phone" value="{{ old('parent_phone', $student->parent_phone) }}"
+                                   data-ajax-validate="true" data-table="students" data-rules="nullable|numeric|min:10|max:10"
+                                   placeholder="e.g. 9876543210 (10 digits)">
                             @error('parent_phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -202,6 +211,7 @@
 
                 <div class="mb-3">
                     <div class="form-check">
+                        <input type="hidden" name="is_active" value="0">
                         <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1"
                                {{ old('is_active', $student->user->is_active) ? 'checked' : '' }}>
                         <label class="form-check-label" for="is_active">
@@ -339,6 +349,18 @@
             } else {
                 addEnrollmentRow();
             }
+
+            // Phone number numeric validation
+            const phoneFields = ['phone', 'parent_phone'];
+            phoneFields.forEach(fieldName => {
+                const input = document.querySelector(`input[name="${fieldName}"]`);
+                if (input) {
+                    input.addEventListener('input', function(e) {
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                        if (this.value.length > 15) this.value = this.value.slice(0, 15);
+                    });
+                }
+            });
         });
     </script>
 

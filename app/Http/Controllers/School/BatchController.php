@@ -51,7 +51,7 @@ class BatchController extends Controller
                 $subject = Subject::with(['level', 'schoolClass.course'])->find($data['subject_id']);
                 if ($subject) {
                     $data['class_id'] = $subject->class_id;
-                    $data['sport_level'] = $subject->level->name ?? null;
+                    $data['sport_level'] = $data['sport_level'] ?: ($subject->level->name ?? null);
 
                     if (empty($data['name'])) {
                         $sportName = $subject->schoolClass->course->name ?? 'Sport';
@@ -106,7 +106,7 @@ class BatchController extends Controller
                 $subject = Subject::with(['level', 'schoolClass.course'])->find($data['subject_id']);
                 if ($subject) {
                     $data['class_id'] = $subject->class_id;
-                    $data['sport_level'] = $subject->level->name ?? null;
+                    $data['sport_level'] = $data['sport_level'] ?: ($subject->level->name ?? null);
 
                     if (empty($data['name'])) {
                         $levelName = $subject->level->name ?? 'Any Level';
