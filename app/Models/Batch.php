@@ -77,6 +77,16 @@ class Batch extends Model
     }
 
     /**
+     * Get all enrolled students through the pivot table.
+     */
+    public function enrolledStudents()
+    {
+        return $this->belongsToMany(Student::class, 'batch_student')
+            ->withPivot('enrollment_date', 'is_active')
+            ->withTimestamps();
+    }
+
+    /**
      * Get all teachers
      */
     public function teachers()

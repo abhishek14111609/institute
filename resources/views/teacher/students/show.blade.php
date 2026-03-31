@@ -11,7 +11,7 @@
         <!-- Header -->
         <div class="mb-4 d-flex align-items-center justify-content-between">
             <div>
-                <a href="{{ route('teacher.batches.students', $student->batch_id) }}"
+                <a href="{{ $student->batches->first() || $student->batch_id ? route('teacher.batches.students', $student->batches->first()->id ?? $student->batch_id) : route('teacher.batches.index') }}"
                     class="btn btn-link text-decoration-none p-0 mb-1 text-muted small">
                     <i class="bi bi-arrow-left me-1"></i> Back to Batch Students
                 </a>
@@ -64,7 +64,7 @@
                             <div class="list-group-item d-flex justify-content-between px-0 py-3">
                                 <span class="text-muted"><i class="bi bi-layers me-2"></i> Sport Level</span>
                                 <span
-                                    class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3">{{ $student->batch->class->name ?? 'Junior' }}</span>
+                                    class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3">{{ $student->batches->first()->class->name ?? optional(optional($student->batch)->class)->name ?? 'Junior' }}</span>
                             </div>
                         </div>
 

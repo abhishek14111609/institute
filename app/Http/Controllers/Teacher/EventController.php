@@ -32,15 +32,21 @@ class EventController extends Controller
             abort(403, 'Unauthorized access to this event.');
         }
 
-        $event->load(['students.user', 'students.batch']);
+        $event->load(['students.user', 'students.batch', 'students.batches.class']);
 
         // Get all students in this teacher's batches who are NOT yet in the event
         $teacherBatchIds = $teacher->batches()->pluck('batches.id')->toArray();
         $participantIds = $event->students->pluck('id')->toArray();
 
-        $availableStudents = Student::whereIn('batch_id', $teacherBatchIds)
+        $availableStudents = Student::where(function ($query) use ($teacherBatchIds) {
+                $query->whereIn('students.batch_id', $teacherBatchIds)
+                    ->orWhereHas('batches', function ($batchQuery) use ($teacherBatchIds) {
+                        $batchQuery->whereIn('batches.id', $teacherBatchIds)
+                            ->where('batch_student.is_active', true);
+                    });
+            })
             ->whereNotIn('id', $participantIds)
-            ->with(['user', 'batch'])
+            ->with(['user', 'batch', 'batches.class'])
             ->active()
             ->get();
 
@@ -64,7 +70,16 @@ class EventController extends Controller
             'student_ids.*' => [
                 'distinct',
                 Rule::exists('students', 'id')->where(function ($query) use ($teacherBatchIds) {
-                    $query->whereIn('batch_id', $teacherBatchIds);
+                    $query->where(function ($studentQuery) use ($teacherBatchIds) {
+                        $studentQuery->whereIn('students.batch_id', $teacherBatchIds)
+                            ->orWhereExists(function ($subQuery) use ($teacherBatchIds) {
+                                $subQuery->selectRaw('1')
+                                    ->from('batch_student')
+                                    ->whereColumn('batch_student.student_id', 'students.id')
+                                    ->whereIn('batch_student.batch_id', $teacherBatchIds)
+                                    ->where('batch_student.is_active', true);
+                            });
+                    });
                 }),
             ]
         ]);

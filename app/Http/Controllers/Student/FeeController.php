@@ -13,10 +13,12 @@ class FeeController extends Controller
         $fees = $student->fees()->with('payments')->latest()->get();
 
         $stats = [
-            'total_due' => $fees->sum('total_amount'),
+            'total_due' => $fees->sum(fn($fee) => $fee->total_amount + $fee->late_fee - $fee->discount),
             'total_paid' => $fees->sum('paid_amount'),
-            'total_remaining' => $fees->sum('total_amount') - $fees->sum('paid_amount'),
-            'payment_progress' => $fees->sum('total_amount') > 0 ? ($fees->sum('paid_amount') / $fees->sum('total_amount')) * 100 : 0
+            'total_remaining' => $fees->sum(fn($fee) => max(0, $fee->remaining_amount)),
+            'payment_progress' => $fees->sum(fn($fee) => $fee->total_amount + $fee->late_fee - $fee->discount) > 0
+                ? ($fees->sum('paid_amount') / $fees->sum(fn($fee) => $fee->total_amount + $fee->late_fee - $fee->discount)) * 100
+                : 0
         ];
 
         return view('student.fees-index', compact('fees', 'stats'));
@@ -25,7 +27,7 @@ class FeeController extends Controller
     public function show($feeId)
     {
         $student = auth()->user()->student;
-        $fee = $student->fees()->with('payments')->findOrFail($feeId);
+        $fee = $student->fees()->with(['payments', 'invoices'])->findOrFail($feeId);
 
         return view('student.fee-details', compact('fee'));
     }

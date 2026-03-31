@@ -7,6 +7,7 @@ use App\Http\Controllers\School;
 use App\Http\Controllers\Teacher;
 use App\Http\Controllers\Student;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Student\MaterialController as StudentMaterialController;
 use App\Models\Material;
 
 /*
@@ -196,6 +197,15 @@ Route::middleware(['auth', 'role:student', 'check.subscription'])->prefix('stude
     // View Profile
     Route::get('profile', function () {
         $student = auth()->user()->student;
+        $student->load([
+            'school',
+            'batch.class',
+            'batch.teachers.user',
+            'batches' => function ($query) {
+                $query->wherePivot('is_active', true)->with(['class', 'teachers.user']);
+            },
+        ]);
+
         return view('student.profile', compact('student'));
     })->name('profile');
 
@@ -209,6 +219,7 @@ Route::middleware(['auth', 'role:student', 'check.subscription'])->prefix('stude
     Route::get('purchases', [Student\PurchaseController::class, 'index'])->name('purchases.index');
     Route::get('invoices/{invoice}/download', [Student\InvoiceController::class, 'download'])->name('invoices.download');
     Route::get('invoices/{invoice}/stream', [Student\InvoiceController::class, 'stream'])->name('invoices.stream');
+    Route::get('materials/{material}/download', [StudentMaterialController::class, 'download'])->name('materials.download');
 
     // Events
     Route::get('events', [Student\EventController::class, 'index'])->name('events.index');
@@ -216,18 +227,54 @@ Route::middleware(['auth', 'role:student', 'check.subscription'])->prefix('stude
     // Resources & Timetable
     Route::get('resources', function () {
         $student = auth()->user()->student;
-        $materials = Material::where(function ($q) use ($student) {
-            $q->where('batch_id', '=', $student->batch_id)
-                ->orWhereNull('batch_id');
+        $student->loadMissing([
+            'batches' => function ($query) {
+                $query->wherePivot('is_active', true);
+            },
+        ]);
+
+        $activeBatchIds = $student->batches->pluck('id')
+            ->push($student->batch_id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $materials = Material::where(function ($query) use ($activeBatchIds) {
+            if ($activeBatchIds->isNotEmpty()) {
+                $query->whereIn('batch_id', $activeBatchIds)
+                    ->orWhereNull('batch_id');
+            } else {
+                $query->whereNull('batch_id');
+            }
         })->where('school_id', '=', $student->school_id)
+            ->when(request()->filled('search'), function ($query) {
+                $query->where('title', 'like', '%' . trim((string) request('search')) . '%');
+            })
+            ->when(request()->filled('batch_id'), function ($query) use ($activeBatchIds) {
+                $batchId = (int) request('batch_id');
+
+                if ($activeBatchIds->contains($batchId)) {
+                    $query->where('batch_id', $batchId);
+                }
+            })
             ->with('teacher')
             ->latest()
             ->get();
-        return view('student.resources', compact('materials'));
+        $batches = $student->batches;
+
+        return view('student.resources', compact('materials', 'batches'));
     })->name('resources');
 
     Route::get('timetable', function () {
         $student = auth()->user()->student;
+        $student->load([
+            'school',
+            'batch.class',
+            'batches' => function ($query) {
+                $query->wherePivot('is_active', true)->with(['class', 'teachers.user']);
+            },
+        ]);
+
         return view('student.timetable', compact('student'));
     })->name('timetable');
 

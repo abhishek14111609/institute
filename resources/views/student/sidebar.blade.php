@@ -31,7 +31,7 @@
         {{ $isSport ? 'Training & Games' : 'Academic' }}</li>
     <li>
         <a href="{{ route('student.profile') }}" class="{{ request()->routeIs('student.profile') ? 'active' : '' }}">
-            <i class="bi bi-person-badge"></i> <span>My Portfolio</span>
+            <i class="bi bi-person-badge"></i> <span>My Profile</span>
         </a>
     </li>
     <li>
@@ -86,7 +86,7 @@
     </li>
 </ul>
 
-<li class="mt-auto pt-5">
+<div class="mt-auto pt-5">
     <div class="card bg-primary bg-opacity-10 border-0 rounded-4 mx-2">
         <div class="card-body p-3">
             <h6 class="text-primary fw-bold mb-1 small">Need Help?</h6>
@@ -95,4 +95,4 @@
             </p>
         </div>
     </div>
-</li>
+</div>

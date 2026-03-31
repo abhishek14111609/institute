@@ -22,8 +22,24 @@ class AttendanceController extends Controller
         $batches = $teacher->batches()
             ->select('batches.*')
             ->with(['class'])
-            ->withCount('students')
             ->get();
+
+        $batches->each(function ($batch) {
+            $batch->students_count = \App\Models\Student::query()
+                ->where('students.is_active', true)
+                ->where(function ($query) use ($batch) {
+                    $query->where('students.batch_id', $batch->id)
+                        ->orWhereExists(function ($subQuery) use ($batch) {
+                            $subQuery->selectRaw('1')
+                                ->from('batch_student')
+                                ->whereColumn('batch_student.student_id', 'students.id')
+                                ->where('batch_student.batch_id', $batch->id)
+                                ->where('batch_student.is_active', true);
+                        });
+                })
+                ->distinct('students.id')
+                ->count('students.id');
+        });
 
         // Calculate actual health score for each batch
         $batches->each(function ($batch) {
@@ -49,7 +65,20 @@ class AttendanceController extends Controller
 
         if ($batchId) {
             $selectedBatch = $teacher->batches()->findOrFail($batchId);
-            $students = $selectedBatch->students()->active()->with('user')->get();
+            $students = \App\Models\Student::query()
+                ->where('students.is_active', true)
+                ->where(function ($query) use ($selectedBatch) {
+                    $query->where('students.batch_id', $selectedBatch->id)
+                        ->orWhereExists(function ($subQuery) use ($selectedBatch) {
+                            $subQuery->selectRaw('1')
+                                ->from('batch_student')
+                                ->whereColumn('batch_student.student_id', 'students.id')
+                                ->where('batch_student.batch_id', $selectedBatch->id)
+                                ->where('batch_student.is_active', true);
+                        });
+                })
+                ->with('user')
+                ->get();
             $attendanceRecords = Attendance::where('batch_id', '=', $batchId)
                 ->whereDate('attendance_date', $attendanceDate)
                 ->get();

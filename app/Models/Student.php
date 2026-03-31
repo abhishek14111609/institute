@@ -170,7 +170,8 @@ class Student extends Model
     {
         return $this->fees()
             ->whereIn('status', ['pending', 'partial', 'overdue'])
-            ->sum('total_amount');
+            ->get()
+            ->sum(fn($fee) => max(0, $fee->remaining_amount));
     }
 
     /**

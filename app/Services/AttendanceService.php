@@ -97,12 +97,17 @@ class AttendanceService
     /**
      * Get attendance report for student
      */
-    public function getStudentAttendanceReport(Student $student, $startDate = null, $endDate = null)
+    public function getStudentAttendanceReport(Student $student, $startDate = null, $endDate = null, ?int $batchId = null)
     {
-        $query = Attendance::where('student_id', '=', $student->id);
+        $query = Attendance::where('student_id', '=', $student->id)
+            ->with('batch.class');
 
         if ($startDate && $endDate) {
             $query->whereBetween('attendance_date', [$startDate, $endDate]);
+        }
+
+        if ($batchId) {
+            $query->where('batch_id', $batchId);
         }
 
         $attendances = $query->orderBy('attendance_date', 'desc')->get();

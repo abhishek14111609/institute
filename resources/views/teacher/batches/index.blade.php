@@ -73,7 +73,7 @@
                                 <div class="col-6">
                                     <div class="bg-light p-3 rounded-4 text-center border border-dashed shadow-sm">
                                         <div class="tiny text-muted fw-bold mb-1 uppercase">COHORT SIZE</div>
-                                        <div class="small fw-bold text-dark">{{ $batch->students->count() }} MEMBERS</div>
+                                        <div class="small fw-bold text-dark">{{ $batch->students_count }} MEMBERS</div>
                                     </div>
                                 </div>
                             </div>

@@ -13,12 +13,27 @@ class DashboardController extends Controller
     {
         $teacher = auth()->user()->teacher;
 
-        // Eager load classes and count students to avoid high memory usage
         $batches = $teacher->batches()
             ->select('batches.*')
             ->with(['class'])
-            ->withCount('students')
             ->get();
+
+        $batches->each(function ($batch) {
+            $batch->students_count = \App\Models\Student::query()
+                ->where('students.is_active', true)
+                ->where(function ($query) use ($batch) {
+                    $query->where('students.batch_id', $batch->id)
+                        ->orWhereExists(function ($subQuery) use ($batch) {
+                            $subQuery->selectRaw('1')
+                                ->from('batch_student')
+                                ->whereColumn('batch_student.student_id', 'students.id')
+                                ->where('batch_student.batch_id', $batch->id)
+                                ->where('batch_student.is_active', true);
+                        });
+                })
+                ->distinct('students.id')
+                ->count('students.id');
+        });
 
         $totalStudents = $batches->sum('students_count');
 
@@ -31,7 +46,19 @@ class DashboardController extends Controller
             $attRate = $totalAtt > 0 ? ($present / $totalAtt) * 100 : 0;
 
             // Participation health: % of students in batch who have participated in at least one event
-            $studentIds = $batch->students()->active()->pluck('students.id');
+            $studentIds = \App\Models\Student::query()
+                ->where('students.is_active', true)
+                ->where(function ($query) use ($batch) {
+                    $query->where('students.batch_id', $batch->id)
+                        ->orWhereExists(function ($subQuery) use ($batch) {
+                            $subQuery->selectRaw('1')
+                                ->from('batch_student')
+                                ->whereColumn('batch_student.student_id', 'students.id')
+                                ->where('batch_student.batch_id', $batch->id)
+                                ->where('batch_student.is_active', true);
+                        });
+                })
+                ->pluck('students.id');
             $participatedCount = \App\Models\EventParticipant::whereIn('student_id', $studentIds)
                 ->where('participation_status', 'participated')
                 ->distinct('student_id')

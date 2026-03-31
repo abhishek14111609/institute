@@ -16,7 +16,27 @@ class StudentController extends Controller
     public function index()
     {
         $teacher = auth()->user()->teacher;
-        $batches = $teacher->batches()->select('batches.*')->with('class')->withCount('students')->get();
+        $batches = $teacher->batches()
+            ->select('batches.*')
+            ->with('class')
+            ->get();
+
+        $batches->each(function ($batch) {
+            $batch->students_count = \App\Models\Student::query()
+                ->where('students.is_active', true)
+                ->where(function ($query) use ($batch) {
+                    $query->where('students.batch_id', $batch->id)
+                        ->orWhereExists(function ($subQuery) use ($batch) {
+                            $subQuery->selectRaw('1')
+                                ->from('batch_student')
+                                ->whereColumn('batch_student.student_id', 'students.id')
+                                ->where('batch_student.batch_id', $batch->id)
+                                ->where('batch_student.is_active', true);
+                        });
+                })
+                ->distinct('students.id')
+                ->count('students.id');
+        });
         return view('teacher.batches.index', compact('batches'));
     }
 
@@ -31,7 +51,20 @@ class StudentController extends Controller
             abort(403, 'Unauthorized access to this batch.');
         }
 
-        $students = $batch->students()->active()->with('user')->get();
+        $students = \App\Models\Student::query()
+            ->where('students.is_active', true)
+            ->where(function ($query) use ($batch) {
+                $query->where('students.batch_id', $batch->id)
+                    ->orWhereExists(function ($subQuery) use ($batch) {
+                        $subQuery->selectRaw('1')
+                            ->from('batch_student')
+                            ->whereColumn('batch_student.student_id', 'students.id')
+                            ->where('batch_student.batch_id', $batch->id)
+                            ->where('batch_student.is_active', true);
+                    });
+            })
+            ->with(['user', 'batches.class'])
+            ->get();
         return view('teacher.batches.students', compact('batch', 'students'));
     }
 
@@ -42,10 +75,10 @@ class StudentController extends Controller
     {
         $teacher = auth()->user()->teacher;
 
-        // Check if the student belongs to any of the teacher's batches
         $teacherBatches = $teacher->batches()->pluck('batches.id')->toArray();
-        if (!in_array($student->batch_id, $teacherBatches)) {
-            // Check if student is in any coached event by this teacher
+        $studentBatchIds = $student->batches()->pluck('batches.id')->push($student->batch_id)->filter()->unique()->toArray();
+
+        if (empty(array_intersect($teacherBatches, $studentBatchIds))) {
             $isParticipantInCoachedEvent = $student->events()
                 ->where('coach_id', $teacher->id)
                 ->exists();
@@ -57,6 +90,7 @@ class StudentController extends Controller
 
         $student->load([
             'user',
+            'batches.class',
             'batch.class',
             'events' => function ($q) {
                 $q->orderBy('event_date', 'desc');

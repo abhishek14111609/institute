@@ -55,7 +55,7 @@
 
                             <div class="row g-3 mb-4 bg-light bg-opacity-50 p-3 rounded-4 border border-dashed text-center">
                                 <div class="col-6 border-end">
-                                    <div class="fw-bold text-dark h5 mb-0">{{ $batch->students->count() }}</div>
+                                    <div class="fw-bold text-dark h5 mb-0">{{ $batch->students_count }}</div>
                                     <small class="text-muted tiny fw-bold text-uppercase">Total Squad</small>
                                 </div>
                                 <div class="col-6">

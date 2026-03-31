@@ -58,7 +58,6 @@
                                 <td class="border-0 text-center">
                                     @php
                                         $statusClass = [
-                                            'scheduled' => 'info',
                                             'upcoming' => 'info',
                                             'ongoing' => 'warning',
                                             'completed' => 'success',

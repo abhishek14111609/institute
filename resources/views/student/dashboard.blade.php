@@ -155,7 +155,7 @@
                                         </div>
                                         <h4 class="fw-bold text-dark mb-1">{{ $session->class->name }}</h4>
                                         <p class="text-muted mb-3"><i class="bi bi-person-workspace me-1"></i>
-                                            {{ $isSport ? 'Coach' : 'Teacher' }}: <span class="fw-semibold text-dark">{{ $session->teachers->first()->user->name ?? 'Instructor' }}</span></p>
+                                            {{ $isSport ? 'Coach' : 'Teacher' }}: <span class="fw-semibold text-dark">{{ optional(optional($session->teachers->first())->user)->name ?? 'Instructor' }}</span></p>
                                         <div class="d-flex gap-2">
                                             <div class="bg-white px-3 py-2 rounded-pill shadow-sm border small fw-bold"><i class="bi bi-geo-alt-fill text-danger me-1"></i> Training Area A</div>
                                             <div class="bg-white px-3 py-2 rounded-pill shadow-sm border small fw-bold"><i class="bi bi-people-fill text-info me-1"></i> {{ $session->students_count ?? '0' }} Peers</div>
@@ -220,9 +220,9 @@
                                     <span class="tiny fw-bold text-uppercase">{{ $event->event_date->format('M') }}</span>
                                 </div>
                                 <div class="grow">
-                                    <h6 class="fw-bold text-dark mb-1">{{ $event->name }}</h6>
+                                    <h6 class="fw-bold text-dark mb-1">{{ $event->title }}</h6>
                                     <p class="text-muted tiny mb-1"><i class="bi bi-geo-alt me-1"></i> {{ $event->location ?? 'Main Arena' }}</p>
-                                    <small class="text-primary fw-bold tiny"><i class="bi bi-person-fill me-1"></i> {{ $label['teacher'] }} {{ $event->coach->user->name ?? 'Head' }}</small>
+                                    <small class="text-primary fw-bold tiny"><i class="bi bi-person-fill me-1"></i> {{ $label['teacher'] }} {{ optional(optional($event->coach)->user)->name ?? 'Head' }}</small>
                                 </div>
                             </div>
                         @empty

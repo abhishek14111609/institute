@@ -258,11 +258,13 @@ class StudentService
      */
     public function getStudentStats(Student $student)
     {
+        $fees = $student->fees()->get();
+
         return [
             'attendance_percentage' => $student->getAttendancePercentage(),
-            'total_fees' => $student->fees()->sum('total_amount'),
-            'paid_fees' => $student->fees()->sum('paid_amount'),
-            'pending_fees' => $student->getPendingFees(),
+            'total_fees' => $fees->sum(fn($fee) => $fee->total_amount + $fee->late_fee - $fee->discount),
+            'paid_fees' => $fees->sum('paid_amount'),
+            'pending_fees' => $fees->sum(fn($fee) => max(0, $fee->remaining_amount)),
             'events_participated' => $student->eventParticipations()->count(),
         ];
     }
@@ -283,6 +285,8 @@ class StudentService
                 'description' => $fee->fee_type . ' Fee Assigned',
                 'type' => 'dr',
                 'amount' => $fee->total_amount,
+                'dr' => $fee->total_amount,
+                'cr' => 0,
                 'reference' => 'FEE-' . $fee->id,
             ];
 
@@ -292,6 +296,8 @@ class StudentService
                     'description' => 'Late Fee Charged',
                     'type' => 'dr',
                     'amount' => $fee->late_fee,
+                    'dr' => $fee->late_fee,
+                    'cr' => 0,
                     'reference' => 'LATE-' . $fee->id,
                 ];
             }
@@ -302,6 +308,8 @@ class StudentService
                     'description' => 'Discount Applied',
                     'type' => 'cr',
                     'amount' => $fee->discount,
+                    'dr' => 0,
+                    'cr' => $fee->discount,
                     'reference' => 'DISC-' . $fee->id,
                 ];
             }
@@ -313,6 +321,8 @@ class StudentService
                 'description' => 'Payment Received (' . $payment->payment_method . ')',
                 'type' => 'cr',
                 'amount' => $payment->amount,
+                'dr' => 0,
+                'cr' => $payment->amount,
                 'reference' => 'PAY-' . $payment->id,
             ];
         }

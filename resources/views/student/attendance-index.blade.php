@@ -130,6 +130,9 @@
                             <form id="attendance-form" action="{{ route('student.attendance.store') }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
+                                @if($batch)
+                                    <input type="hidden" name="batch_id" value="{{ $batch->id }}">
+                                @endif
                                 <input type="file" name="photo" id="photo-input" class="d-none" required>
                             </form>
                             <canvas id="photo-canvas" class="d-none"></canvas>
@@ -172,6 +175,16 @@
                 <form action="{{ route('student.attendance.index') }}" method="GET"
                     class="row g-3 mb-4 p-3 bg-light rounded-4 border">
                     <div class="col-md-4">
+                        <label class="form-label tiny fw-bold text-muted">BATCH</label>
+                        <select name="batch_id" class="form-select rounded-pill border-0 shadow-sm px-4">
+                            @foreach($activeBatches as $activeBatch)
+                                <option value="{{ $activeBatch->id }}" {{ $batch && $batch->id === $activeBatch->id ? 'selected' : '' }}>
+                                    {{ $activeBatch->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label tiny fw-bold text-muted">DATE RANGE (FROM)</label>
                         <input type="date" name="start_date" class="form-control rounded-pill border-0 shadow-sm px-4"
                             value="{{ $startDate->format('Y-m-d') }}">
@@ -181,7 +194,7 @@
                         <input type="date" name="end_date" class="form-control rounded-pill border-0 shadow-sm px-4"
                             value="{{ $endDate->format('Y-m-d') }}">
                     </div>
-                    <div class="col-md-4 d-flex align-items-end">
+                    <div class="col-md-12 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 shadow-sm fw-bold">
                             <i class="bi bi-funnel-fill me-2"></i> Update View
                         </button>
@@ -255,8 +268,10 @@
                                     <td>
                                         <div class="d-flex align-items-center small text-muted">
                                             <i class="bi bi-clock-history me-2 text-primary"></i>
-                                            {{ $batch->start_time ?? '09:00 AM' }} -
-                                            {{ \Carbon\Carbon::parse($batch->start_time ?? '09:00:00')->addMinutes(60)->format('h:i A') }}
+                                            {{ $attendance->batch && $attendance->batch->start_time ? $attendance->batch->start_time->format('h:i A') : 'N/A' }}
+                                            @if($attendance->batch && $attendance->batch->end_time)
+                                                - {{ $attendance->batch->end_time->format('h:i A') }}
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="pe-4 text-end small text-muted">

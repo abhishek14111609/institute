@@ -78,7 +78,7 @@
                                                 <div class="avatar-sm rounded-circle bg-light border d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
                                                     <i class="bi bi-person-fill text-muted"></i>
                                                 </div>
-                                                <small class="fw-bold text-dark">Coach {{ explode(' ', $event->coach->user->name ?? 'N/A')[0] }}</small>
+                                                <small class="fw-bold text-dark">Coach {{ explode(' ', optional(optional($event->coach)->user)->name ?? 'N/A')[0] }}</small>
                                             </div>
                                             <span class="small text-muted"><i class="bi bi-geo-alt me-1"></i> {{ $event->location ?? 'Arena' }}</span>
                                         </div>
@@ -124,7 +124,7 @@
                                             </td>
                                             <td>
                                                 <div class="fw-bold text-dark">{{ $participation->sportsEvent->title }}</div>
-                                                <div class="tiny text-muted"><i class="bi bi-person-badge me-1"></i> Coach: {{ $participation->sportsEvent->coach->user->name ?? 'N/A' }}</div>
+                                                <div class="tiny text-muted"><i class="bi bi-person-badge me-1"></i> Coach: {{ optional(optional($participation->sportsEvent->coach)->user)->name ?? 'N/A' }}</div>
                                             </td>
                                             <td class="text-center">
                                                 @if($participation->rank == 1)
@@ -147,7 +147,8 @@
                                                 @php
                                                     $statusClass = [
                                                         'completed' => 'success',
-                                                        'scheduled' => 'info',
+                                                        'upcoming' => 'info',
+                                                        'ongoing' => 'warning',
                                                         'cancelled' => 'danger'
                                                     ][$participation->sportsEvent->status] ?? 'secondary';
                                                 @endphp

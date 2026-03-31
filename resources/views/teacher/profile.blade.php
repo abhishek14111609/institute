@@ -30,7 +30,7 @@
                         </div>
                         <h3 class="fw-bold mb-1">{{ $teacher->user->name }}</h3>
                         <p class="text-white-50 small mb-4 text-uppercase fw-bold" style="letter-spacing: 2px;">
-                            {{ $teacher->specialization ?? 'Professional Coach' }}
+                            {{ $teacher->specialization ?? ($isSport ? 'Professional Coach' : 'Faculty Member') }}
                         </p>
 
                         <div class="d-flex justify-content-center gap-3 mb-2">
@@ -105,13 +105,11 @@
                             {{ $teacher->bio ?? 'Highly dedicated and professional educator with a passion for student development. Specialized in creating engaging learning environments and driving academic excellence across diverse groups.' }}
                         </p>
 
-                        <h6 class="fw-bold mb-3 mt-5">Assigned Subjects / Expertise</h6>
+                        <h6 class="fw-bold mb-3 mt-5">{{ $isSport ? 'Assigned Levels / Expertise' : 'Assigned Subjects / Expertise' }}</h6>
                         <div class="d-flex flex-wrap gap-2">
                             @foreach($teacher->batches->pluck('class.name')->unique() as $class)
                                 <span class="badge bg-light text-primary border rounded-pill px-4 py-2">{{ $class }}</span>
                             @endforeach
-                            <span class="badge bg-light text-primary border rounded-pill px-4 py-2">Advanced Coaching</span>
-                            <span class="badge bg-light text-primary border rounded-pill px-4 py-2">Mentorship</span>
                         </div>
                     </div>
                 </div>
@@ -136,12 +134,16 @@
                                 <tbody>
                                     @foreach($teacher->batches as $batch)
                                         <tr>
-                                            <td class="px-3 fw-bold small text-muted">MON / WED</td>
+                                            <td class="px-3 fw-bold small text-muted">{{ $batch->class->type === 'sports' ? 'Training' : 'Session' }}</td>
                                             <td><span class="fw-bold text-dark">{{ $batch->name }}</span><br><small
                                                     class="text-muted">{{ $batch->class->name }}</small></td>
                                             <td><i class="bi bi-clock me-1 text-primary small"></i>
-                                                {{ $batch->time ?? '09:00 AM' }}</td>
-                                            <td><span class="badge bg-light text-dark rounded-pill">Room 102</span></td>
+                                                {{ $batch->start_time ? $batch->start_time->format('h:i A') : 'N/A' }}
+                                                @if($batch->end_time)
+                                                    - {{ $batch->end_time->format('h:i A') }}
+                                                @endif
+                                            </td>
+                                            <td><span class="badge bg-light text-dark rounded-pill">{{ ucfirst($batch->class->type) }}</span></td>
                                         </tr>
                                     @endforeach
                                 </tbody>

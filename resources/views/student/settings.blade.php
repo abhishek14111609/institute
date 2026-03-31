@@ -128,7 +128,7 @@
                                 <div class="col-md-6">
                                     <label class="form-label tiny fw-bold text-muted text-uppercase"
                                         style="letter-spacing: 1px;">Validate New Key</label>
-                                    <input type="password" name="password_confirmation"
+                                    <input type="password" name="new_password_confirmation"
                                         class="form-control form-control-lg rounded-4 shadow-none border-light"
                                         placeholder="••••••••">
                                 </div>

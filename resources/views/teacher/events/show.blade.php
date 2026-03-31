@@ -68,7 +68,6 @@
                         <div class="d-grid">
                             @php
                                 $statusClass = [
-                                    'scheduled' => 'info',
                                     'upcoming' => 'info',
                                     'ongoing' => 'warning',
                                     'completed' => 'success',
@@ -108,7 +107,7 @@
                                                         class="rounded-circle me-2 shadow-sm">
                                                     <div>
                                                         <div class="fw-bold text-dark">{{ $student->user->name }}</div>
-                                                        <small class="text-muted">{{ $student->batch->name ?? 'N/A' }}</small>
+                                                        <small class="text-muted">{{ $student->batches->first()->name ?? optional($student->batch)->name ?? 'N/A' }}</small>
                                                     </div>
                                                 </div>
                                             </td>
@@ -134,7 +133,7 @@
                                             <td class="border-0 pe-4 text-end">
                                                 <div class="d-flex justify-content-end gap-1">
                                                     <button type="button" class="btn btn-sm btn-light border rounded-pill px-3"
-                                                        onclick="openResultModal({{ $student->id }}, '{{ $student->user->name }}', '{{ $student->pivot->participation_status }}', '{{ $student->pivot->rank }}', '{{ $student->pivot->notes }}')">
+                                                        onclick='openResultModal(@json($student->id), @json($student->user->name), @json($student->pivot->participation_status), @json($student->pivot->rank), @json($student->pivot->notes))'>
                                                         <i class="bi bi-pencil me-1"></i> Results
                                                     </button>
                                                     <form
@@ -157,7 +156,6 @@
                                                 No students added to this event yet.
                                             </td>
                                         </tr>
-                                        @hide
                                     @endforelse
                                 </tbody>
                             </table>
@@ -213,7 +211,7 @@
                                             <td class="border-0">
                                                 <span class="fw-bold student-name">{{ $student->user->name }}</span>
                                             </td>
-                                            <td class="border-0 small text-muted">{{ $student->batch->name ?? 'N/A' }}</td>
+                                            <td class="border-0 small text-muted">{{ $student->batches->first()->name ?? optional($student->batch)->name ?? 'N/A' }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -226,7 +224,7 @@
                         </div>
                     </div>
                     <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-toggle="modal">Cancel</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary rounded-pill px-4" id="submitAddBtn" disabled>Add
                             Selected Students</button>
                     </div>

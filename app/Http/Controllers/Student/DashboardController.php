@@ -20,10 +20,28 @@ class DashboardController extends Controller
         $student = auth()->user()->student;
         $student->load([
             'batches' => function ($q) {
-                $q->wherePivot('is_active', true)->with(['class', 'teachers.user'])->withCount('students');
+                $q->wherePivot('is_active', true)
+                    ->with(['class', 'teachers.user']);
             },
             'course'
         ]);
+
+        $student->batches->each(function ($batch) {
+            $batch->students_count = \App\Models\Student::query()
+                ->where('students.is_active', true)
+                ->where(function ($query) use ($batch) {
+                    $query->where('students.batch_id', $batch->id)
+                        ->orWhereExists(function ($subQuery) use ($batch) {
+                            $subQuery->selectRaw('1')
+                                ->from('batch_student')
+                                ->whereColumn('batch_student.student_id', 'students.id')
+                                ->where('batch_student.batch_id', $batch->id)
+                                ->where('batch_student.is_active', true);
+                        });
+                })
+                ->distinct('students.id')
+                ->count('students.id');
+        });
 
         $stats = $this->studentService->getStudentStats($student);
 

@@ -16,7 +16,18 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         $student = auth()->user()->student;
-        $batch = $student->batch;
+        $activeBatches = $student->batches()
+            ->wherePivot('is_active', true)
+            ->with('class')
+            ->get();
+
+        if ($activeBatches->isEmpty() && $student->batch) {
+            $student->loadMissing('batch.class');
+            $activeBatches = collect([$student->batch]);
+        }
+
+        $selectedBatchId = $request->integer('batch_id');
+        $batch = $activeBatches->firstWhere('id', $selectedBatchId) ?? $activeBatches->first();
 
         $canUpload = false;
         $uploadMessage = '';
@@ -62,7 +73,12 @@ class AttendanceController extends Controller
         $startDate = $request->input('start_date', $now->copy()->startOfMonth());
         $endDate = $request->input('end_date', $now->copy());
 
-        $report = $this->attendanceService->getStudentAttendanceReport($student, $startDate, $endDate);
+        $report = $this->attendanceService->getStudentAttendanceReport(
+            $student,
+            $startDate,
+            $endDate,
+            $batch?->id
+        );
 
         return view('student.attendance-index', [
             'attendances' => $report['attendances'],
@@ -70,6 +86,7 @@ class AttendanceController extends Controller
             'startDate' => Carbon::parse($startDate),
             'endDate' => Carbon::parse($endDate),
             'batch' => $batch,
+            'activeBatches' => $activeBatches,
             'canUpload' => $canUpload,
             'uploadMessage' => $uploadMessage,
             'now' => $now,
@@ -80,10 +97,22 @@ class AttendanceController extends Controller
     {
         $request->validate([
             'photo' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'batch_id' => 'nullable|integer',
         ]);
 
         $student = auth()->user()->student;
-        $batch = $student->batch;
+        $activeBatches = $student->batches()
+            ->wherePivot('is_active', true)
+            ->get();
+        $batch = $activeBatches->firstWhere('id', $request->integer('batch_id'));
+
+        if ($request->filled('batch_id') && !$batch) {
+            return back()->with('error', 'The selected batch is not available for attendance.');
+        }
+
+        if (!$batch && $student->batch) {
+            $batch = $student->batch;
+        }
 
         if (!$batch) {
             return back()->with('error', 'You are not assigned to any batch.');
