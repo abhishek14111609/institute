@@ -81,10 +81,10 @@
                                     <td class="ps-4 py-4 border-0">
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-container position-relative me-3">
-                                                @if($fee->student->photo)
-                                                    <img src="{{ Storage::url($fee->student->photo) }}"
-                                                        class="rounded-circle shadow-sm border-2 border-white" width="45"
-                                                        height="45" style="object-fit: cover;">
+                                                @if ($fee->student->photo)
+                                                    <img src="{{ route('media.public', ['path' => $fee->student->photo]) }}"
+                                                        class="rounded-circle shadow-sm border-2 border-white"
+                                                        width="45" height="45" style="object-fit: cover;">
                                                 @else
                                                     <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center shadow-sm border-2 border-white"
                                                         style="width: 45px; height: 45px;">

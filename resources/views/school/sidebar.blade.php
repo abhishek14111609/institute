@@ -3,8 +3,8 @@
         <div class="brand-logo bg-white p-2 rounded-3 me-2 shadow-sm d-flex align-items-center justify-content-center"
             style="width: 40px; height: 40px; overflow: hidden;">
             @if (auth()->user()->school && auth()->user()->school->logo)
-                <img src="{{ asset('storage/' . auth()->user()->school->logo) }}" alt="Logo" class="img-fluid"
-                    style="max-height: 100%; object-fit: contain;">
+                <img src="{{ route('media.public', ['path' => auth()->user()->school->logo]) }}" alt="Logo"
+                    class="img-fluid" style="max-height: 100%; object-fit: contain;">
             @else
                 <i class="bi bi-buildings-fill text-primary fs-4"></i>
             @endif
@@ -108,7 +108,7 @@
     <li class="nav-label tiny text-white opacity-75 mt-4 mb-2" style="padding-left: 15px;">
         {{ $label['section_finance'] }}
     </li>
-        <li class="nav-item">
+    <li class="nav-item">
         <a href="{{ route('school.fee-plans.index') }}"
             class="nav-link {{ request()->routeIs('school.fee-plans.*') ? 'active' : '' }}">
             <i class="bi bi-gear-fill text-white"></i> <span class="text-white opacity-75">Add fee/invoice

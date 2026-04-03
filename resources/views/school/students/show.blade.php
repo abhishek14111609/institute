@@ -16,10 +16,14 @@
         <div class="d-flex justify-content-between align-items-center mb-5 pb-2 border-bottom">
             <div>
                 <h3 class="fw-bold mb-1 text-gradient">
-                    @if($isSport) Athlete Portfolio @else Student Portfolio @endif
+                    @if ($isSport)
+                        Athlete Portfolio
+                    @else
+                        Student Portfolio
+                    @endif
                 </h3>
                 <p class="text-muted small mb-0">
-                    @if($isSport)
+                    @if ($isSport)
                         Comprehensive performance dossier for training and event tracking.
                     @else
                         Comprehensive institutional dossier for academic and behavioral tracking.
@@ -48,8 +52,8 @@
                 <div class="card border-0 shadow-sm rounded-4 text-center p-4 mb-4 overflow-hidden position-relative">
                     <div class="card-body py-4 position-relative z-index-10">
                         <div class="mb-4 position-relative d-inline-block">
-                            @if($student->photo)
-                                <img src="{{ Storage::url($student->photo) }}"
+                            @if ($student->photo)
+                                <img src="{{ route('media.public', ['path' => $student->photo]) }}"
                                     class="rounded-circle border-white shadow-lg" width="140" height="140"
                                     style="object-fit: cover; border-width: 4px; border-style: solid;">
                             @else
@@ -131,12 +135,16 @@
                             <div class="col-md-8">
                                 <div class="p-3 rounded-4 bg-light border border-white">
                                     <small class="text-muted tiny fw-bold text-uppercase d-block mb-1">
-                                        @if($isSport) Active Session Enrollments @else Batch Placement @endif
+                                        @if ($isSport)
+                                            Active Session Enrollments
+                                        @else
+                                            Batch Placement
+                                        @endif
                                     </small>
-                                    @if($isSport)
-                                        @if($student->batches->isNotEmpty())
+                                    @if ($isSport)
+                                        @if ($student->batches->isNotEmpty())
                                             <div class="d-flex flex-wrap gap-2 mt-1">
-                                                @foreach($student->batches as $batch)
+                                                @foreach ($student->batches as $batch)
                                                     <span class="badge bg-primary rounded-pill px-3 py-2 small fw-bold">
                                                         <i class="bi bi-tag-fill me-1"></i> {{ $batch->name }}
                                                     </span>
@@ -167,7 +175,7 @@
                             </div>
                         </div>
 
-                        @if($student->parent_name || $student->parent_phone)
+                        @if ($student->parent_name || $student->parent_phone)
                             <div class="mt-4 p-3 rounded-4 border bg-primary bg-opacity-5">
                                 <h6 class="tiny fw-bold text-primary text-uppercase mb-3"><i class="bi bi-people me-1"></i>
                                     Guardian Control</h6>
@@ -203,7 +211,7 @@
                         <div class="tab-content">
                             <!-- Attendance Tab -->
                             <div id="attendanceTab" class="tab-pane active fade show p-4">
-                                @if($student->attendances->take(10)->count() > 0)
+                                @if ($student->attendances->take(10)->count() > 0)
                                     <div class="table-responsive">
                                         <table class="table table-hover align-middle mb-0">
                                             <thead>
@@ -214,18 +222,19 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($student->attendances->sortByDesc('attendance_date')->take(10) as $attendance)
+                                                @foreach ($student->attendances->sortByDesc('attendance_date')->take(10) as $attendance)
                                                     <tr>
                                                         <td class="small fw-bold">
                                                             {{ $attendance->attendance_date->format('d M, Y') }}</td>
                                                         <td class="text-center">
                                                             @php
-                                                                $statusStyle = [
-                                                                    'present' => 'success',
-                                                                    'absent' => 'danger',
-                                                                    'late' => 'warning',
-                                                                    'excused' => 'info'
-                                                                ][$attendance->status] ?? 'secondary';
+                                                                $statusStyle =
+                                                                    [
+                                                                        'present' => 'success',
+                                                                        'absent' => 'danger',
+                                                                        'late' => 'warning',
+                                                                        'excused' => 'info',
+                                                                    ][$attendance->status] ?? 'secondary';
                                                             @endphp
                                                             <span
                                                                 class="badge bg-{{ $statusStyle }} rounded-pill px-3 py-1 tiny fw-bold">
@@ -240,14 +249,15 @@
                                         </table>
                                     </div>
                                 @else
-                                    <div class="text-center py-4 text-muted small"><i class="bi bi-clock-history me-2"></i> No
+                                    <div class="text-center py-4 text-muted small"><i
+                                            class="bi bi-clock-history me-2"></i> No
                                         chronological data recorded.</div>
                                 @endif
                             </div>
 
                             <!-- Fee Tab -->
                             <div id="feeTab" class="tab-pane fade p-4">
-                                @if($student->fees->count() > 0)
+                                @if ($student->fees->count() > 0)
                                     <div class="table-responsive">
                                         <table class="table table-hover align-middle mb-0">
                                             <thead>
@@ -260,19 +270,24 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($student->fees->sortByDesc('due_date') as $fee)
+                                                @foreach ($student->fees->sortByDesc('due_date') as $fee)
                                                     <tr>
                                                         <td class="small fw-bold">
                                                             <div class="small fw-bold text-dark">
                                                                 {{ $fee->due_date->format('d M, Y') }}</div>
                                                             <div class="d-flex gap-2">
-                                                                <small class="text-muted tiny text-uppercase">{{ $fee->fee_type }}</small>
-                                                                @if($fee->batch)
-                                                                    <small class="text-primary tiny fw-bold text-uppercase"><i class="bi bi-tag-fill"></i> {{ $fee->batch->name }}</small>
+                                                                <small
+                                                                    class="text-muted tiny text-uppercase">{{ $fee->fee_type }}</small>
+                                                                @if ($fee->batch)
+                                                                    <small
+                                                                        class="text-primary tiny fw-bold text-uppercase"><i
+                                                                            class="bi bi-tag-fill"></i>
+                                                                        {{ $fee->batch->name }}</small>
                                                                 @endif
                                                             </div>
                                                         </td>
-                                                        <td class="small fw-bold">₹{{ number_format($fee->total_amount, 0) }}</td>
+                                                        <td class="small fw-bold">
+                                                            ₹{{ number_format($fee->total_amount, 0) }}</td>
                                                         <td class="small fw-bold text-danger">
                                                             ₹{{ number_format($fee->getRemainingAmount(), 0) }}</td>
                                                         <td class="text-center">

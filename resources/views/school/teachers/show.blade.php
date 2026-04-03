@@ -33,8 +33,8 @@
                 <div class="card border-0 shadow-sm rounded-4 text-center p-4 mb-4 overflow-hidden position-relative">
                     <div class="card-body py-4 position-relative z-index-10">
                         <div class="mb-4 position-relative d-inline-block">
-                            @if($teacher->user->avatar)
-                                <img src="{{ asset('storage/' . $teacher->user->avatar) }}"
+                            @if ($teacher->user->avatar)
+                                <img src="{{ route('media.public', ['path' => $teacher->user->avatar]) }}"
                                     class="rounded-circle border-white shadow-lg" width="140" height="140"
                                     style="object-fit: cover; border-width: 4px; border-style: solid;">
                             @else
@@ -75,7 +75,8 @@
                             <div class="bg-light p-2 rounded-3 me-3 text-success"><i class="bi bi-phone-fill"></i></div>
                             <div>
                                 <small class="text-muted tiny d-block fw-bold text-uppercase">Mobile Interface</small>
-                                <span class="small fw-bold text-dark">{{ $teacher->user->phone ?? 'NOT REGISTERED' }}</span>
+                                <span
+                                    class="small fw-bold text-dark">{{ $teacher->user->phone ?? 'NOT REGISTERED' }}</span>
                             </div>
                         </div>
                     </div>
@@ -95,7 +96,8 @@
                                 <div class="p-3 rounded-4 bg-light border border-white">
                                     <small class="text-muted tiny fw-bold text-uppercase d-block mb-1">Human Resource
                                         ID</small>
-                                    <div class="fw-bold text-dark small">{{ $teacher->employee_id ?? 'AUTH-PENDING' }}</div>
+                                    <div class="fw-bold text-dark small">{{ $teacher->employee_id ?? 'AUTH-PENDING' }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -146,7 +148,7 @@
                             ACTIVE BATCHES</span>
                     </div>
                     <div class="card-body p-0">
-                        @if($teacher->batches->count() > 0)
+                        @if ($teacher->batches->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="bg-light">
@@ -158,7 +160,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($teacher->batches as $batch)
+                                        @foreach ($teacher->batches as $batch)
                                             <tr class="transition-all hover-lift">
                                                 <td class="ps-4 border-0">
                                                     <div class="fw-bold text-dark small">{{ $batch->name }}</div>
@@ -189,9 +191,11 @@
                             </div>
                         @else
                             <div class="text-center py-5">
-                                <div class="opacity-10 mb-2"><i class="bi bi-collection-fill" style="font-size: 3rem;"></i>
+                                <div class="opacity-10 mb-2"><i class="bi bi-collection-fill"
+                                        style="font-size: 3rem;"></i>
                                 </div>
-                                <h6 class="text-muted fw-bold small">Zero operational loads currently assigned to this faculty.
+                                <h6 class="text-muted fw-bold small">Zero operational loads currently assigned to this
+                                    faculty.
                                 </h6>
                             </div>
                         @endif

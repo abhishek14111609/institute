@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Student Registry' : 'Institutional
+@section('title',
+    auth()->user()->school->institute_type === 'sport'
+    ? 'Institutional Student Registry'
+    : 'Institutional
     Student Registry')
 
 @section('sidebar')
@@ -115,7 +118,7 @@
                                         <div class="d-flex align-items-center">
                                             <div class="me-3 position-relative">
                                                 @if ($student->photo)
-                                                    <img src="{{ asset('storage/' . $student->photo) }}"
+                                                    <img src="{{ route('media.public', ['path' => $student->photo]) }}"
                                                         class="rounded-circle border-2 border-white shadow-sm"
                                                         width="50" height="50">
                                                 @else

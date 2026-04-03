@@ -29,9 +29,8 @@
             <div class="col-xl-4 col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
                     <div class="bg-primary pt-5 pb-3 text-center position-relative">
-                        <img src="{{ $student->user->avatar ? asset('storage/' . $student->user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($student->user->name) . '&background=random&color=fff&size=128' }}"
-                            alt="{{ $student->user->name }}"
-                            class="rounded-circle border-4 border-white shadow-lg mb-3"
+                        <img src="{{ $student->user->avatar ? route('media.public', ['path' => $student->user->avatar]) : 'https://ui-avatars.com/api/?name=' . urlencode($student->user->name) . '&background=random&color=fff&size=128' }}"
+                            alt="{{ $student->user->name }}" class="rounded-circle border-4 border-white shadow-lg mb-3"
                             style="width: 120px; height: 120px; object-fit: cover; margin-top: 10px;">
                         <h4 class="text-white fw-bold mb-0">{{ $student->user->name }}</h4>
                         <p class="text-white-50 mb-0">Roll No: #{{ $student->id }}</p>
@@ -64,7 +63,7 @@
                             <div class="list-group-item d-flex justify-content-between px-0 py-3">
                                 <span class="text-muted"><i class="bi bi-layers me-2"></i> Sport Level</span>
                                 <span
-                                    class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3">{{ $student->batches->first()->class->name ?? optional(optional($student->batch)->class)->name ?? 'Junior' }}</span>
+                                    class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3">{{ $student->batches->first()->class->name ?? (optional(optional($student->batch)->class)->name ?? 'Junior') }}</span>
                             </div>
                         </div>
 
@@ -84,7 +83,7 @@
                     </div>
                     <div class="card-body p-4">
                         <div class="d-flex gap-2 mb-4">
-                            @foreach($attendances->take(10)->reverse() as $att)
+                            @foreach ($attendances->take(10)->reverse() as $att)
                                 <div class="flex-fill rounded-pill"
                                     title="{{ $att->attendance_date->format('M d') }}: {{ ucfirst($att->status) }}"
                                     style="height: 30px; background-color: {{ $att->status === 'present' ? '#198754' : ($att->status === 'late' ? '#ffc107' : '#dc3545') }};">
@@ -147,9 +146,16 @@
                                                         <small class="text-muted">{{ $event->location }}</small>
                                                     </td>
                                                     <td class="border-0">
-                                                        @if($event->pivot->rank)
+                                                        @if ($event->pivot->rank)
                                                             @php
-                                                                $medalColor = $event->pivot->rank == 1 ? '#ffd700' : ($event->pivot->rank == 2 ? '#c0c0c0' : ($event->pivot->rank == 3 ? '#cd7f32' : ''));
+                                                                $medalColor =
+                                                                    $event->pivot->rank == 1
+                                                                        ? '#ffd700'
+                                                                        : ($event->pivot->rank == 2
+                                                                            ? '#c0c0c0'
+                                                                            : ($event->pivot->rank == 3
+                                                                                ? '#cd7f32'
+                                                                                : ''));
                                                             @endphp
                                                             <span class="badge rounded-pill px-3 py-2 border-0"
                                                                 style="background-color: {{ $medalColor ?: '#6c757d' }}; color: {{ $event->pivot->rank <= 3 ? '#000' : '#fff' }};">
@@ -201,19 +207,20 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($attendances as $att)
+                                            @foreach ($attendances as $att)
                                                 <tr>
                                                     <td class="ps-4 border-0 fw-bold">
                                                         {{ $att->attendance_date->format('d M, Y') }}</td>
                                                     <td class="border-0">{{ $att->batch->name ?? 'N/A' }}</td>
                                                     <td class="border-0 text-center">
                                                         @php
-                                                            $attStatusClass = [
-                                                                'present' => 'bg-success',
-                                                                'absent' => 'bg-danger',
-                                                                'late' => 'bg-warning',
-                                                                'excused' => 'bg-info'
-                                                            ][$att->status] ?? 'bg-secondary';
+                                                            $attStatusClass =
+                                                                [
+                                                                    'present' => 'bg-success',
+                                                                    'absent' => 'bg-danger',
+                                                                    'late' => 'bg-warning',
+                                                                    'excused' => 'bg-info',
+                                                                ][$att->status] ?? 'bg-secondary';
                                                         @endphp
                                                         <span
                                                             class="badge {{ $attStatusClass }} rounded-pill px-3 py-2 shadow-none small">

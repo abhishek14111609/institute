@@ -2,9 +2,9 @@
     <div class="sidebar-brand d-flex align-items-center">
         <div class="brand-logo bg-white p-2 rounded-3 me-2 shadow-sm d-flex align-items-center justify-content-center"
             style="width: 40px; height: 40px; overflow: hidden;">
-            @if(auth()->user()->school && auth()->user()->school->logo)
-                <img src="{{ asset('storage/' . auth()->user()->school->logo) }}" alt="Logo" class="img-fluid"
-                    style="max-height: 100%; object-fit: contain;">
+            @if (auth()->user()->school && auth()->user()->school->logo)
+                <img src="{{ route('media.public', ['path' => auth()->user()->school->logo]) }}" alt="Logo"
+                    class="img-fluid" style="max-height: 100%; object-fit: contain;">
             @else
                 <i class="bi bi-mortarboard-fill text-primary fs-4"></i>
             @endif
@@ -12,7 +12,11 @@
         <div>
             <h6 class="fw-bold mb-0 text-white">{{ $label['teacher_portal'] }}</h6>
             <small class="text-white opacity-75 tiny">
-                @if($isSport) Sports Academy @else School @endif
+                @if ($isSport)
+                    Sports Academy
+                @else
+                    School
+                @endif
             </small>
         </div>
     </div>

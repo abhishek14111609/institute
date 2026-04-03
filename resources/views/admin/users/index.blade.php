@@ -82,8 +82,8 @@
                                     <td class="ps-4">
                                         <div class="d-flex align-items-center">
                                             <div class="position-relative">
-                                                @if($user->avatar)
-                                                    <img src="{{ asset('storage/' . $user->avatar) }}"
+                                                @if ($user->avatar)
+                                                    <img src="{{ route('media.public', ['path' => $user->avatar]) }}"
                                                         class="rounded-circle shadow-sm" width="48" height="48"
                                                         style="object-fit: cover;">
                                                 @else
@@ -104,18 +104,19 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @foreach($user->roles as $role)
+                                        @foreach ($user->roles as $role)
                                             @php
                                                 $roleClass = match ($role->name) {
                                                     'super_admin' => 'bg-purple text-purple',
                                                     'school_admin' => 'bg-primary text-primary',
                                                     'teacher' => 'bg-info text-info',
                                                     'student' => 'bg-success text-success',
-                                                    default => 'bg-secondary text-secondary'
+                                                    default => 'bg-secondary text-secondary',
                                                 };
                                                 // Fallback customized classes if CSS doesn't support bg-purple fully yet
-                                                if ($role->name == 'super_admin')
-                                                    $roleClass = 'bg-dark text-light'; 
+if ($role->name == 'super_admin') {
+    $roleClass = 'bg-dark text-light';
+                                                }
                                             @endphp
                                             <span
                                                 class="badge {{ $roleClass }} bg-opacity-10 border border-opacity-10 px-3 py-1 rounded-pill text-uppercase"
@@ -125,7 +126,7 @@
                                         @endforeach
                                     </td>
                                     <td>
-                                        @if($user->school)
+                                        @if ($user->school)
                                             <div class="d-flex align-items-center text-dark">
                                                 <i class="bi bi-building me-2 text-muted"></i>
                                                 <span class="fw-medium">{{ $user->school->name }}</span>
@@ -135,7 +136,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if($user->is_active)
+                                        @if ($user->is_active)
                                             <span
                                                 class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded">Active</span>
                                         @else
@@ -183,7 +184,7 @@
                 </div>
             </div>
 
-            @if($users->hasPages())
+            @if ($users->hasPages())
                 <div class="mt-4 d-flex justify-content-end">
                     {{ $users->links() }}
                 </div>

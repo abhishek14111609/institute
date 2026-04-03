@@ -8,20 +8,19 @@
 
 @section('content')
     @php
-        $displayBatches = $student->batches->isNotEmpty()
-            ? $student->batches
-            : collect([$student->batch])->filter();
+        $displayBatches = $student->batches->isNotEmpty() ? $student->batches : collect([$student->batch])->filter();
     @endphp
 
     <div class="container-fluid">
         <div class="row g-4">
             <div class="col-xl-4">
                 <div class="card border-0 shadow-lg overflow-hidden position-relative mb-4" style="border-radius: 2rem;">
-                    <div class="bg-primary position-absolute w-100 h-25 top-0 start-0 z-0" style="background: var(--primary-gradient) !important;"></div>
+                    <div class="bg-primary position-absolute w-100 h-25 top-0 start-0 z-0"
+                        style="background: var(--primary-gradient) !important;"></div>
                     <div class="card-body p-5 position-relative z-1 text-center mt-4">
                         <div class="position-relative d-inline-block mb-4">
-                            @if($student->user->avatar)
-                                <img src="{{ asset('storage/' . $student->user->avatar) }}" alt="Avatar"
+                            @if ($student->user->avatar)
+                                <img src="{{ route('media.public', ['path' => $student->user->avatar]) }}" alt="Avatar"
                                     class="rounded-circle shadow-lg border-4 border-white" width="140" height="140"
                                     style="object-fit: cover;">
                             @else
@@ -38,8 +37,10 @@
                         <p class="text-muted small mb-3">Roll: {{ $student->roll_number ?? 'Pending' }}</p>
 
                         <div class="d-flex justify-content-center gap-2 mb-4">
-                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Active {{ $isSport ? 'Athlete' : 'Student' }}</span>
-                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">{{ $student->school->name }}</span>
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Active
+                                {{ $isSport ? 'Athlete' : 'Student' }}</span>
+                            <span
+                                class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">{{ $student->school->name }}</span>
                         </div>
 
                         <div class="row g-2 border-top border-light pt-4 mt-2">
@@ -49,7 +50,8 @@
                             </div>
                             <div class="col-6">
                                 <h6 class="fw-bold mb-0">DOB</h6>
-                                <small class="text-muted">{{ $student->birth_date ? $student->birth_date->format('d M, Y') : 'N/A' }}</small>
+                                <small
+                                    class="text-muted">{{ $student->birth_date ? $student->birth_date->format('d M, Y') : 'N/A' }}</small>
                             </div>
                         </div>
                     </div>
@@ -70,7 +72,8 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="p-2 bg-light rounded-3 me-3 text-success"><i class="bi bi-telephone"></i></div>
                             <div>
-                                <small class="text-muted d-block">{{ $isSport ? 'ATHLETE CONTACT' : 'STUDENT CONTACT' }}</small>
+                                <small
+                                    class="text-muted d-block">{{ $isSport ? 'ATHLETE CONTACT' : 'STUDENT CONTACT' }}</small>
                                 <span class="fw-semibold">{{ $student->user->phone ?? 'Not provided' }}</span>
                             </div>
                         </div>
@@ -92,17 +95,18 @@
                         <i class="bi bi-mortarboard fs-4 text-primary opacity-50"></i>
                     </div>
                     <div class="card-body p-4">
-                        @if($displayBatches->isNotEmpty())
+                        @if ($displayBatches->isNotEmpty())
                             <div class="row g-4">
-                                @foreach($displayBatches as $batch)
+                                @foreach ($displayBatches as $batch)
                                     <div class="col-lg-6">
-                                        <div class="bg-primary bg-opacity-10 rounded-4 p-4 border border-primary border-opacity-10 h-100">
+                                        <div
+                                            class="bg-primary bg-opacity-10 rounded-4 p-4 border border-primary border-opacity-10 h-100">
                                             <h5 class="fw-bold text-primary mb-1">{{ $batch->name }}</h5>
                                             <p class="text-muted mb-2">{{ $batch->class->name }}</p>
                                             <div class="small text-muted mb-3">
                                                 <i class="bi bi-clock me-1"></i>
                                                 {{ $batch->start_time ? $batch->start_time->format('h:i A') : 'N/A' }}
-                                                @if($batch->end_time)
+                                                @if ($batch->end_time)
                                                     - {{ $batch->end_time->format('h:i A') }}
                                                 @endif
                                             </div>
@@ -126,7 +130,8 @@
                                 <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
                                 <div>
                                     <h6 class="fw-bold mb-1">No Active Batch</h6>
-                                    <p class="mb-0 small">Your school has not assigned an active batch yet. Please contact the admin office.</p>
+                                    <p class="mb-0 small">Your school has not assigned an active batch yet. Please contact
+                                        the admin office.</p>
                                 </div>
                             </div>
                         @endif
@@ -141,12 +146,17 @@
                             </div>
                             <div class="card-body">
                                 <div class="mb-4">
-                                    <label class="text-muted tiny fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">ENROLLMENT DATE</label>
-                                    <p class="fw-bold text-dark mb-0">{{ $student->admission_date ? $student->admission_date->format('M d, Y') : 'N/A' }}</p>
+                                    <label class="text-muted tiny fw-bold text-uppercase"
+                                        style="font-size: 0.7rem; letter-spacing: 1px;">ENROLLMENT DATE</label>
+                                    <p class="fw-bold text-dark mb-0">
+                                        {{ $student->admission_date ? $student->admission_date->format('M d, Y') : 'N/A' }}
+                                    </p>
                                 </div>
                                 <div>
-                                    <label class="text-muted tiny fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">{{ $student->school->institute_type === 'sport' ? 'CURRENT SCHOOL / INSTITUTE' : 'PREVIOUS ACADEMIC RECORD' }}</label>
-                                    <p class="fw-bold text-dark mb-0 text-truncate">{{ $student->previous_school ?? 'Fresh Enrollment' }}</p>
+                                    <label class="text-muted tiny fw-bold text-uppercase"
+                                        style="font-size: 0.7rem; letter-spacing: 1px;">{{ $student->school->institute_type === 'sport' ? 'CURRENT SCHOOL / INSTITUTE' : 'PREVIOUS ACADEMIC RECORD' }}</label>
+                                    <p class="fw-bold text-dark mb-0 text-truncate">
+                                        {{ $student->previous_school ?? 'Fresh Enrollment' }}</p>
                                 </div>
                             </div>
                         </div>

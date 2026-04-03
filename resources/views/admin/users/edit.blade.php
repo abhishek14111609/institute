@@ -27,9 +27,10 @@
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                     <div class="bg-primary bg-opacity-10 p-4 text-center border-bottom">
                         <div class="position-relative d-inline-block mb-3">
-                            @if($user->avatar)
-                                <img src="{{ asset('storage/' . $user->avatar) }}" class="rounded-circle shadow-sm" width="100"
-                                    height="100" style="object-fit: cover;">
+                            @if ($user->avatar)
+                                <img src="{{ route('media.public', ['path' => $user->avatar]) }}"
+                                    class="rounded-circle shadow-sm" width="100" height="100"
+                                    style="object-fit: cover;">
                             @else
                                 <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center fw-bold fs-1 shadow-sm mx-auto"
                                     style="width: 100px; height: 100px;">
@@ -41,7 +42,7 @@
                         </div>
                         <h4 class="fw-bold text-dark mb-1">{{ $user->name }}</h4>
                         <div class="d-flex justify-content-center gap-2">
-                            @foreach($user->roles as $role)
+                            @foreach ($user->roles as $role)
                                 <span
                                     class="badge bg-dark bg-opacity-75 rounded-pill px-3">{{ ucfirst(str_replace('_', ' ', $role->name)) }}</span>
                             @endforeach
@@ -60,7 +61,9 @@
                                     <input type="text" name="name" class="form-control bg-light border-0"
                                         value="{{ old('name', $user->name) }}" required>
                                 </div>
-                                @error('name') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
+                                @error('name')
+                                    <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="mb-4">
@@ -72,7 +75,9 @@
                                     <input type="email" name="email" class="form-control bg-light border-0"
                                         value="{{ old('email', $user->email) }}" required>
                                 </div>
-                                @error('email') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
+                                @error('email')
+                                    <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="mb-4">
@@ -83,7 +88,9 @@
                                     <input type="text" name="phone" class="form-control bg-light border-0"
                                         value="{{ old('phone', $user->phone) }}">
                                 </div>
-                                @error('phone') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
+                                @error('phone')
+                                    <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="alert alert-info border-0 rounded-4 p-3 small d-flex mb-4">

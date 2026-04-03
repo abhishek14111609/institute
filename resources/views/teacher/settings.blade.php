@@ -40,8 +40,8 @@
 
                             <div class="d-flex align-items-center mb-4 p-4 rounded-4 bg-light border border-dashed">
                                 <div class="position-relative me-4">
-                                    @if(auth()->user()->avatar)
-                                        <img src="{{ asset('storage/' . auth()->user()->avatar) }}"
+                                    @if (auth()->user()->avatar)
+                                        <img src="{{ route('media.public', ['path' => auth()->user()->avatar]) }}"
                                             class="rounded-circle border-4 border-white shadow-lg"
                                             style="width: 100px; height: 100px; object-fit: cover;">
                                     @else
@@ -66,21 +66,25 @@
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label class="form-label tiny fw-bold text-muted text-uppercase">Full Name</label>
-                                    <input type="text" name="name" class="form-control form-control-lg rounded-4 shadow-none border-light"
+                                    <input type="text" name="name"
+                                        class="form-control form-control-lg rounded-4 shadow-none border-light"
                                         value="{{ old('name', auth()->user()->name) }}" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label tiny fw-bold text-muted text-uppercase">Email Address</label>
-                                    <input type="email" name="email" class="form-control form-control-lg rounded-4 shadow-none border-light"
+                                    <input type="email" name="email"
+                                        class="form-control form-control-lg rounded-4 shadow-none border-light"
                                         value="{{ old('email', auth()->user()->email) }}" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label tiny fw-bold text-muted text-uppercase">Phone Number</label>
-                                    <input type="text" name="phone" class="form-control form-control-lg rounded-4 shadow-none border-light"
+                                    <input type="text" name="phone"
+                                        class="form-control form-control-lg rounded-4 shadow-none border-light"
                                         value="{{ old('phone', auth()->user()->phone) }}" placeholder="+91 98765 43210">
                                 </div>
                                 <div class="col-12 text-end">
-                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold">
+                                    <button type="submit"
+                                        class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold">
                                         Save Profile
                                     </button>
                                 </div>
@@ -104,7 +108,8 @@
 
                             <div class="row g-4">
                                 <div class="col-12">
-                                    <label class="form-label tiny fw-bold text-muted text-uppercase">Current Password</label>
+                                    <label class="form-label tiny fw-bold text-muted text-uppercase">Current
+                                        Password</label>
                                     <input type="password" name="current_password"
                                         class="form-control form-control-lg rounded-4 shadow-none border-light">
                                 </div>
@@ -114,7 +119,8 @@
                                         class="form-control form-control-lg rounded-4 shadow-none border-light">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label tiny fw-bold text-muted text-uppercase">Confirm Password</label>
+                                    <label class="form-label tiny fw-bold text-muted text-uppercase">Confirm
+                                        Password</label>
                                     <input type="password" name="new_password_confirmation"
                                         class="form-control form-control-lg rounded-4 shadow-none border-light">
                                 </div>
@@ -135,7 +141,8 @@
                         <h5 class="fw-bold mb-3">Current Account Snapshot</h5>
                         <div class="list-group list-group-flush rounded-4 overflow-hidden border">
                             <div class="list-group-item px-4 py-3">
-                                <small class="text-muted tiny fw-bold text-uppercase d-block mb-1">Assigned {{ $isSport ? 'Batches' : 'Classes/Batches' }}</small>
+                                <small class="text-muted tiny fw-bold text-uppercase d-block mb-1">Assigned
+                                    {{ $isSport ? 'Batches' : 'Classes/Batches' }}</small>
                                 <span class="fw-bold">{{ $teacher->batches()->count() }}</span>
                             </div>
                             <div class="list-group-item px-4 py-3">
@@ -143,7 +150,8 @@
                                 <span class="fw-bold">{{ $teacher->qualification ?? 'Not added' }}</span>
                             </div>
                             <div class="list-group-item px-4 py-3">
-                                <small class="text-muted tiny fw-bold text-uppercase d-block mb-1">{{ $isSport ? 'Specialization' : 'Subject Area' }}</small>
+                                <small
+                                    class="text-muted tiny fw-bold text-uppercase d-block mb-1">{{ $isSport ? 'Specialization' : 'Subject Area' }}</small>
                                 <span class="fw-bold">{{ $teacher->specialization ?? 'Not added' }}</span>
                             </div>
                         </div>
@@ -153,7 +161,8 @@
                 <div class="card border-0 shadow-sm rounded-4 bg-primary text-white">
                     <div class="card-body p-4">
                         <h5 class="fw-bold mb-3"><i class="bi bi-headset me-2"></i> Support</h5>
-                        <p class="small opacity-75 mb-4">Need changes beyond your own profile? Contact the school admin for role, batch, or portal preference updates.</p>
+                        <p class="small opacity-75 mb-4">Need changes beyond your own profile? Contact the school admin for
+                            role, batch, or portal preference updates.</p>
                         <a href="mailto:{{ auth()->user()->school->email ?? 'support@school.com' }}"
                             class="btn btn-white w-100 rounded-pill py-2 fw-bold text-primary shadow-sm border-0">
                             Contact Admin

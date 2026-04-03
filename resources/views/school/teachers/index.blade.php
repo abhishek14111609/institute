@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Coach Registry' : 'Institutional Faculty Registry')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Coach Registry' : 'Institutional
+    Faculty Registry')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -24,7 +25,7 @@
             </a>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
                 <i class="bi bi-check-circle-fill fs-5 me-2"></i>
                 <div>{{ session('success') }}</div>
@@ -82,10 +83,10 @@
                                     <td class="ps-4 border-0">
                                         <div class="d-flex align-items-center">
                                             <div class="me-3">
-                                                @if($teacher->user->avatar)
-                                                    <img src="{{ Storage::url($teacher->user->avatar) }}"
-                                                        class="rounded-circle border-2 border-white shadow-sm" width="48"
-                                                        height="48">
+                                                @if ($teacher->user->avatar)
+                                                    <img src="{{ route('media.public', ['path' => $teacher->user->avatar]) }}"
+                                                        class="rounded-circle border-2 border-white shadow-sm"
+                                                        width="48" height="48">
                                                 @else
                                                     <div class="rounded-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center fw-bold shadow-sm"
                                                         style="width: 48px; height: 48px;">

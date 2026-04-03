@@ -138,10 +138,10 @@
                                                     </td>
                                                     <td>
                                                         @if ($pending->photo_path)
-                                                            <img src="{{ Storage::url($pending->photo_path) }}"
+                                                            <img src="{{ route('media.public', ['path' => $pending->photo_path]) }}"
                                                                 alt="Attendance photo" class="rounded-3 border shadow-sm"
                                                                 style="width: 56px; height: 56px; object-fit: cover; cursor: pointer;"
-                                                                onclick="previewPhoto('{{ Storage::url($pending->photo_path) }}', '{{ $pending->student->user->name ?? 'Student' }}', '{{ $pending->photo_submitted_at ? $pending->photo_submitted_at->format('h:i A') : 'N/A' }}')">
+                                                                onclick="previewPhoto('{{ route('media.public', ['path' => $pending->photo_path]) }}', '{{ $pending->student->user->name ?? 'Student' }}', '{{ $pending->photo_submitted_at ? $pending->photo_submitted_at->format('h:i A') : 'N/A' }}')">
                                                         @else
                                                             <span class="text-muted small">No photo</span>
                                                         @endif
@@ -221,7 +221,7 @@
                                                         <div class="d-flex align-items-center">
                                                             <div class="avatar-container position-relative me-3">
                                                                 @if ($student->user->avatar)
-                                                                    <img src="{{ asset('storage/' . $student->user->avatar) }}"
+                                                                    <img src="{{ route('media.public', ['path' => $student->user->avatar]) }}"
                                                                         class="rounded-circle shadow-sm border"
                                                                         style="width: 48px; height: 48px; object-fit: cover;">
                                                                 @else
@@ -244,7 +244,7 @@
                                                                     @if ($existingAttendance && $existingAttendance->photo_path)
                                                                         <button type="button"
                                                                             class="badge bg-primary bg-opacity-10 text-primary border-0 rounded-pill px-2 py-1 tiny fw-bold cursor-pointer"
-                                                                            onclick="previewPhoto('{{ Storage::url($existingAttendance->photo_path) }}', '{{ $student->user->name }}', '{{ $existingAttendance->photo_submitted_at ? $existingAttendance->photo_submitted_at->format('h:i A') : 'N/A' }}')">
+                                                                            onclick="previewPhoto('{{ route('media.public', ['path' => $existingAttendance->photo_path]) }}', '{{ $student->user->name }}', '{{ $existingAttendance->photo_submitted_at ? $existingAttendance->photo_submitted_at->format('h:i A') : 'N/A' }}')">
                                                                             <i class="bi bi-camera-fill me-1"></i> VIEW
                                                                             PHOTO
                                                                         </button>

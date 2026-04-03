@@ -46,7 +46,7 @@
                             <div class="mb-4 position-relative d-inline-block">
                                 <div class="avatar-glow position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-10"
                                     style="width: 120px; height: 120px;"></div>
-                                <img src="{{ $student->user->avatar ? asset('storage/' . $student->user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($student->user->name) . '&background=4f46e5&color=fff&size=200' }}"
+                                <img src="{{ $student->user->avatar ? route('media.public', ['path' => $student->user->avatar]) : 'https://ui-avatars.com/api/?name=' . urlencode($student->user->name) . '&background=4f46e5&color=fff&size=200' }}"
                                     alt="{{ $student->user->name }}"
                                     class="rounded-circle border-4 border-white shadow-lg position-relative z-1"
                                     style="width: 100px; height: 100px; object-fit: cover;">
