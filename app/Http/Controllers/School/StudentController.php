@@ -19,6 +19,8 @@ class StudentController extends Controller
 {
     public function statement(Student $student)
     {
+        abort_unless((int) $student->school_id === (int) auth()->user()->school_id, 404);
+
         $student->load(['user', 'school', 'batch']);
         $ledger = $this->studentService->getStudentLedger($student);
         $school = auth()->user()->school;
@@ -89,6 +91,8 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
+        abort_unless((int) $student->school_id === (int) auth()->user()->school_id, 404);
+
         $student->load(['user', 'batch', 'batches', 'fees', 'attendances']);
         $stats = $this->studentService->getStudentStats($student);
 
@@ -97,6 +101,8 @@ class StudentController extends Controller
 
     public function edit(Student $student)
     {
+        abort_unless((int) $student->school_id === (int) auth()->user()->school_id, 404);
+
         $batches = Batch::with(['class.course', 'subject.level'])->active()->get();
         $courses = \App\Models\Course::active()->get();
         $feePlans = \App\Models\FeePlan::where('is_active', true)->get();
@@ -106,6 +112,8 @@ class StudentController extends Controller
 
     public function update(UpdateStudentRequest $request, Student $student)
     {
+        abort_unless((int) $student->school_id === (int) auth()->user()->school_id, 404);
+
         try {
             $this->studentService->updateStudent($student, $request->validated());
 
@@ -118,6 +126,8 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
+        abort_unless((int) $student->school_id === (int) auth()->user()->school_id, 404);
+
         try {
             $this->studentService->deleteStudent($student);
 

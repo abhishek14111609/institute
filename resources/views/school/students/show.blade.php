@@ -162,14 +162,16 @@
                                 <div class="p-3 rounded-4 bg-light border border-white">
                                     <small class="text-muted tiny fw-bold text-uppercase d-block mb-1">Institutional
                                         Level</small>
-                                    <div class="fw-bold text-dark small">{{ $student->batch->class->name }}</div>
+                                    <div class="fw-bold text-dark small">
+                                        {{ optional(optional($student->batch)->class)->name ?? 'N/A' }}</div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="p-3 rounded-4 bg-light border border-white">
                                     <small class="text-muted tiny fw-bold text-uppercase d-block mb-1">Admission
                                         Cycle</small>
-                                    <div class="fw-bold text-dark small">{{ $student->admission_date->format('d M, Y') }}
+                                    <div class="fw-bold text-dark small">
+                                        {{ optional($student->admission_date)->format('d M, Y') ?? 'N/A' }}
                                     </div>
                                 </div>
                             </div>
@@ -225,7 +227,8 @@
                                                 @foreach ($student->attendances->sortByDesc('attendance_date')->take(10) as $attendance)
                                                     <tr>
                                                         <td class="small fw-bold">
-                                                            {{ $attendance->attendance_date->format('d M, Y') }}</td>
+                                                            {{ optional($attendance->attendance_date)->format('d M, Y') ?? 'N/A' }}
+                                                        </td>
                                                         <td class="text-center">
                                                             @php
                                                                 $statusStyle =
@@ -274,7 +277,8 @@
                                                     <tr>
                                                         <td class="small fw-bold">
                                                             <div class="small fw-bold text-dark">
-                                                                {{ $fee->due_date->format('d M, Y') }}</div>
+                                                                {{ optional($fee->due_date)->format('d M, Y') ?? 'N/A' }}
+                                                            </div>
                                                             <div class="d-flex gap-2">
                                                                 <small
                                                                     class="text-muted tiny text-uppercase">{{ $fee->fee_type }}</small>
