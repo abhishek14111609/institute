@@ -63,6 +63,14 @@ class StudentService
     public function createStudent(array $data)
     {
         return DB::transaction(function () use ($data) {
+            $batchIds = collect($data['batch_ids'] ?? (isset($data['batch_id']) ? [$data['batch_id']] : []))
+                ->filter()
+                ->map(fn($batchId) => (int) $batchId)
+                ->unique()
+                ->values();
+
+            $primaryBatchId = $data['batch_id'] ?? $batchIds->first();
+
             // Upload photo if provided
             $photoPath = null;
             if (isset($data['photo'])) {
@@ -94,7 +102,7 @@ class StudentService
                 'school_id' => auth()->user()->school_id,
                 'user_id' => $user->id,
                 'course_id' => $data['course_id'] ?? null,
-                'batch_id' => $data['batch_id'] ?? null,
+                'batch_id' => $primaryBatchId,
                 'roll_number' => $rollNumber,
                 'birth_date' => $data['birth_date'] ?? null,
                 'previous_school' => $data['previous_school'] ?? null,
@@ -107,14 +115,13 @@ class StudentService
             ]);
 
             // Sync batches
-            $batchIds = $data['batch_ids'] ?? (isset($data['batch_id']) ? [$data['batch_id']] : []);
             if (!empty($batchIds)) {
                 $student->batches()->sync($batchIds);
 
                 // Handle Batch-Specific Fees (Supports multiple fees per sport)
                 if (isset($data['batch_fees']) && is_array($data['batch_fees'])) {
                     foreach ($data['batch_fees'] as $batchId => $plans) {
-                        if (empty($plans) || !in_array($batchId, $batchIds))
+                        if (empty($plans) || ! $batchIds->contains((int) $batchId))
                             continue;
 
                         $planIds = is_array($plans) ? $plans : [$plans];
@@ -151,6 +158,14 @@ class StudentService
     public function updateStudent(Student $student, array $data)
     {
         return DB::transaction(function () use ($student, $data) {
+            $batchIds = collect($data['batch_ids'] ?? (isset($data['batch_id']) ? [$data['batch_id']] : []))
+                ->filter()
+                ->map(fn($batchId) => (int) $batchId)
+                ->unique()
+                ->values();
+
+            $primaryBatchId = $data['batch_id'] ?? $batchIds->first() ?? $student->batch_id;
+
             // Upload new photo if provided
             if (isset($data['photo'])) {
                 $data['photo'] = $data['photo']->store('students/photos', 'public');
@@ -173,7 +188,7 @@ class StudentService
 
             // Update student record
             $studentData = array_filter([
-                'batch_id' => $data['batch_id'] ?? $student->batch_id,
+                'batch_id' => $primaryBatchId,
                 'roll_number' => $data['roll_number'] ?? $student->roll_number,
                 'birth_date' => $data['birth_date'] ?? $student->birth_date,
                 'previous_school' => $data['previous_school'] ?? $student->previous_school,
@@ -190,14 +205,13 @@ class StudentService
             $student->update($studentData);
 
             // Sync batches
-            $batchIds = $data['batch_ids'] ?? (isset($data['batch_id']) ? [$data['batch_id']] : []);
             if (!empty($batchIds)) {
                 $student->batches()->sync($batchIds);
 
                 // Handle Batch-Specific Fees (Supports multiple fees per sport)
                 if (isset($data['batch_fees']) && is_array($data['batch_fees'])) {
                     foreach ($data['batch_fees'] as $batchId => $plans) {
-                        if (empty($plans) || !in_array($batchId, $batchIds))
+                        if (empty($plans) || ! $batchIds->contains((int) $batchId))
                             continue;
 
                         $planIds = is_array($plans) ? $plans : [$plans];

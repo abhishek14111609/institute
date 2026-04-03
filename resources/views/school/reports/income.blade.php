@@ -24,8 +24,9 @@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Year</label>
                         <select name="year" class="form-select">
-                            @for($y = now()->year; $y >= now()->year - 4; $y--)
-                                <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @for ($y = now()->year; $y >= now()->year - 4; $y--)
+                                <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}
+                                </option>
                             @endfor
                         </select>
                     </div>
@@ -33,7 +34,7 @@
                         <label class="form-label fw-semibold">Month (optional)</label>
                         <select name="month" class="form-select">
                             <option value="">All Months</option>
-                            @foreach(range(1, 12) as $m)
+                            @foreach (range(1, 12) as $m)
                                 <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
                                     {{ \Carbon\Carbon::create()->month($m)->format('F') }}
                                 </option>
@@ -54,7 +55,7 @@
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <div class="text-muted small mb-1">Fees Generated</div>
-                        <h4 class="text-dark fw-bold">&#8377;{{ number_format($report['fee_generated'], 2) }}</h4>
+                        <h4 class="text-dark fw-bold">Rs{{ number_format($report['fee_generated'], 2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -62,7 +63,7 @@
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <div class="text-muted small mb-1">Fee Revenue</div>
-                        <h4 class="text-primary fw-bold">&#8377;{{ number_format($report['fee_collected'], 2) }}</h4>
+                        <h4 class="text-primary fw-bold">Rs{{ number_format($report['fee_collected'], 2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -70,7 +71,7 @@
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <div class="text-muted small mb-1">Selling Revenue</div>
-                        <h4 class="text-success fw-bold">&#8377;{{ number_format($report['sales_collected'], 2) }}</h4>
+                        <h4 class="text-success fw-bold">Rs{{ number_format($report['sales_collected'], 2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -78,7 +79,7 @@
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <div class="text-muted small mb-1">Total Revenue</div>
-                        <h4 class="text-info fw-bold">&#8377;{{ number_format($report['total_revenue'], 2) }}</h4>
+                        <h4 class="text-info fw-bold">Rs{{ number_format($report['total_revenue'], 2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -89,7 +90,7 @@
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <div class="text-muted small mb-1">Pending Fees</div>
-                        <h4 class="text-warning fw-bold">&#8377;{{ number_format($report['total_pending'], 2) }}</h4>
+                        <h4 class="text-warning fw-bold">Rs{{ number_format($report['total_pending'], 2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -97,7 +98,7 @@
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <div class="text-muted small mb-1">Discounts</div>
-                        <h4 class="text-secondary fw-bold">&#8377;{{ number_format($report['total_discount'], 2) }}</h4>
+                        <h4 class="text-secondary fw-bold">Rs{{ number_format($report['total_discount'], 2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -105,7 +106,7 @@
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <div class="text-muted small mb-1">{{ $label['expenses'] }}</div>
-                        <h4 class="text-danger fw-bold">&#8377;{{ number_format($report['total_expenses'], 2) }}</h4>
+                        <h4 class="text-danger fw-bold">Rs{{ number_format($report['total_expenses'], 2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -114,7 +115,7 @@
                     <div class="card-body">
                         <div class="text-muted small mb-1">Net Balance</div>
                         <h4 class="fw-bold {{ $report['net_income'] >= 0 ? 'text-success' : 'text-danger' }}">
-                            &#8377;{{ number_format($report['net_income'], 2) }}
+                            Rs{{ number_format($report['net_income'], 2) }}
                         </h4>
                     </div>
                 </div>
@@ -122,9 +123,10 @@
         </div>
 
         @php
-            $rate = $report['fee_generated'] > 0
-                ? round(($report['fee_collected'] / $report['fee_generated']) * 100, 1)
-                : 0;
+            $rate =
+                $report['fee_generated'] > 0
+                    ? round(($report['fee_collected'] / $report['fee_generated']) * 100, 1)
+                    : 0;
         @endphp
         <div class="card shadow-sm border-0">
             <div class="card-body">

@@ -307,7 +307,7 @@
                     </td>
                     <td style="text-align: center;">1</td>
                     <td style="text-align: right; font-weight: bold;">
-                        <span class="rupee">&#8377;</span>{{ number_format($subscription->amount_paid, 2) }}
+                        Rs {{ number_format($subscription->amount_paid, 2) }}
                     </td>
                 </tr>
             </tbody>
@@ -326,17 +326,15 @@
             <table class="totals-table">
                 <tr>
                     <td class="total-label">Subtotal</td>
-                    <td class="total-amount"><span
-                            class="rupee">&#8377;</span>{{ number_format($subscription->amount_paid, 2) }}</td>
+                    <td class="total-amount">Rs {{ number_format($subscription->amount_paid, 2) }}</td>
                 </tr>
                 <tr>
                     <td class="total-label">Tax (0%)</td>
-                    <td class="total-amount"><span class="rupee">&#8377;</span>0.00</td>
+                    <td class="total-amount">Rs 0.00</td>
                 </tr>
                 <tr class="grand-total">
                     <td class="total-label">TOTAL PAID</td>
-                    <td class="total-amount"><span
-                            class="rupee">&#8377;</span>{{ number_format($subscription->amount_paid, 2) }}</td>
+                    <td class="total-amount">Rs {{ number_format($subscription->amount_paid, 2) }}</td>
                 </tr>
             </table>
         </div>

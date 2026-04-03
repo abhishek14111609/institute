@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Add New Student' : 'Add New Student')
+@php
+    $isSport = auth()->user()->school && auth()->user()->school->institute_type === 'sport';
+@endphp
+
+@section('title', 'Add New Student')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -8,7 +12,7 @@
 
 @section('content')
     <div class="container-fluid">
-        <h2 class="mb-4">{{ auth()->user()->school->institute_type === 'sport' ? 'Add New Student' : 'Add New Student' }}
+        <h2 class="mb-4">Add New Student
         </h2>
 
         <div class="card">
@@ -20,12 +24,11 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label
-                                class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Student Name' : 'Student Name' }}
+                            <label class="form-label">Student Name
                                 *</label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                value="{{ old('name') }}" required
-                                data-ajax-validate="true" data-table="users" data-rules="required|string|max:255">
+                                value="{{ old('name') }}" required data-ajax-validate="true" data-table="users"
+                                data-rules="required|string|max:255">
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -34,8 +37,8 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Email *</label>
                             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                value="{{ old('email') }}" required
-                                data-ajax-validate="true" data-table="users" data-rules="required|email|email">
+                                value="{{ old('email') }}" required data-ajax-validate="true" data-table="users"
+                                data-rules="required|email|email">
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -47,8 +50,8 @@
                             <label class="form-label">Username *</label>
                             <input type="text" name="username"
                                 class="form-control @error('username') is-invalid @enderror" value="{{ old('username') }}"
-                                required
-                                data-ajax-validate="true" data-table="users" data-rules="required|alpha_dash|min:3">
+                                required data-ajax-validate="true" data-table="users"
+                                data-rules="required|alpha_dash|min:3">
                             @error('username')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -57,9 +60,8 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Phone</label>
                             <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror"
-                                value="{{ old('phone') }}"
-                                data-ajax-validate="true" data-table="users" data-rules="nullable|numeric|min:10|max:10"
-                                placeholder="e.g. 9876543210 (10 digits)">
+                                value="{{ old('phone') }}" data-ajax-validate="true" data-table="users"
+                                data-rules="nullable|numeric|min:10|max:10" placeholder="e.g. 9876543210 (10 digits)">
                             @error('phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -85,18 +87,22 @@
                     <hr class="my-4">
 
                     <h5 class="mb-3">
-                        {{ auth()->user()->school->institute_type === 'sport' ? 'Registration Information' : 'Academic Information' }}
+                        {{ $isSport ? 'Registration Information' : 'Academic Information' }}
                     </h5>
 
                     <div class="row align-items-center mb-4">
                         <div class="col-md-6 text-primary">
-                            <h5 class="mb-0 fw-bold"><i class="bi bi-trophy-fill me-2"></i>Sport Enrollments & Fees</h5>
+                            <h5 class="mb-0 fw-bold">
+                                <i class="bi {{ $isSport ? 'bi-trophy-fill' : 'bi-mortarboard-fill' }} me-2"></i>
+                                {{ $isSport ? 'Sport Enrollments & Fees' : 'Academic Enrollments & Fees' }}
+                            </h5>
                         </div>
                         <div class="col-md-6 text-end">
                             <button type="button"
                                 class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm fw-bold"
                                 onclick="addEnrollmentRow()">
-                                <i class="bi bi-plus-circle-fill me-1"></i> Enroll in Another Sport
+                                <i class="bi bi-plus-circle-fill me-1"></i>
+                                {{ $isSport ? 'Enroll in Another Sport' : 'Add Another Academic Enrollment' }}
                             </button>
                         </div>
                     </div>
@@ -115,10 +121,11 @@
 
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Roll No (Auto-generated)</label>
-                            <input type="text" id="roll_number" name="roll_number" class="form-control rounded-3 bg-light"
+                            <input type="text" id="roll_number" name="roll_number"
+                                class="form-control rounded-3 bg-light"
                                 value="{{ old('roll_number', $rollMeta['suggestedRollNumber'] ?? '') }}" readonly
-                                placeholder="Auto-generated"
-                                data-ajax-validate="true" data-table="students" data-rules="nullable|string|unique:students,roll_number">
+                                placeholder="Auto-generated" data-ajax-validate="true" data-table="students"
+                                data-rules="nullable|string|unique:students,roll_number">
                         </div>
                     </div>
 
@@ -137,7 +144,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label for="previous_school"
-                                class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Current School/Institute' : 'Previous School' }}</label>
+                                class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Current School/Institute' : 'Current School' }}</label>
                             <input type="text" name="previous_school"
                                 class="form-control @error('previous_school') is-invalid @enderror"
                                 value="{{ old('previous_school') }}">
@@ -166,9 +173,8 @@
                             <label class="form-label">Parent Phone</label>
                             <input type="tel" name="parent_phone"
                                 class="form-control @error('parent_phone') is-invalid @enderror"
-                                value="{{ old('parent_phone') }}"
-                                data-ajax-validate="true" data-table="students" data-rules="nullable|numeric|min:10|max:10"
-                                placeholder="e.g. 9876543210 (10 digits)">
+                                value="{{ old('parent_phone') }}" data-ajax-validate="true" data-table="students"
+                                data-rules="nullable|numeric|min:10|max:10" placeholder="e.g. 9876543210 (10 digits)">
                             @error('parent_phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -184,8 +190,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label
-                            class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Student Photo' : 'Student Photo' }}</label>
+                        <label class="form-label">Student Photo</label>
                         <input type="file" name="photo" class="form-control @error('photo') is-invalid @enderror"
                             accept="image/*">
                         @error('photo')
@@ -194,8 +199,7 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="submit"
-                            class="btn btn-primary">{{ auth()->user()->school->institute_type === 'sport' ? 'Register Student' : 'Create Student' }}</button>
+                        <button type="submit" class="btn btn-primary">Create Student</button>
                         <a href="{{ route('school.students.index') }}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
@@ -225,21 +229,21 @@
                         <div class="col-md-3">
                             <label class="form-label small fw-bold text-muted">1. Select Course</label>
                             <select onchange="populateBatches('${rowId}', this.value)" class="form-select rounded-pill bg-light border-0 shadow-none px-3 course-select">
-                                <option value="">— Select Course —</option>
+                                <option value="">-- Select Course --</option>
                                 ${allCourses.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small fw-bold text-muted">2. Select Sport/Session</label>
+                            <label class="form-label small fw-bold text-muted">2. Select Batch</label>
                             <select name="batch_ids[]" class="form-select rounded-pill bg-light border-0 shadow-none px-3 batch-select" data-row="${rowId}">
-                                <option value="">— Select Batch —</option>
+                                <option value="">-- Select Batch --</option>
                             </select>
                         </div>
                         <div class="col-md-5">
-                            <label class="form-label small fw-bold text-muted">3. Assign Fees (Collect one or more)</label>
+                            <label class="form-label small fw-bold text-muted">3. Select Fees</label>
                             <div class="fee-checkboxes d-flex flex-wrap gap-2 border rounded-4 p-2 bg-white" style="min-height: 40px; max-height: 120px; overflow-y: auto;">
                                 <!-- Checkboxes injected here -->
-                                <small class="text-muted fst-italic w-100 text-center py-1">Select a sport first...</small>
+                                <small class="text-muted fst-italic w-100 text-center py-1">Select a batch first...</small>
                             </div>
                         </div>
                         <div class="col-md-1 text-end">
@@ -259,9 +263,11 @@
             const batchSelect = row.querySelector('.batch-select');
             const filteredBatches = allBatches.filter(b => b.class && b.class.course_id == courseId);
 
-            batchSelect.innerHTML = '<option value="">— Select Batch —</option>';
+            batchSelect.innerHTML = '<option value="">-- Select Batch --</option>';
             filteredBatches.forEach(b => {
-                batchSelect.innerHTML += `<option value="${b.id}">${b.name}</option>`;
+                const className = b.class?.name ? ` | ${b.class.name}` : '';
+                const courseName = b.class?.course?.name ? ` | ${b.class.course.name}` : '';
+                batchSelect.innerHTML += `<option value="${b.id}">${b.name}${className}${courseName}</option>`;
             });
 
             // Add listener for batch change to show fees
@@ -274,7 +280,7 @@
 
             if (!batchId) {
                 feeContainer.innerHTML =
-                    '<small class="text-muted fst-italic w-100 text-center py-1">Select a sport first...</small>';
+                    '<small class="text-muted fst-italic w-100 text-center py-1">Select a batch first...</small>';
                 return;
             }
 
@@ -294,14 +300,14 @@
 
             if (relevantPlans.length === 0) {
                 feeContainer.innerHTML =
-                    '<small class="text-danger small w-100 text-center py-1">No fee plans found for this sport.</small>';
+                    '<small class="text-danger small w-100 text-center py-1">No fee plans found for this batch.</small>';
                 return;
             }
 
             feeContainer.innerHTML = relevantPlans.map(p => `
             <div class="form-check form-check-inline m-0">
                 <input class="form-check-input" type="checkbox" name="batch_fees[${batchId}][]" value="${p.id}" id="fee_${rowId}_${p.id}">
-                <label class="form-check-label small" for="fee_${rowId}_${p.id}">${p.name} (₹${p.amount})</label>
+                <label class="form-check-label small" for="fee_${rowId}_${p.id}">${p.name} (Rs ${p.amount})</label>
             </div>
         `).join('');
         }
@@ -328,15 +334,15 @@
                 oldBatchIds.forEach((batchId, index) => {
                     const batchIdVal = batchId;
                     const rowId = `row_${rowCount++}`;
-                    
+
                     // Add row
                     addEnrollmentRow(rowId);
-                    
+
                     // We need to wait for the DOM to update or manually trigger population
                     const row = document.getElementById(rowId);
                     const batchSelect = row.querySelector('.batch-select');
                     const courseSelectInRow = row.querySelector('.course-select');
-                    
+
                     // Find course for this batch
                     const selectedBatch = allBatches.find(b => b.id == batchIdVal);
                     if (selectedBatch) {
@@ -345,12 +351,13 @@
                         populateBatches(rowId, courseId);
                         batchSelect.value = batchIdVal;
                         populateFees(rowId, batchIdVal);
-                        
+
                         // Set specific fees if any were selected
                         if (oldBatchFees && oldBatchFees[batchIdVal]) {
                             const feesForBatch = oldBatchFees[batchIdVal];
                             feesForBatch.forEach(feePlanId => {
-                                const feeCheckbox = row.querySelector(`input[id="fee_${rowId}_${feePlanId}"]`);
+                                const feeCheckbox = row.querySelector(
+                                    `input[id="fee_${rowId}_${feePlanId}"]`);
                                 if (feeCheckbox) feeCheckbox.checked = true;
                             });
                         }
@@ -363,11 +370,12 @@
             // Password matching validation
             const passwordInput = document.querySelector('input[name="password"]');
             const confirmInput = document.querySelector('input[name="password_confirmation"]');
-            
+
             function validatePasswords() {
                 if (confirmInput.value && passwordInput.value !== confirmInput.value) {
                     confirmInput.classList.add('is-invalid');
-                    if (!confirmInput.nextElementSibling || !confirmInput.nextElementSibling.classList.contains('password-error')) {
+                    if (!confirmInput.nextElementSibling || !confirmInput.nextElementSibling.classList.contains(
+                            'password-error')) {
                         const errorDiv = document.createElement('div');
                         errorDiv.className = 'invalid-feedback password-error';
                         errorDiv.innerText = 'Passwords do not match.';
@@ -393,7 +401,7 @@
                 phoneInput.addEventListener('input', function(e) {
                     // Remove any non-numeric characters
                     this.value = this.value.replace(/[^0-9]/g, '');
-                    
+
                     if (this.value.length > 15) {
                         this.value = this.value.slice(0, 15);
                     }

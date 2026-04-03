@@ -10,8 +10,8 @@
         $documentLabel = $isInventoryInvoice ? 'CASH SALE RECEIPT' : 'FEE RECEIPT';
         $paymentMethod = strtoupper($invoice->feePayment->payment_method ?? ($isInventoryInvoice ? 'cash' : 'cash'));
         $description = $isInventoryInvoice
-            ? (($inventorySale->item->name ?? 'Inventory Item') . ' Cash Sale')
-            : ($fee->name ?? ucfirst(str_replace('_', '-', $fee->fee_type ?? 'fee')) . ' Fee Payment');
+            ? ($inventorySale->item->name ?? 'Inventory Item') . ' Cash Sale'
+            : $fee->name ?? ucfirst(str_replace('_', '-', $fee->fee_type ?? 'fee')) . ' Fee Payment';
     @endphp
     <title>Receipt #{{ $invoice->invoice_number }}</title>
     <style>
@@ -298,7 +298,8 @@
                         <div class="item-description">
                             {{ $description }}
                             @if (!$isInventoryInvoice && $fee?->sport_level)
-                                <span style="font-size:10px;background:#e0e7ff;color:#4f46e5;padding:2px 8px;border-radius:4px;margin-left:8px;">
+                                <span
+                                    style="font-size:10px;background:#e0e7ff;color:#4f46e5;padding:2px 8px;border-radius:4px;margin-left:8px;">
                                     {{ ucfirst($fee->sport_level) }} Level
                                 </span>
                             @endif
@@ -307,7 +308,7 @@
                             @if ($isInventoryInvoice)
                                 Item Category: {{ $inventorySale->item->category ?? 'Inventory' }}<br>
                                 Quantity: {{ $inventorySale->quantity }}<br>
-                                Unit Price: &#8377;{{ number_format($inventorySale->unit_price, 2) }}<br>
+                                Unit Price: Rs {{ number_format($inventorySale->unit_price, 2) }}<br>
                                 Payment Method: {{ $paymentMethod }}
                             @else
                                 Payment towards {{ $fee->name ?? 'fee' }} for the current period.<br>
@@ -320,7 +321,7 @@
                         </div>
                     </td>
                     <td style="text-align: right; font-weight: bold; font-size: 14px;">
-                        <span class="rupee">&#8377;</span>{{ number_format($invoice->amount, 2) }}
+                        Rs {{ number_format($invoice->amount, 2) }}
                     </td>
                 </tr>
             </tbody>
@@ -337,14 +338,15 @@
             <table class="totals-table">
                 <tr class="grand-total">
                     <td class="total-label">AMOUNT PAID</td>
-                    <td class="total-amount"><span class="rupee">&#8377;</span>{{ number_format($invoice->amount, 2) }}</td>
+                    <td class="total-amount">Rs {{ number_format($invoice->amount, 2) }}</td>
                 </tr>
             </table>
         </div>
 
         <div class="page-footer">
             <p class="footer-note">This is an electronically generated document. No signature required.</p>
-            <p class="footer-note">{{ $isInventoryInvoice ? 'Thank you for your purchase!' : 'Thank you for your payment!' }}</p>
+            <p class="footer-note">
+                {{ $isInventoryInvoice ? 'Thank you for your purchase!' : 'Thank you for your payment!' }}</p>
         </div>
     </div>
 </body>

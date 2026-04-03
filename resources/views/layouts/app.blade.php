@@ -11,7 +11,12 @@
                 $branding = config('app.name', 'Management System');
                 if (auth()->user()->isSuperAdmin()) {
                     $branding = 'System Admin';
-                } elseif (auth()->user()->isStudent() && auth()->user()->student && auth()->user()->student->batch && auth()->user()->student->batch->class) {
+                } elseif (
+                    auth()->user()->isStudent() &&
+                    auth()->user()->student &&
+                    auth()->user()->student->batch &&
+                    auth()->user()->student->batch->class
+                ) {
                     $branding = auth()->user()->student->batch->class->name;
                 } elseif (auth()->user()->school) {
                     $branding = auth()->user()->school->name;
@@ -51,11 +56,11 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        @if(!View::hasSection('custom_sidebar_header'))
+        @if (!View::hasSection('custom_sidebar_header'))
             <div class="sidebar-header">
                 <h4>
-                    @if(auth()->check() && auth()->user()->school && auth()->user()->school->logo)
-                        <img src="{{ asset('storage/' . auth()->user()->school->logo) }}" alt="Logo"
+                    @if (auth()->check() && auth()->user()->school && auth()->user()->school->logo)
+                        <img src="{{ route('media.public', ['path' => auth()->user()->school->logo]) }}" alt="Logo"
                             class="img-fluid rounded me-2" style="max-height: 28px; width: auto;">
                     @else
                         <i class="bi bi-mortarboard-fill text-primary"></i>
@@ -65,7 +70,12 @@
                             $branding = config('app.name', 'Management System');
                             if (auth()->user()->isSuperAdmin()) {
                                 $branding = 'System Admin';
-                            } elseif (auth()->user()->isStudent() && auth()->user()->student && auth()->user()->student->batch && auth()->user()->student->batch->class) {
+                            } elseif (
+                                auth()->user()->isStudent() &&
+                                auth()->user()->student &&
+                                auth()->user()->student->batch &&
+                                auth()->user()->student->batch->class
+                            ) {
                                 $branding = auth()->user()->student->batch->class->name;
                             } elseif (auth()->user()->school) {
                                 $branding = auth()->user()->school->name;
@@ -81,12 +91,12 @@
                 </button>
             </div>
         @endif
-{{--
+        {{--
         @auth
             <div class="px-4 py-3 border-bottom border-secondary border-opacity-10">
                 <div class="d-flex align-items-center">
-                    @if(auth()->user()->avatar)
-                        <img src="{{ asset('storage/' . auth()->user()->avatar) }}" class="rounded-circle me-3"
+                    @if (auth()->user()->avatar)
+                        <img src="{{ route('media.public', ['path' => auth()->user()->avatar]) }}" class="rounded-circle me-3"
                             style="width: 40px; height: 40px; object-fit: cover;">
                     @else
                         <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white fw-bold me-3"
@@ -133,7 +143,7 @@
         </form>
 
         <!-- Desktop Header -->
-        @unless(View::hasSection('hide_header'))
+        @unless (View::hasSection('hide_header'))
             <div class="d-none d-lg-flex justify-content-between align-items-center mb-5 pb-3 border-bottom">
                 <div>
                     <h2 class="fw-bold text-dark m-0">@yield('title')</h2>
@@ -153,7 +163,7 @@
         @endunless
 
         <!-- Alerts -->
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 bg-success-subtle text-success"
                 role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
@@ -162,7 +172,7 @@
             </div>
         @endif
 
-        @if(session('error'))
+        @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 bg-danger-subtle text-danger"
                 role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -201,7 +211,7 @@
 
     <script>
         // Loader
-        window.addEventListener('load', function () {
+        window.addEventListener('load', function() {
             const loader = document.getElementById('loader');
             if (loader) {
                 loader.style.opacity = '0';
@@ -223,7 +233,7 @@
          * Institutional Navigation Persistence System
          * Ensures temporal and spatial continuity across page cycles.
          */
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
             const currentPath = window.location.pathname;
@@ -283,11 +293,18 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({ field, value, table, rules, ignore_id: ignoreId, user_id: userId })
+                    body: JSON.stringify({
+                        field,
+                        value,
+                        table,
+                        rules,
+                        ignore_id: ignoreId,
+                        user_id: userId
+                    })
                 });
 
                 const data = await response.json();
-                
+
                 // Remove existing feedback
                 input.classList.remove('is-invalid', 'is-valid');
                 const existingFeedback = input.parentNode.querySelector('.ajax-feedback');
@@ -307,7 +324,7 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Attach listeners to all inputs marked for AJAX validation
             document.querySelectorAll('[data-ajax-validate="true"]').forEach(input => {
                 input.addEventListener('blur', function() {

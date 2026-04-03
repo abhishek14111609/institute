@@ -44,8 +44,8 @@
 
                             <div class="d-flex align-items-center mb-5 p-4 rounded-4 bg-light border border-dashed">
                                 <div class="position-relative me-4">
-                                    @if(auth()->user()->avatar)
-                                        <img src="{{ asset('storage/' . auth()->user()->avatar) }}"
+                                    @if (auth()->user()->avatar)
+                                        <img src="{{ route('media.public', ['path' => auth()->user()->avatar]) }}"
                                             class="rounded-circle border-4 border-white shadow-lg"
                                             style="width: 100px; height: 100px; object-fit: cover;">
                                     @else

@@ -67,7 +67,7 @@ class StudentController extends Controller
 
     public function create()
     {
-        $batches = Batch::with(['class', 'subject.level'])->active()->get();
+        $batches = Batch::with(['class.course', 'subject.level'])->active()->get();
         $courses = \App\Models\Course::active()->get();
         $feePlans = \App\Models\FeePlan::where('is_active', true)->get();
         $rollMeta = $this->studentService->nextRollNumberMeta();
@@ -81,7 +81,7 @@ class StudentController extends Controller
             $this->studentService->createStudent($request->validated());
 
             return redirect()->route('school.students.index')
-                ->with('success', auth()->user()->school->institute_type === 'sport' ? 'Athlete registered successfully.' : 'Student created successfully.');
+                ->with('success', 'Student created successfully.');
         } catch (\Exception $e) {
             return back()->with('error', 'Error creating: ' . $e->getMessage());
         }
@@ -97,7 +97,7 @@ class StudentController extends Controller
 
     public function edit(Student $student)
     {
-        $batches = Batch::with(['class', 'subject.level'])->active()->get();
+        $batches = Batch::with(['class.course', 'subject.level'])->active()->get();
         $courses = \App\Models\Course::active()->get();
         $feePlans = \App\Models\FeePlan::where('is_active', true)->get();
 

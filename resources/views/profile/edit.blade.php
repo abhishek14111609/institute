@@ -7,7 +7,7 @@
         $user = auth()->user();
     @endphp
 
-    @if($user->isSuperAdmin())
+    @if ($user->isSuperAdmin())
         @include('admin.sidebar')
     @elseif($user->isSchoolAdmin())
         @include('school.sidebar')
@@ -27,10 +27,10 @@
                     <div class="card-body p-5 d-flex align-items-center justify-content-between position-relative z-1">
                         <div class="d-flex align-items-center">
                             <div class="position-relative me-4">
-                                @if($user->avatar)
-                                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar"
-                                        class="rounded-circle shadow-lg border-4 border-white border-opacity-25" width="100"
-                                        height="100" style="object-fit: cover;">
+                                @if ($user->avatar)
+                                    <img src="{{ route('media.public', ['path' => $user->avatar]) }}" alt="Avatar"
+                                        class="rounded-circle shadow-lg border-4 border-white border-opacity-25"
+                                        width="100" height="100" style="object-fit: cover;">
                                 @else
                                     <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center border-4 border-white border-opacity-25 shadow-lg"
                                         style="width: 100px; height: 100px; font-size: 2.5rem; font-weight: 800;">
@@ -169,7 +169,8 @@
                                     <span class="fw-bold small">{{ now()->diffForHumans() }} (Current Session)</span>
                                 </div>
                             </div>
-                            <div class="p-3 rounded-4 bg-light d-flex align-items-center border border-dashed text-success">
+                            <div
+                                class="p-3 rounded-4 bg-light d-flex align-items-center border border-dashed text-success">
                                 <i class="bi bi-browser-safari fs-4 me-3"></i>
                                 <div>
                                     <small class="text-muted d-block tiny fw-bold text-uppercase">Environment
@@ -194,7 +195,8 @@
                             <i class="bi bi-shield-shaded text-primary display-6"></i>
                         </div>
                         <h6 class="fw-bold text-dark">Account Security Protocol</h6>
-                        <p class="text-muted small mb-0">Your data is secured using industry-standard hashing and encryption
+                        <p class="text-muted small mb-0">Your data is secured using industry-standard hashing and
+                            encryption
                             protocols. Always ensure you log out after using public devices.</p>
                     </div>
                 </div>

@@ -15,7 +15,8 @@
                     generated for fees and store-room sales.</p>
             </div>
             <div class="bg-white p-2 px-3 rounded-pill shadow-sm border small fw-bold text-muted d-flex align-items-center">
-                <i class="bi bi-info-circle-fill me-2 text-info"></i> Invoices are auto-generated for fee payments and cash inventory sales.
+                <i class="bi bi-info-circle-fill me-2 text-info"></i> Invoices are auto-generated for fee payments and cash
+                inventory sales.
             </div>
         </div>
 
@@ -49,7 +50,9 @@
                                     $typeLabel = $isInventoryInvoice
                                         ? 'Inventory Sale'
                                         : ucfirst(str_replace('_', ' ', $invoice->fee->fee_type ?? 'Fee Payment'));
-                                    $paymentMethod = strtoupper($invoice->feePayment->payment_method ?? ($isInventoryInvoice ? 'cash' : 'cash'));
+                                    $paymentMethod = strtoupper(
+                                        $invoice->feePayment->payment_method ?? ($isInventoryInvoice ? 'cash' : 'cash'),
+                                    );
                                     $enrollments = $invoice->student->batches
                                         ->pluck('subject.name')
                                         ->filter()
@@ -70,23 +73,25 @@
                                     </td>
                                     <td class="border-0">
                                         <div class="small fw-bold text-dark">{{ $invoice->student->user->name }}</div>
-                                        <small class="text-muted tiny d-block">ROLL: {{ $invoice->student->roll_number }}</small>
+                                        <small class="text-muted tiny d-block">ROLL:
+                                            {{ $invoice->student->roll_number }}</small>
                                         <small class="text-muted tiny d-block">
                                             {{ $enrollments ? 'Enroll: ' . $enrollments : 'Batch: ' . ($invoice->student->batch->name ?? 'N/A') }}
                                         </small>
                                     </td>
                                     <td class="border-0">
-                                        <div class="small fw-bold text-dark">{{ $invoice->invoice_date->format('d M, Y') }}</div>
+                                        <div class="small fw-bold text-dark">{{ $invoice->invoice_date->format('d M, Y') }}
+                                        </div>
                                         <small class="text-muted tiny">Recorded at midnight</small>
                                     </td>
-                                    <td class="border-0 text-dark fw-bold">&#8377;{{ number_format($invoice->amount, 0) }}</td>
+                                    <td class="border-0 text-dark fw-bold">Rs{{ number_format($invoice->amount, 0) }}</td>
                                     <td class="border-0">
                                         <span class="badge bg-soft-info px-3 py-2 rounded-pill small">
                                             {{ $typeLabel }}
                                         </span>
                                         <small class="text-muted tiny d-block mt-1">
                                             {{ $paymentMethod }}
-                                            @if($isInventoryInvoice && $inventorySale?->item)
+                                            @if ($isInventoryInvoice && $inventorySale?->item)
                                                 • {{ $inventorySale->quantity }}x {{ $inventorySale->item->name }}
                                             @endif
                                         </small>
@@ -107,9 +112,11 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
-                                        <div class="opacity-25 mb-3"><i class="bi bi-receipt-cutoff" style="font-size: 5rem;"></i></div>
+                                        <div class="opacity-25 mb-3"><i class="bi bi-receipt-cutoff"
+                                                style="font-size: 5rem;"></i></div>
                                         <h5 class="text-muted">Institutional Invoice archives are currently empty.</h5>
-                                        <p class="text-muted small">Invoices appear here once fees are paid or inventory sales are completed.</p>
+                                        <p class="text-muted small">Invoices appear here once fees are paid or inventory
+                                            sales are completed.</p>
                                     </td>
                                 </tr>
                             @endforelse

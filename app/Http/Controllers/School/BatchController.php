@@ -17,7 +17,7 @@ class BatchController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Batch::with('class')->withCount('students');
+        $query = Batch::with(['class.course', 'subject.level', 'teachers'])->withCount('students');
 
         if ($request->filled('class_id')) {
             $query->where('class_id', $request->class_id);
@@ -34,9 +34,9 @@ class BatchController extends Controller
         $isSport = auth()->user()->school->institute_type === 'sport';
         $classes = Classes::active()->get();
         $courses = Course::active()->get();
-        $teachers = Teacher::with('user')->active()->get();
-        $students = Student::with('user')->active()->orderBy('id', 'desc')->get();
-        $subjects = Subject::with(['level', 'schoolClass'])->active()->get();
+        $teachers = Teacher::with('user')->active()->get()->unique('id');
+        $students = Student::with('user')->active()->orderBy('id', 'desc')->get()->unique('id')->values();
+        $subjects = Subject::with(['level', 'schoolClass.course'])->active()->get();
         $levels = \App\Models\Level::where('is_active', true)->get();
 
         return view('school.batches.create', compact('classes', 'courses', 'teachers', 'students', 'subjects', 'levels', 'isSport'));
@@ -89,9 +89,9 @@ class BatchController extends Controller
         $isSport = auth()->user()->school->institute_type === 'sport';
         $classes = Classes::active()->get();
         $courses = Course::active()->get();
-        $teachers = Teacher::with('user')->active()->get();
-        $students = Student::with('user')->active()->orderBy('id', 'desc')->get();
-        $subjects = Subject::with(['level', 'schoolClass'])->active()->get();
+        $teachers = Teacher::with('user')->active()->get()->unique('id');
+        $students = Student::with('user')->active()->orderBy('id', 'desc')->get()->unique('id')->values();
+        $subjects = Subject::with(['level', 'schoolClass.course'])->active()->get();
         $levels = \App\Models\Level::where('is_active', true)->get();
 
         return view('school.batches.edit', compact('batch', 'classes', 'courses', 'teachers', 'students', 'subjects', 'levels', 'isSport'));

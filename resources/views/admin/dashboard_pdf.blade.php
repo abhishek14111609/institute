@@ -74,7 +74,7 @@
         </tr>
         <tr>
             <th>Total Revenue</th>
-            <td class="highlight">&#8377; {{ number_format($stats['total_revenue'], 2) }}</td>
+            <td class="highlight">Rs {{ number_format($stats['total_revenue'], 2) }}</td>
         </tr>
     </table>
 

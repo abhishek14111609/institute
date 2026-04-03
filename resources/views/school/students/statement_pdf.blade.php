@@ -194,10 +194,11 @@
             $totalDebit = 0;
             $totalCredit = 0;
             foreach ($ledger as $entry) {
-                if ($entry['type'] == 'dr')
+                if ($entry['type'] == 'dr') {
                     $totalDebit += $entry['amount'];
-                else
+                } else {
                     $totalCredit += $entry['amount'];
+                }
             }
             $balance = $totalDebit - $totalCredit;
         @endphp
@@ -207,21 +208,20 @@
                 <td width="33%">
                     <div class="summary-box">
                         <span class="section-title">Total Assessed</span>
-                        <div class="summary-value"><span class="rupee">₹</span>{{ number_format($totalDebit, 2) }}</div>
+                        <div class="summary-value">Rs {{ number_format($totalDebit, 2) }}</div>
                     </div>
                 </td>
                 <td width="33%">
                     <div class="summary-box">
                         <span class="section-title">Total Paid</span>
-                        <div class="summary-value" style="color: #16a34a;"><span
-                                class="rupee">₹</span>{{ number_format($totalCredit, 2) }}</div>
+                        <div class="summary-value" style="color: #16a34a;">Rs {{ number_format($totalCredit, 2) }}
+                        </div>
                     </div>
                 </td>
                 <td width="33%">
                     <div class="summary-box" style="border-left: 4px solid #dc2626;">
                         <span class="section-title">Outstanding Balance</span>
-                        <div class="summary-value" style="color: #dc2626;"><span
-                                class="rupee">₹</span>{{ number_format($balance, 2) }}</div>
+                        <div class="summary-value" style="color: #dc2626;">Rs {{ number_format($balance, 2) }}</div>
                     </div>
                 </td>
             </tr>
@@ -237,7 +237,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($ledger as $entry)
+                @foreach ($ledger as $entry)
                     <tr>
                         <td>{{ \Carbon\Carbon::parse($entry['date'])->format('d/m/Y') }}</td>
                         <td>
@@ -246,12 +246,18 @@
                             <small style="color: #64748b;">Ref: {{ $entry['reference'] }}</small>
                         </td>
                         <td style="text-align: right;" class="type-dr">
-                            @if($entry['type'] == 'dr') <span class="rupee">₹</span>{{ number_format($entry['amount'], 2) }}
-                            @else — @endif
+                            @if ($entry['type'] == 'dr')
+                                Rs {{ number_format($entry['amount'], 2) }}
+                            @else
+                                —
+                            @endif
                         </td>
                         <td style="text-align: right;" class="type-cr">
-                            @if($entry['type'] == 'cr') <span class="rupee">₹</span>{{ number_format($entry['amount'], 2) }}
-                            @else — @endif
+                            @if ($entry['type'] == 'cr')
+                                Rs {{ number_format($entry['amount'], 2) }}
+                            @else
+                                —
+                            @endif
                         </td>
                     </tr>
                 @endforeach
@@ -261,7 +267,7 @@
                     <td colspan="2" style="text-align: right; padding: 15px;">CLOSING BALANCE</td>
                     <td colspan="2"
                         style="text-align: right; font-size: 14px; padding: 15px; color: {{ $balance > 0 ? '#dc2626' : '#16a34a' }};">
-                        <span class="rupee">₹</span>{{ number_format($balance, 2) }}
+                        Rs {{ number_format($balance, 2) }}
                     </td>
                 </tr>
             </tfoot>

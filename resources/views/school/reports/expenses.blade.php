@@ -24,15 +24,16 @@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Year</label>
                         <select name="year" class="form-select">
-                            @for($y = now()->year; $y >= now()->year - 4; $y--)
-                                <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @for ($y = now()->year; $y >= now()->year - 4; $y--)
+                                <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}
+                                </option>
                             @endfor
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Month</label>
                         <select name="month" class="form-select">
-                            @foreach(range(1, 12) as $m)
+                            @foreach (range(1, 12) as $m)
                                 <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
                                     {{ \Carbon\Carbon::create()->month($m)->format('F') }}
                                 </option>
@@ -48,7 +49,7 @@
             </div>
         </div>
 
-        @if($report->isEmpty())
+        @if ($report->isEmpty())
             <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
                 No expenses recorded for the selected period.
@@ -64,19 +65,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($report as $row)
+                            @foreach ($report as $row)
                                 <tr>
                                     <td>
                                         <span class="badge bg-secondary me-2">{{ ucfirst($row->category) }}</span>
                                     </td>
-                                    <td class="text-end fw-semibold text-danger">&#8377;{{ number_format($row->total, 2) }}</td>
+                                    <td class="text-end fw-semibold text-danger">Rs{{ number_format($row->total, 2) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                         <tfoot class="table-warning fw-bold">
                             <tr>
                                 <td>Total</td>
-                                <td class="text-end">&#8377;{{ number_format($report->sum('total'), 2) }}</td>
+                                <td class="text-end">Rs{{ number_format($report->sum('total'), 2) }}</td>
                             </tr>
                         </tfoot>
                     </table>

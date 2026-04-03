@@ -11,17 +11,20 @@
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-5 pb-2">
             <div>
-                <h3 class="fw-bold mb-1 text-gradient">{{ auth()->user()->school->institute_type === 'sport' ? 'Training  Batch' : 'Batch Management' }}</h3>
-                <p class="text-muted small mb-0">{{ auth()->user()->school->institute_type === 'sport' ? 'Optimize institutional scheduling and monitor athlete allocations.' : 'Optimize institutional scheduling and monitor student enrollment density.' }}
+                <h3 class="fw-bold mb-1 text-gradient">
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Training  Batch' : 'Batch Management' }}</h3>
+                <p class="text-muted small mb-0">
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Optimize institutional scheduling and monitor athlete allocations.' : 'Optimize institutional scheduling and monitor student enrollment density.' }}
                 </p>
             </div>
             <a href="{{ route('school.batches.create') }}"
                 class="btn btn-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
-                <i class="bi bi-clock-history me-2"></i> {{ auth()->user()->school->institute_type === 'sport' ? 'Create Dynamic Batch' : 'Create Dynamic Batch' }}
+                <i class="bi bi-clock-history me-2"></i>
+                {{ auth()->user()->school->institute_type === 'sport' ? 'Create Dynamic Batch' : 'Create Dynamic Batch' }}
             </a>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
                 <i class="bi bi-check-circle-fill fs-5 me-2"></i>
                 <div>{{ session('success') }}</div>
@@ -39,9 +42,12 @@
                                     CLASS:</span>
                                 <select name="class_id" class="form-select bg-transparent border-0 shadow-none tiny fw-bold"
                                     onchange="this.form.submit()">
-                                    <option value="">{{ auth()->user()->school->institute_type === 'sport' ? 'All Institutional Levels' : 'All Classes' }}</option>
-                                    @foreach($classes as $class)
-                                        <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>
+                                    <option value="">
+                                        {{ auth()->user()->school->institute_type === 'sport' ? 'All Institutional Levels' : 'All Classes' }}
+                                    </option>
+                                    @foreach ($classes as $class)
+                                        <option value="{{ $class->id }}"
+                                            {{ request('class_id') == $class->id ? 'selected' : '' }}>
                                             {{ $class->name }}
                                         </option>
                                     @endforeach
@@ -56,11 +62,18 @@
                     <table class="table table-hover align-middle mb-0 text-nowrap">
                         <thead class="bg-light">
                             <tr class="small text-muted text-uppercase fw-bold">
-                                <th class="ps-4 py-3 border-0">{{ auth()->user()->school->institute_type === 'sport' ? 'Sport & Session' : 'Batch Reference' }}</th>
-                                <th class="py-3 border-0">{{ auth()->user()->school->institute_type === 'sport' ? 'Activity & Level' : 'Class Assignment' }}</th>
+                                <th class="ps-4 py-3 border-0">
+                                    {{ auth()->user()->school->institute_type === 'sport' ? 'Sport & Session' : 'Batch Reference' }}
+                                </th>
+                                <th class="py-3 border-0">
+                                    {{ auth()->user()->school->institute_type === 'sport' ? 'Activity & Level' : 'Class Assignment' }}
+                                </th>
                                 <th class="py-3 border-0">Operational Window</th>
-                                <th class="py-3 border-0 text-center">{{ auth()->user()->school->institute_type === 'sport' ? 'Allocation Status' : 'Enrollment Status' }}</th>
-                                <th class="py-3 border-0 text-center">{{ auth()->user()->school->institute_type === 'sport' ? 'Coaches' : 'Faculties' }}</th>
+                                <th class="py-3 border-0 text-center">
+                                    {{ auth()->user()->school->institute_type === 'sport' ? 'Allocation Status' : 'Enrollment Status' }}
+                                </th>
+                                <th class="py-3 border-0 text-center">
+                                    {{ auth()->user()->school->institute_type === 'sport' ? 'Coaches' : 'Faculties' }}</th>
                                 <th class="pe-4 py-3 border-0 text-end">Administration</th>
                             </tr>
                         </thead>
@@ -73,27 +86,35 @@
                                                 <i class="bi bi-collection-fill"></i>
                                             </div>
                                             <div>
-                                                @if(auth()->user()->school->institute_type === 'sport')
-                                                    <div class="fw-bold text-dark">{{ $batch->class->course->name ?? 'N/A' }}</div>
-                                                    <small class="text-muted tiny">{{ $batch->name }}</small>
+                                                @if (auth()->user()->school->institute_type === 'sport')
+                                                    <div class="fw-bold text-dark">{{ $batch->name }}</div>
+                                                    <small class="text-muted tiny d-block">
+                                                        Course: {{ $batch->class->course->name ?? 'N/A' }}
+                                                    </small>
+                                                    <small class="text-muted tiny d-block">
+                                                        {{ $batch->subject->name ?? 'N/A' }} ·
+                                                        {{ $batch->sport_level ?? ($batch->subject->level->name ?? 'Any Level') }}
+                                                    </small>
                                                 @else
                                                     <div class="fw-bold text-dark">{{ $batch->name }}</div>
-                                                    <small class="text-muted tiny">Code: #BTC-{{ $batch->id }}</small>
+                                                    <small class="text-muted tiny d-block">Class:
+                                                        {{ $batch->class->name ?? 'N/A' }}</small>
+                                                    <small class="text-muted tiny d-block">Course:
+                                                        {{ $batch->class->course->name ?? 'N/A' }}</small>
+                                                    <small class="text-muted tiny d-block">Code:
+                                                        #BTC-{{ $batch->id }}</small>
                                                 @endif
                                             </div>
                                         </div>
                                     </td>
                                     <td class="border-0">
-                                        @if(auth()->user()->school->institute_type === 'sport')
-                                            <div>
-                                                <span class="badge bg-soft-success px-3 py-2 rounded-pill small">
-                                                    {{ $batch->subject->name ?? 'N/A' }}
-                                                </span>
-                                            </div>
-                                            <small class="text-muted mt-1 d-block">{{ $batch->sport_level ?? ($batch->subject->level->name ?? 'Any Level') }}</small>
+                                        @if (auth()->user()->school->institute_type === 'sport')
+                                            <span class="badge bg-soft-success px-3 py-2 rounded-pill small">
+                                                {{ $batch->class->name ?? 'N/A' }}
+                                            </span>
                                         @else
                                             <span class="badge bg-soft-info px-3 py-2 rounded-pill small">
-                                                {{ $batch->class->name }}
+                                                {{ $batch->class->name ?? 'N/A' }}
                                             </span>
                                         @endif
                                     </td>
@@ -106,16 +127,26 @@
                                     </td>
                                     <td class="border-0 text-center">
                                         @php
-                                            $occupancy = $batch->capacity > 0 ? ($batch->students_count / $batch->capacity) * 100 : 0;
-                                            $statusColor = $occupancy >= 90 ? 'danger' : ($occupancy >= 60 ? 'warning' : 'success');
+                                            $occupancy =
+                                                $batch->capacity > 0
+                                                    ? ($batch->students_count / $batch->capacity) * 100
+                                                    : 0;
+                                            $statusColor =
+                                                $occupancy >= 90
+                                                    ? 'danger'
+                                                    : ($occupancy >= 60
+                                                        ? 'warning'
+                                                        : 'success');
                                         @endphp
                                         <div class="mb-1 d-flex justify-content-between px-1">
                                             <small class="tiny text-muted fw-bold">{{ $batch->students_count }} /
                                                 {{ $batch->capacity }}</small>
                                             <small class="tiny text-muted fw-bold">{{ round($occupancy) }}%</small>
                                         </div>
-                                        <div class="progress rounded-pill" style="height: 6px; width: 120px; margin: 0 auto;">
-                                            <div class="progress-bar bg-{{ $statusColor }}" style="width: {{ $occupancy }}%">
+                                        <div class="progress rounded-pill"
+                                            style="height: 6px; width: 120px; margin: 0 auto;">
+                                            <div class="progress-bar bg-{{ $statusColor }}"
+                                                style="width: {{ $occupancy }}%">
                                             </div>
                                         </div>
                                     </td>
@@ -137,7 +168,8 @@
                                             </button>
                                         </div>
                                         <form id="delete-form-{{ $batch->id }}"
-                                            action="{{ route('school.batches.destroy', $batch) }}" method="POST" class="d-none">
+                                            action="{{ route('school.batches.destroy', $batch) }}" method="POST"
+                                            class="d-none">
                                             @csrf
                                             @method('DELETE')
                                         </form>
@@ -146,9 +178,12 @@
                             @empty
                                 <tr>
                                     <td colspan="7" class="text-center py-5">
-                                        <div class="opacity-25 mb-3"><i class="bi bi-calendar-x" style="font-size: 4rem;"></i>
+                                        <div class="opacity-25 mb-3"><i class="bi bi-calendar-x"
+                                                style="font-size: 4rem;"></i>
                                         </div>
-                                        <h5 class="text-muted">{{ auth()->user()->school->institute_type === 'sport' ? 'No operating Batch found for the selected criteria.' : 'No operating batches found for the selected criteria.' }}</h5>
+                                        <h5 class="text-muted">
+                                            {{ auth()->user()->school->institute_type === 'sport' ? 'No operating Batch found for the selected criteria.' : 'No operating batches found for the selected criteria.' }}
+                                        </h5>
                                         <a href="{{ route('school.batches.create') }}"
                                             class="btn btn-sm btn-primary rounded-pill px-4 mt-2">{{ auth()->user()->school->institute_type === 'sport' ? 'Create Initial Batch' : 'Create Initial Batch' }}</a>
                                     </td>

@@ -13,7 +13,15 @@
 @section('content')
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>{{ $batch->name }}</h2>
+            <div>
+                <h2 class="mb-1">{{ $batch->name }}</h2>
+                <div class="text-muted small">
+                    {{ $batch->class->course->name ?? 'N/A' }}
+                    @if ($batch->class->name)
+                        · {{ $batch->class->name }}
+                    @endif
+                </div>
+            </div>
             <div>
                 <a href="{{ route('school.batches.edit', $batch) }}" class="btn btn-warning">
                     <i class="bi bi-pencil"></i> Edit
@@ -34,13 +42,16 @@
                         <table class="table table-borderless">
                             <tr>
                                 <th>{{ $isSport ? 'Team:' : 'Class:' }}</th>
-                                <td>{{ $batch->class->name }}</td>
+                                <td>
+                                    {{ $batch->class->name ?? 'N/A' }}
+                                    <div class="text-muted small">{{ $batch->class->course->name ?? 'N/A' }}</div>
+                                </td>
                             </tr>
-                            @if($isSport && $batch->sport_level)
-                            <tr>
-                                <th>Sport Level:</th>
-                                <td>{{ $batch->sport_level }}</td>
-                            </tr>
+                            @if ($isSport && $batch->sport_level)
+                                <tr>
+                                    <th>Sport Level:</th>
+                                    <td>{{ $batch->sport_level }}</td>
+                                </tr>
                             @endif
                             <tr>
                                 <th>Type:</th>
@@ -77,15 +88,15 @@
                 <div class="card mb-3">
                     <div class="card-header">
                         <h5 class="mb-0">
-                                @if($isSport)
-                                        Assigned Coaches ({{ $batch->teachers->count() }})
-                                @else
-                                        Assigned Teachers ({{ $batch->teachers->count() }})
-                                @endif
+                            @if ($isSport)
+                                Assigned Coaches ({{ $batch->teachers->count() }})
+                            @else
+                                Assigned Teachers ({{ $batch->teachers->count() }})
+                            @endif
                         </h5>
                     </div>
                     <div class="card-body">
-                        @if($batch->teachers->count() > 0)
+                        @if ($batch->teachers->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-sm">
                                     <thead>
@@ -97,7 +108,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($batch->teachers as $teacher)
+                                        @foreach ($batch->teachers as $teacher)
                                             <tr>
                                                 <td>{{ $teacher->user->name }}</td>
                                                 <td>{{ $teacher->employee_id }}</td>
@@ -110,7 +121,11 @@
                             </div>
                         @else
                             <p class="text-muted mb-0">
-                                @if($isSport) No coaches assigned to this batch. @else No teachers assigned to this batch. @endif
+                                @if ($isSport)
+                                    No coaches assigned to this batch.
+                                @else
+                                    No teachers assigned to this batch.
+                                @endif
                             </p>
                         @endif
                     </div>
@@ -119,15 +134,15 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
-                                @if($isSport)
-                                        Enrolled Athletes ({{ $batch->students->count() }})
-                                @else
-                                        Enrolled Students ({{ $batch->students->count() }})
-                                @endif
+                            @if ($isSport)
+                                Enrolled Athletes ({{ $batch->students->count() }})
+                            @else
+                                Enrolled Students ({{ $batch->students->count() }})
+                            @endif
                         </h5>
                     </div>
                     <div class="card-body">
-                        @if($batch->students->count() > 0)
+                        @if ($batch->students->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-sm">
                                     <thead>
@@ -140,7 +155,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($batch->students as $student)
+                                        @foreach ($batch->students as $student)
                                             <tr>
                                                 <td>{{ $student->roll_number }}</td>
                                                 <td>{{ $student->user->name }}</td>
@@ -159,7 +174,11 @@
                             </div>
                         @else
                             <p class="text-muted mb-0">
-                                @if($isSport) No athletes enrolled in this batch yet. @else No students enrolled in this batch yet. @endif
+                                @if ($isSport)
+                                    No athletes enrolled in this batch yet.
+                                @else
+                                    No students enrolled in this batch yet.
+                                @endif
                             </p>
                         @endif
                     </div>

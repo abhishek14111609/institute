@@ -14,11 +14,14 @@
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                             <div>
-                                <h6 class="text-white-50 fw-bold mb-1 small text-uppercase" style="letter-spacing: 1px;">Purchase Ledger</h6>
-                                <h2 class="fw-bold mb-0 display-6">&#8377;{{ number_format($stats['total_spent'], 2) }}</h2>
-                                <p class="text-white-50 small mb-0 mt-2">All store-room purchases are marked paid and linked to downloadable invoices.</p>
+                                <h6 class="text-white-50 fw-bold mb-1 small text-uppercase" style="letter-spacing: 1px;">
+                                    Purchase Ledger</h6>
+                                <h2 class="fw-bold mb-0 display-6">Rs {{ number_format($stats['total_spent'], 2) }}</h2>
+                                <p class="text-white-50 small mb-0 mt-2">All store-room purchases are marked paid and linked
+                                    to downloadable invoices.</p>
                             </div>
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle border border-primary border-opacity-25">
+                            <div
+                                class="bg-primary bg-opacity-10 p-3 rounded-circle border border-primary border-opacity-25">
                                 <i class="bi bi-bag-check text-primary fs-2"></i>
                             </div>
                         </div>
@@ -78,29 +81,37 @@
                                     <td>
                                         <div class="fw-bold text-dark">{{ $purchase->item->name ?? 'Deleted Item' }}</div>
                                         <div class="tiny text-muted">
-                                            {{ $purchase->item->category ?? 'Inventory' }} • &#8377;{{ number_format($purchase->unit_price, 2) }} each
+                                            {{ $purchase->item->category ?? 'Inventory' }} •
+                                            Rs{{ number_format($purchase->unit_price, 2) }} each
                                         </div>
                                     </td>
                                     <td class="text-center fw-bold">{{ $purchase->quantity }}</td>
                                     <td class="text-end">
-                                        <div class="fw-bold text-success">&#8377;{{ number_format($purchase->total_amount, 2) }}</div>
-                                        <div class="tiny text-muted">{{ strtoupper($purchase->payment_status ?? 'paid') }}</div>
+                                        <div class="fw-bold text-success">Rs {{ number_format($purchase->total_amount, 2) }}
+                                        </div>
+                                        <div class="tiny text-muted">{{ strtoupper($purchase->payment_status ?? 'paid') }}
+                                        </div>
                                     </td>
                                     <td>
-                                        @if($purchase->invoice)
-                                            <div class="fw-bold text-primary">{{ $purchase->invoice->invoice_number }}</div>
-                                            <div class="tiny text-muted">{{ $purchase->invoice->invoice_date->format('d M, Y') }}</div>
+                                        @if ($purchase->invoice)
+                                            <div class="fw-bold text-primary">{{ $purchase->invoice->invoice_number }}
+                                            </div>
+                                            <div class="tiny text-muted">
+                                                {{ $purchase->invoice->invoice_date->format('d M, Y') }}</div>
                                         @else
                                             <span class="text-muted small">Pending</span>
                                         @endif
                                     </td>
                                     <td class="pe-4 text-end">
-                                        @if($purchase->invoice)
+                                        @if ($purchase->invoice)
                                             <div class="btn-group shadow-sm rounded-pill overflow-hidden border">
-                                                <a href="{{ route('student.invoices.stream', $purchase->invoice) }}" target="_blank" class="btn btn-sm btn-white border-0" title="View Invoice">
+                                                <a href="{{ route('student.invoices.stream', $purchase->invoice) }}"
+                                                    target="_blank" class="btn btn-sm btn-white border-0"
+                                                    title="View Invoice">
                                                     <i class="bi bi-eye text-primary"></i>
                                                 </a>
-                                                <a href="{{ route('student.invoices.download', $purchase->invoice) }}" class="btn btn-sm btn-white border-0" title="Download Invoice">
+                                                <a href="{{ route('student.invoices.download', $purchase->invoice) }}"
+                                                    class="btn btn-sm btn-white border-0" title="Download Invoice">
                                                     <i class="bi bi-download text-success"></i>
                                                 </a>
                                             </div>
@@ -113,7 +124,8 @@
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
                                         <div class="opacity-25 mb-3"><i class="bi bi-bag-x display-1"></i></div>
-                                        <p class="text-muted small mb-0">No inventory purchases have been recorded for your account yet.</p>
+                                        <p class="text-muted small mb-0">No inventory purchases have been recorded for your
+                                            account yet.</p>
                                     </td>
                                 </tr>
                             @endforelse

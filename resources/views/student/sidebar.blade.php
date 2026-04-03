@@ -2,9 +2,9 @@
     <div class="sidebar-brand d-flex align-items-center">
         <div class="brand-logo bg-white p-2 rounded-3 me-2 shadow-sm d-flex align-items-center justify-content-center"
             style="width: 40px; height: 40px; overflow: hidden;">
-            @if(auth()->user()->school && auth()->user()->school->logo)
-                <img src="{{ asset('storage/' . auth()->user()->school->logo) }}" alt="Logo" class="img-fluid"
-                    style="max-height: 100%; object-fit: contain;">
+            @if (auth()->user()->school && auth()->user()->school->logo)
+                <img src="{{ route('media.public', ['path' => auth()->user()->school->logo]) }}" alt="Logo"
+                    class="img-fluid" style="max-height: 100%; object-fit: contain;">
             @else
                 <i class="bi bi-mortarboard-fill text-primary fs-4"></i>
             @endif
@@ -12,7 +12,11 @@
         <div>
             <h6 class="fw-bold mb-0 text-white">{{ $isSport ? 'Athlete Portal' : 'Student Portal' }}</h6>
             <small class="text-white opacity-75 tiny">
-                @if($isSport) Sports Academy @else School @endif
+                @if ($isSport)
+                    Sports Academy
+                @else
+                    School
+                @endif
             </small>
         </div>
     </div>
@@ -61,19 +65,22 @@
 
     <li class="nav-label tiny text-white opacity-75 mt-4 mb-2" style="padding-left: 15px;">Finance</li>
     <li>
-        <a href="{{ route('student.fees.index') }}" class="{{ request()->routeIs('student.fees.*') ? 'active' : '' }}">
+        <a href="{{ route('student.fees.index') }}"
+            class="{{ request()->routeIs('student.fees.*') ? 'active' : '' }}">
             <i class="bi bi-cash-stack"></i> <span>{{ $label['fees'] }}</span>
         </a>
     </li>
     <li>
-        <a href="{{ route('student.purchases.index') }}" class="{{ request()->routeIs('student.purchases.*') || request()->routeIs('student.invoices.*') ? 'active' : '' }}">
+        <a href="{{ route('student.purchases.index') }}"
+            class="{{ request()->routeIs('student.purchases.*') || request()->routeIs('student.invoices.*') ? 'active' : '' }}">
             <i class="bi bi-bag-check"></i> <span>My Purchases</span>
         </a>
     </li>
 
     <li class="nav-label tiny text-white opacity-75 mt-4 mb-2" style="padding-left: 15px;">Account</li>
     <li>
-        <a href="{{ route('student.settings') }}" class="{{ request()->routeIs('student.settings') ? 'active' : '' }}">
+        <a href="{{ route('student.settings') }}"
+            class="{{ request()->routeIs('student.settings') ? 'active' : '' }}">
             <i class="bi bi-gear"></i> <span>Settings</span>
         </a>
     </li>
@@ -91,7 +98,11 @@
         <div class="card-body p-3">
             <h6 class="text-primary fw-bold mb-1 small">Need Help?</h6>
             <p class="text-secondary small mb-0" style="font-size: 0.75rem;">
-                Contact your @if($isSport) coach @else school admin @endif for any issues.
+                Contact your @if ($isSport)
+                    coach
+                @else
+                    school admin
+                @endif for any issues.
             </p>
         </div>
     </div>

@@ -26,6 +26,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Public media fallback route for uploaded files.
+Route::get('/media/public/{path}', [App\Http\Controllers\MediaController::class, 'publicFile'])
+    ->where('path', '.*')
+    ->name('media.public');
+
 // Auth Routes
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->middleware('throttle:5,1');

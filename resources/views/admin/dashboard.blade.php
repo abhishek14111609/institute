@@ -106,32 +106,38 @@
                             <h5 class="fw-bold text-main mb-1">Sports Institutes</h5>
                             <small class="text-muted">Operational finance across all sports institutes</small>
                         </div>
-                        <span class="badge bg-success-subtle text-success">{{ $sportFinance['school_count'] ?? 0 }} schools</span>
+                        <span class="badge bg-success-subtle text-success">{{ $sportFinance['school_count'] ?? 0 }}
+                            schools</span>
                     </div>
                     <div class="card-body p-4">
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="p-3 rounded-4 bg-light">
                                     <div class="small text-muted mb-1">Fee Revenue</div>
-                                    <div class="fw-bold text-primary">&#8377;{{ number_format($sportFinance['fee_revenue'] ?? 0, 2) }}</div>
+                                    <div class="fw-bold text-primary">
+                                        Rs{{ number_format($sportFinance['fee_revenue'] ?? 0, 2) }}</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 rounded-4 bg-light">
                                     <div class="small text-muted mb-1">Selling Revenue</div>
-                                    <div class="fw-bold text-success">&#8377;{{ number_format($sportFinance['sales_revenue'] ?? 0, 2) }}</div>
+                                    <div class="fw-bold text-success">
+                                        Rs{{ number_format($sportFinance['sales_revenue'] ?? 0, 2) }}</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 rounded-4 bg-light">
                                     <div class="small text-muted mb-1">Expenses</div>
-                                    <div class="fw-bold text-danger">&#8377;{{ number_format($sportFinance['expenses'] ?? 0, 2) }}</div>
+                                    <div class="fw-bold text-danger">
+                                        Rs{{ number_format($sportFinance['expenses'] ?? 0, 2) }}</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 rounded-4 bg-light">
                                     <div class="small text-muted mb-1">Net</div>
-                                    <div class="fw-bold {{ ($sportFinance['net'] ?? 0) >= 0 ? 'text-info' : 'text-danger' }}">&#8377;{{ number_format($sportFinance['net'] ?? 0, 2) }}</div>
+                                    <div
+                                        class="fw-bold {{ ($sportFinance['net'] ?? 0) >= 0 ? 'text-info' : 'text-danger' }}">
+                                        Rs{{ number_format($sportFinance['net'] ?? 0, 2) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -146,32 +152,38 @@
                             <h5 class="fw-bold text-main mb-1">Academic Institutes</h5>
                             <small class="text-muted">Operational finance across all academic institutes</small>
                         </div>
-                        <span class="badge bg-primary-subtle text-primary">{{ $academicFinance['school_count'] ?? 0 }} schools</span>
+                        <span class="badge bg-primary-subtle text-primary">{{ $academicFinance['school_count'] ?? 0 }}
+                            schools</span>
                     </div>
                     <div class="card-body p-4">
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="p-3 rounded-4 bg-light">
                                     <div class="small text-muted mb-1">Fee Revenue</div>
-                                    <div class="fw-bold text-primary">&#8377;{{ number_format($academicFinance['fee_revenue'] ?? 0, 2) }}</div>
+                                    <div class="fw-bold text-primary">
+                                        Rs{{ number_format($academicFinance['fee_revenue'] ?? 0, 2) }}</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 rounded-4 bg-light">
                                     <div class="small text-muted mb-1">Selling Revenue</div>
-                                    <div class="fw-bold text-success">&#8377;{{ number_format($academicFinance['sales_revenue'] ?? 0, 2) }}</div>
+                                    <div class="fw-bold text-success">
+                                        Rs{{ number_format($academicFinance['sales_revenue'] ?? 0, 2) }}</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 rounded-4 bg-light">
                                     <div class="small text-muted mb-1">Expenses</div>
-                                    <div class="fw-bold text-danger">&#8377;{{ number_format($academicFinance['expenses'] ?? 0, 2) }}</div>
+                                    <div class="fw-bold text-danger">
+                                        Rs{{ number_format($academicFinance['expenses'] ?? 0, 2) }}</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 rounded-4 bg-light">
                                     <div class="small text-muted mb-1">Net</div>
-                                    <div class="fw-bold {{ ($academicFinance['net'] ?? 0) >= 0 ? 'text-info' : 'text-danger' }}">&#8377;{{ number_format($academicFinance['net'] ?? 0, 2) }}</div>
+                                    <div
+                                        class="fw-bold {{ ($academicFinance['net'] ?? 0) >= 0 ? 'text-info' : 'text-danger' }}">
+                                        Rs{{ number_format($academicFinance['net'] ?? 0, 2) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -189,7 +201,8 @@
                             <div>
                                 <p class="text-muted text-uppercase small mb-1">Active Subscriptions</p>
                                 <h4 class="fw-bold mb-1">{{ $stats['active_subscriptions'] }}</h4>
-                                <p class="small text-muted mb-0">{{ $stats['expiring_soon_count'] }} expiring within 7 days
+                                <p class="small text-muted mb-0">{{ $stats['expiring_soon_count'] }} expiring within 7
+                                    days
                                 </p>
                             </div>
                             <span
