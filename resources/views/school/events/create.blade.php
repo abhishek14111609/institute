@@ -10,6 +10,7 @@
     @php
         $teachers = $teachers ?? collect();
         $students = $students ?? collect();
+        $isSport = $isSport ?? auth()->user()->school->institute_type === 'sport';
     @endphp
     <div class="container-fluid py-4">
         <!-- Header -->
@@ -147,29 +148,33 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-4">
-                                    <label for="sport_level"
-                                        class="form-label tiny fw-bold text-muted text-uppercase mb-2">Sport Level</label>
-                                    <div class="input-group bg-light rounded-pill px-3 py-1 border shadow-sm">
-                                        <span class="input-group-text bg-transparent border-0"><i
-                                                class="bi bi-bar-chart-steps text-info"></i></span>
-                                        <select
-                                            class="form-select bg-transparent border-0 shadow-none fw-bold @error('sport_level') is-invalid @enderror"
-                                            id="sport_level" name="sport_level">
-                                            <option value="">Select Level (Optional)</option>
-                                            @foreach($levels as $level)
-                                                <option value="{{ $level->name }}" {{ old('sport_level') == $level->name ? 'selected' : '' }}>
-                                                    {{ $level->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                @if ($isSport)
+                                    <div class="col-md-4">
+                                        <label for="sport_level"
+                                            class="form-label tiny fw-bold text-muted text-uppercase mb-2">Sport
+                                            Level</label>
+                                        <div class="input-group bg-light rounded-pill px-3 py-1 border shadow-sm">
+                                            <span class="input-group-text bg-transparent border-0"><i
+                                                    class="bi bi-bar-chart-steps text-info"></i></span>
+                                            <select
+                                                class="form-select bg-transparent border-0 shadow-none fw-bold @error('sport_level') is-invalid @enderror"
+                                                id="sport_level" name="sport_level">
+                                                <option value="">Select Level (Optional)</option>
+                                                @foreach ($levels as $level)
+                                                    <option value="{{ $level->name }}"
+                                                        {{ old('sport_level') == $level->name ? 'selected' : '' }}>
+                                                        {{ $level->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        @error('sport_level')
+                                            <div class="text-danger tiny fw-bold mt-2 ms-3">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    @error('sport_level')
-                                        <div class="text-danger tiny fw-bold mt-2 ms-3">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                                @endif
 
-                                <div class="col-md-4">
+                                <div class="{{ $isSport ? 'col-md-4' : 'col-md-8' }}">
                                     <label for="status"
                                         class="form-label tiny fw-bold text-muted text-uppercase mb-2">Lifecycle Status
                                         <span class="text-danger">*</span></label>
@@ -237,7 +242,7 @@
                 // Clear previous validation states
                 startTimeInput.classList.remove('is-invalid');
                 endTimeInput.classList.remove('is-invalid');
-                
+
                 // Remove existing custom error messages
                 const existingErrors = document.querySelectorAll('.time-error-msg');
                 existingErrors.forEach(err => err.remove());

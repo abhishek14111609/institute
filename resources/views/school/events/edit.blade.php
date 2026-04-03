@@ -7,6 +7,9 @@
 @endsection
 
 @section('content')
+    @php
+        $isSport = $isSport ?? auth()->user()->school->institute_type === 'sport';
+    @endphp
     <div class="container-fluid py-4">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-5 pb-2 border-bottom">
@@ -42,14 +45,16 @@
 
                             <div class="row g-4 mb-4">
                                 <div class="col-md-7">
-                                    <label for="title" class="form-label tiny fw-bold text-muted text-uppercase mb-2">Event
+                                    <label for="title"
+                                        class="form-label tiny fw-bold text-muted text-uppercase mb-2">Event
                                         Nomenclature <span class="text-danger">*</span></label>
                                     <div class="input-group bg-light rounded-pill px-3 py-1 border shadow-sm">
                                         <span class="input-group-text bg-transparent border-0"><i
                                                 class="bi bi-flag text-primary"></i></span>
                                         <input type="text"
                                             class="form-control bg-transparent border-0 shadow-none fw-bold @error('title') is-invalid @enderror"
-                                            id="title" name="title" value="{{ old('title', $event->title) }}" required>
+                                            id="title" name="title" value="{{ old('title', $event->title) }}"
+                                            required>
                                     </div>
                                     @error('title')
                                         <div class="text-danger tiny fw-bold mt-2 ms-3">{{ $message }}</div>
@@ -67,8 +72,9 @@
                                             class="form-select bg-transparent border-0 shadow-none fw-bold @error('coach_id') is-invalid @enderror"
                                             id="coach_id" name="coach_id" required>
                                             <option value="">Select Faculty</option>
-                                            @foreach($teachers as $teacher)
-                                                <option value="{{ $teacher->id }}" {{ old('coach_id', $event->coach_id) == $teacher->id ? 'selected' : '' }}>
+                                            @foreach ($teachers as $teacher)
+                                                <option value="{{ $teacher->id }}"
+                                                    {{ old('coach_id', $event->coach_id) == $teacher->id ? 'selected' : '' }}>
                                                     {{ $teacher->user->name }}
                                                 </option>
                                             @endforeach
@@ -153,29 +159,33 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-4">
-                                    <label for="sport_level"
-                                        class="form-label tiny fw-bold text-muted text-uppercase mb-2">Sport Level</label>
-                                    <div class="input-group bg-light rounded-pill px-3 py-1 border shadow-sm">
-                                        <span class="input-group-text bg-transparent border-0"><i
-                                                class="bi bi-bar-chart-steps text-info"></i></span>
-                                        <select
-                                            class="form-select bg-transparent border-0 shadow-none fw-bold @error('sport_level') is-invalid @enderror"
-                                            id="sport_level" name="sport_level">
-                                            <option value="">Select Level (Optional)</option>
-                                            @foreach($levels as $level)
-                                                <option value="{{ $level->name }}" {{ old('sport_level', $event->sport_level) == $level->name ? 'selected' : '' }}>
-                                                    {{ $level->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                @if ($isSport)
+                                    <div class="col-md-4">
+                                        <label for="sport_level"
+                                            class="form-label tiny fw-bold text-muted text-uppercase mb-2">Sport
+                                            Level</label>
+                                        <div class="input-group bg-light rounded-pill px-3 py-1 border shadow-sm">
+                                            <span class="input-group-text bg-transparent border-0"><i
+                                                    class="bi bi-bar-chart-steps text-info"></i></span>
+                                            <select
+                                                class="form-select bg-transparent border-0 shadow-none fw-bold @error('sport_level') is-invalid @enderror"
+                                                id="sport_level" name="sport_level">
+                                                <option value="">Select Level (Optional)</option>
+                                                @foreach ($levels as $level)
+                                                    <option value="{{ $level->name }}"
+                                                        {{ old('sport_level', $event->sport_level) == $level->name ? 'selected' : '' }}>
+                                                        {{ $level->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        @error('sport_level')
+                                            <div class="text-danger tiny fw-bold mt-2 ms-3">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    @error('sport_level')
-                                        <div class="text-danger tiny fw-bold mt-2 ms-3">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                                @endif
 
-                                <div class="col-md-4">
+                                <div class="{{ $isSport ? 'col-md-4' : 'col-md-8' }}">
                                     <label for="status"
                                         class="form-label tiny fw-bold text-muted text-uppercase mb-2">Lifecycle Status
                                         <span class="text-danger">*</span></label>
@@ -185,10 +195,18 @@
                                         <select
                                             class="form-select bg-transparent border-0 shadow-none fw-bold @error('status') is-invalid @enderror"
                                             id="status" name="status" required>
-                                            <option value="upcoming" {{ old('status', $event->status) === 'upcoming' ? 'selected' : '' }}>Upcoming</option>
-                                            <option value="ongoing" {{ old('status', $event->status) === 'ongoing' ? 'selected' : '' }}>Operational</option>
-                                            <option value="completed" {{ old('status', $event->status) === 'completed' ? 'selected' : '' }}>Archived</option>
-                                            <option value="cancelled" {{ old('status', $event->status) === 'cancelled' ? 'selected' : '' }}>Void</option>
+                                            <option value="upcoming"
+                                                {{ old('status', $event->status) === 'upcoming' ? 'selected' : '' }}>
+                                                Upcoming</option>
+                                            <option value="ongoing"
+                                                {{ old('status', $event->status) === 'ongoing' ? 'selected' : '' }}>
+                                                Operational</option>
+                                            <option value="completed"
+                                                {{ old('status', $event->status) === 'completed' ? 'selected' : '' }}>
+                                                Archived</option>
+                                            <option value="cancelled"
+                                                {{ old('status', $event->status) === 'cancelled' ? 'selected' : '' }}>Void
+                                            </option>
                                         </select>
                                     </div>
                                     @error('status')
@@ -201,10 +219,8 @@
                                 <label for="description"
                                     class="form-label tiny fw-bold text-muted text-uppercase mb-2">Strategic
                                     Description</label>
-                                <textarea
-                                    class="form-control rounded-4 shadow-none border small p-3 @error('description') is-invalid @enderror"
-                                    id="description" name="description"
-                                    rows="4">{{ old('description', $event->description) }}</textarea>
+                                <textarea class="form-control rounded-4 shadow-none border small p-3 @error('description') is-invalid @enderror"
+                                    id="description" name="description" rows="4">{{ old('description', $event->description) }}</textarea>
                                 @error('description')
                                     <div class="text-danger tiny fw-bold mt-2 ms-3">{{ $message }}</div>
                                 @enderror
@@ -237,7 +253,7 @@
                 // Clear previous validation states
                 startTimeInput.classList.remove('is-invalid');
                 endTimeInput.classList.remove('is-invalid');
-                
+
                 // Remove existing custom error messages
                 const existingErrors = document.querySelectorAll('.time-error-msg');
                 existingErrors.forEach(err => err.remove());

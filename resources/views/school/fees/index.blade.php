@@ -42,7 +42,7 @@
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <i class="bi bi-receipt fs-3 opacity-50"></i>
-                            <span class="badge bg-white bg-opacity-20 rounded-pill tiny fw-bold">TOTAL EXPECTED</span>
+                            <span class="badge bg-white bg-opacity-20 rounded-pill tiny fw-bold text-black">TOTAL EXPECTED</span>
                         </div>
                         <h2 class="fw-bold mb-1">₹{{ number_format($stats['total_expected'], 0) }}</h2>
                         <p class="mb-0 opacity-75 small fw-semibold text-uppercase">Projected Revenue Pool</p>
@@ -54,7 +54,7 @@
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <i class="bi bi-cash-coin fs-3 opacity-50"></i>
-                            <span class="badge bg-white bg-opacity-20 rounded-pill tiny fw-bold">TOTAL COLLECTED</span>
+                            <span class="badge bg-white bg-opacity-20 rounded-pill tiny fw-bold text-black">TOTAL COLLECTED</span>
                         </div>
                         <h2 class="fw-bold mb-1">₹{{ number_format($stats['total_paid'], 0) }}</h2>
                         <p class="mb-0 opacity-75 small fw-semibold text-uppercase">Secured Institutional Asset</p>
@@ -66,7 +66,7 @@
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <i class="bi bi-exclamation-octagon fs-3 opacity-50"></i>
-                            <span class="badge bg-white bg-opacity-20 rounded-pill tiny fw-bold">OUTSTANDING DUE</span>
+                            <span class="badge bg-white bg-opacity-20 rounded-pill tiny fw-bold text-black">OUTSTANDING DUE</span>
                         </div>
                         <h2 class="fw-bold mb-1">₹{{ number_format($stats['total_outstanding'], 0) }}</h2>
                         <p class="mb-0 opacity-75 small fw-semibold text-uppercase">Accounts Receivable Balance</p>
