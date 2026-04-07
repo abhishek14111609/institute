@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Institutional Expenditure Registry')
+@section('title', ' Expenss Registry')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -11,13 +11,12 @@
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-5 pb-2">
             <div>
-                <h3 class="fw-bold mb-1 text-gradient">Expenditure Tracking</h3>
+                <h3 class="fw-bold mb-1 text-gradient">Expenss Tracking</h3>
                 <p class="text-muted small mb-0">Monitor institutional overheads, salaries, and operational costs.</p>
             </div>
             <a href="{{ route('school.expenses.create') }}"
                 class="btn btn-danger rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
-                <i class="bi bi-dash-circle me-2"></i> Log New Expenditure
-            </a>
+                <i class="bi bi-dash-circle me-2"></i> Add New Expenss </a>
         </div>
 
         <!-- Search & Analysis Bar -->
@@ -30,16 +29,12 @@
                             <select name="category" class="form-select rounded-pill px-3 shadow-none border small fw-bold"
                                 onchange="this.form.submit()">
                                 <option value="">All Institutional Overheads</option>
-                                <option value="salary" {{ request('category') === 'salary' ? 'selected' : '' }}>Faculty &
-                                    Staff Salaries</option>
-                                <option value="maintenance" {{ request('category') === 'maintenance' ? 'selected' : '' }}>
-                                    Facility Maintenance</option>
-                                <option value="utilities" {{ request('category') === 'utilities' ? 'selected' : '' }}>Public
-                                    Utilities (Power/Water)</option>
-                                <option value="supplies" {{ request('category') === 'supplies' ? 'selected' : '' }}>
-                                    Educational Supplies</option>
-                                <option value="other" {{ request('category') === 'other' ? 'selected' : '' }}>Miscellaneous
-                                    Costs</option>
+                                @foreach ($categories ?? collect() as $categoryItem)
+                                    <option value="{{ $categoryItem->name }}"
+                                        {{ request('category') === $categoryItem->name ? 'selected' : '' }}>
+                                        {{ $categoryItem->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </form>
                     </div>

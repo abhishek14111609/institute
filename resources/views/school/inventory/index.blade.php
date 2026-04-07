@@ -102,14 +102,12 @@
                                         onchange="this.form.submit()">
                                         <option value="All" {{ request('category') == 'All' ? 'selected' : '' }}>All
                                             Categories</option>
-                                        <option value="Kit" {{ request('category') == 'Kit' ? 'selected' : '' }}>Kits &
-                                            Gear</option>
-                                        <option value="Book" {{ request('category') == 'Book' ? 'selected' : '' }}>Books
-                                        </option>
-                                        <option value="Uniform" {{ request('category') == 'Uniform' ? 'selected' : '' }}>
-                                            Uniforms</option>
-                                        <option value="Other" {{ request('category') == 'Other' ? 'selected' : '' }}>Other
-                                        </option>
+                                        @foreach ($categories ?? collect() as $categoryItem)
+                                            <option value="{{ $categoryItem->name }}"
+                                                {{ request('category') == $categoryItem->name ? 'selected' : '' }}>
+                                                {{ $categoryItem->name }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -307,9 +305,30 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('.select2').select2({
-                dropdownParent: $('#issueItemModal')
-            });
+            if ($.fn.select2) {
+                $('.select2').select2({
+                    dropdownParent: $('#issueItemModal')
+                });
+            }
+
+            const categorySelect = $('#addItemModal select[name="category"]');
+            const newCategoryInput = $('#addItemModal [data-new-category-input="inventory-add"]');
+
+            const toggleNewCategory = function() {
+                const isNew = categorySelect.val() === '__new__';
+                newCategoryInput.toggleClass('d-none', !isNew);
+                if (isNew) {
+                    categorySelect.removeAttr('required');
+                    newCategoryInput.attr('required', 'required').trigger('focus');
+                } else {
+                    newCategoryInput.removeAttr('required').val('');
+                    categorySelect.attr('required', 'required');
+                }
+            };
+
+            categorySelect.on('change', toggleNewCategory);
+            $('#addItemModal').on('shown.bs.modal', toggleNewCategory);
+            toggleNewCategory();
 
             let searchTimer;
             $('input[name="search"]').on('input', function() {

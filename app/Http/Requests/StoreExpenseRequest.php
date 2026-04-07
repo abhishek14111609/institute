@@ -25,7 +25,8 @@ class StoreExpenseRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'amount' => ['required', 'numeric', 'min:0.01', 'max:99999999.99'],
-            'category' => ['required', 'string', 'max:100'],
+            'category' => ['nullable', 'string', 'max:100', 'not_in:__new__', 'required_without:new_category'],
+            'new_category' => ['nullable', 'string', 'max:100'],
             'expense_date' => ['required', 'date', 'before_or_equal:today'],
             'receipt' => ['nullable', 'file', 'mimes:pdf,jpeg,png,jpg', 'max:5120'],
         ];

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\School;
 
 use App\Http\Controllers\Controller;
+use App\Models\CategoryType;
 use App\Models\Course;
 use App\Models\InventoryItem;
 use App\Models\Invoice;
@@ -12,6 +13,7 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class InventoryController extends Controller
@@ -22,16 +24,16 @@ class InventoryController extends Controller
     public function index(Request $request)
     {
         $schoolId = $this->currentSchoolId();
-        
+
         $query = InventoryItem::query()
             ->where('school_id', '=', $schoolId, 'and')
             ->with(['course', 'level']);
 
         if ($request->filled('search')) {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('category', 'LIKE', "%{$searchTerm}%");
+                    ->orWhere('category', 'LIKE', "%{$searchTerm}%");
             });
         }
 
@@ -40,21 +42,38 @@ class InventoryController extends Controller
         }
 
         $items = $query->get();
-            
+
+        $categories = CategoryType::query()
+            ->forSchoolModule($schoolId, CategoryType::MODULE_INVENTORY)
+            ->active()
+            ->orderBy('name')
+            ->get();
+
+        if ($categories->isEmpty()) {
+            $legacyCategories = InventoryItem::query()
+                ->where('school_id', '=', $schoolId, 'and')
+                ->whereNotNull('category')
+                ->distinct()
+                ->pluck('category')
+                ->filter();
+
+            $categories = $legacyCategories->map(fn($name) => (object) ['name' => $name]);
+        }
+
         $recentSales = InventorySale::query()
             ->where('school_id', '=', $schoolId, 'and')
             ->with(['student.user', 'item', 'invoice'])
             ->latest()
             ->take(10)
             ->get();
-            
+
         $students = Student::query()
             ->where('school_id', '=', $schoolId, 'and')
             ->where('is_active', '=', 1, 'and')
             ->with('user')
             ->get();
 
-        return view('school.inventory.index', compact('items', 'recentSales', 'students'));
+        return view('school.inventory.index', compact('items', 'recentSales', 'students', 'categories'));
     }
 
     /**
@@ -76,7 +95,8 @@ class InventoryController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
+            'category' => 'nullable|string|max:255|not_in:__new__|required_without:new_category',
+            'new_category' => 'nullable|string|max:255',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
             'alert_quantity' => 'nullable|integer|min:0',
@@ -95,7 +115,12 @@ class InventoryController extends Controller
             'course_id' => $validated['course_id'] ?? null,
             'level_id' => $validated['level_id'] ?? null,
             'name' => $validated['name'],
-            'category' => $validated['category'],
+            'category' => $this->resolveCategoryName(
+                $schoolId,
+                CategoryType::MODULE_INVENTORY,
+                $validated['category'] ?? null,
+                $request->input('new_category')
+            ),
             'price' => $validated['price'],
             'stock_quantity' => $validated['stock_quantity'],
             'alert_quantity' => $validated['alert_quantity'] ?? 5,
@@ -192,8 +217,24 @@ class InventoryController extends Controller
         $levels = Level::query()
             ->where('school_id', '=', $schoolId, 'and')
             ->get();
-        
-        return view('school.inventory.edit', compact('inventory', 'courses', 'levels'));
+        $categories = CategoryType::query()
+            ->forSchoolModule($schoolId, CategoryType::MODULE_INVENTORY)
+            ->active()
+            ->orderBy('name')
+            ->get();
+
+        if ($categories->isEmpty()) {
+            $legacyCategories = InventoryItem::query()
+                ->where('school_id', '=', $schoolId, 'and')
+                ->whereNotNull('category')
+                ->distinct()
+                ->pluck('category')
+                ->filter();
+
+            $categories = $legacyCategories->map(fn($name) => (object) ['name' => $name]);
+        }
+
+        return view('school.inventory.edit', compact('inventory', 'courses', 'levels', 'categories'));
     }
 
     /**
@@ -207,7 +248,8 @@ class InventoryController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
+            'category' => 'nullable|string|max:255|not_in:__new__|required_without:new_category',
+            'new_category' => 'nullable|string|max:255',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
             'alert_quantity' => 'nullable|integer|min:0',
@@ -223,7 +265,12 @@ class InventoryController extends Controller
 
         $inventory->update([
             'name' => $validated['name'],
-            'category' => $validated['category'],
+            'category' => $this->resolveCategoryName(
+                $schoolId,
+                CategoryType::MODULE_INVENTORY,
+                $validated['category'] ?? null,
+                $request->input('new_category')
+            ),
             'price' => $validated['price'],
             'stock_quantity' => $validated['stock_quantity'],
             'alert_quantity' => $validated['alert_quantity'] ?? 5,
@@ -261,5 +308,35 @@ class InventoryController extends Controller
         $user = auth()->user();
 
         return $user;
+    }
+
+    private function resolveCategoryName(int $schoolId, string $module, ?string $category, ?string $newCategory): string
+    {
+        $selected = trim((string) ($category ?? ''));
+        $custom = trim((string) ($newCategory ?? ''));
+
+        $name = $custom !== '' ? $custom : $selected;
+        if ($name === '') {
+            abort(422, 'Category is required.');
+        }
+
+        $slug = Str::slug($name);
+        if ($slug === '') {
+            $slug = Str::slug($name . '-' . uniqid());
+        }
+
+        CategoryType::query()->updateOrCreate(
+            [
+                'school_id' => $schoolId,
+                'module' => $module,
+                'slug' => $slug,
+            ],
+            [
+                'name' => $name,
+                'is_active' => true,
+            ]
+        );
+
+        return $name;
     }
 }

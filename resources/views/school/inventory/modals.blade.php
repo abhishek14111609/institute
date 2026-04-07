@@ -11,21 +11,27 @@
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-muted">ITEM NAME</label>
-                        <input type="text" name="name" class="form-control" placeholder="e.g. Physics Textbook Grade 10" required>
+                        <input type="text" name="name" class="form-control"
+                            placeholder="e.g. Physics Textbook Grade 10" required>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label small fw-bold text-muted">CATEGORY</label>
-                            <select name="category" class="form-select" required>
-                                <option value="Kit">Kit / Sport Gear</option>
-                                <option value="Book">Educational Book</option>
-                                <option value="Uniform">Uniform / Dress</option>
-                                <option value="Other">Other Equipment</option>
+                            <select name="category" class="form-select" id="inventory_add_category_select" required>
+                                <option value="">Select Category</option>
+                                @foreach ($categories ?? collect() as $categoryItem)
+                                    <option value="{{ $categoryItem->name }}">{{ $categoryItem->name }}</option>
+                                @endforeach
+                                <option value="__new__">+ Add New Category</option>
                             </select>
+                            <input type="text" name="new_category" class="form-control mt-2 d-none"
+                                placeholder="Enter new stock category" data-new-category-input="inventory-add"
+                                id="inventory_add_new_category_input">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label small fw-bold text-muted">UNIT PRICE (₹)</label>
-                            <input type="number" name="price" class="form-control" placeholder="0.00" step="0.01" required>
+                            <input type="number" name="price" class="form-control" placeholder="0.00" step="0.01"
+                                required>
                         </div>
                     </div>
                     <div class="row">
@@ -40,13 +46,50 @@
                     </div>
                 </div>
                 <div class="modal-footer border-0 p-4 pt-0">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-light rounded-pill px-4"
+                        data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary rounded-pill px-4 shadow">Save Item</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    (function() {
+        function wireInventoryCategoryToggle() {
+            const modal = document.getElementById('addItemModal');
+            const categorySelect = document.getElementById('inventory_add_category_select');
+            const newCategoryInput = document.getElementById('inventory_add_new_category_input');
+
+            if (!modal || !categorySelect || !newCategoryInput) {
+                return;
+            }
+
+            const toggle = function() {
+                const isNew = categorySelect.value === '__new__';
+                newCategoryInput.classList.toggle('d-none', !isNew);
+                newCategoryInput.required = isNew;
+
+                if (isNew) {
+                    newCategoryInput.focus();
+                } else {
+                    newCategoryInput.value = '';
+                }
+            };
+
+            categorySelect.addEventListener('change', toggle);
+            modal.addEventListener('shown.bs.modal', toggle);
+            toggle();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', wireInventoryCategoryToggle);
+        } else {
+            wireInventoryCategoryToggle();
+        }
+    })();
+</script>
 
 <!-- Modal: Issue/Sell Item -->
 <div class="modal fade" id="issueItemModal" tabindex="-1">
@@ -63,8 +106,9 @@
                         <label class="form-label small fw-bold text-muted">SELECT STUDENT</label>
                         <select name="student_id" class="form-select select2" required style="width: 100%;">
                             <option value="">— Search Student —</option>
-                            @foreach($students as $student)
-                                <option value="{{ $student->id }}">{{ $student->user->name ?? 'Student' }} (Roll: {{ $student->roll_number }})</option>
+                            @foreach ($students as $student)
+                                <option value="{{ $student->id }}">{{ $student->user->name ?? 'Student' }} (Roll:
+                                    {{ $student->roll_number }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -73,24 +117,27 @@
                             <label class="form-label small fw-bold text-muted">CHOOSE ITEM</label>
                             <select name="item_id" class="form-select" required>
                                 <option value="">— Select Available Stock —</option>
-                                @foreach($items as $item)
-                                    @if($item->stock_quantity > 0)
-                                        <option value="{{ $item->id }}">{{ $item->name }} (Qty: {{ $item->stock_quantity }} | ₹{{ $item->price }})</option>
+                                @foreach ($items as $item)
+                                    @if ($item->stock_quantity > 0)
+                                        <option value="{{ $item->id }}">{{ $item->name }} (Qty:
+                                            {{ $item->stock_quantity }} | ₹{{ $item->price }})</option>
                                     @endif
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label small fw-bold text-muted">QUANTITY</label>
-                            <input type="number" name="quantity" class="form-control" value="1" min="1" required>
+                            <input type="number" name="quantity" class="form-control" value="1" min="1"
+                                required>
                         </div>
                     </div>
                     <div class="alert alert-info py-2 small mb-0 mt-2">
-                         Note: This sale is recorded as a paid cash transaction and the invoice is generated immediately.
+                        Note: This sale is recorded as a paid cash transaction and the invoice is generated immediately.
                     </div>
                 </div>
                 <div class="modal-footer border-0 p-4 pt-0">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-light rounded-pill px-4"
+                        data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success rounded-pill px-4 shadow">Confirm Cash Sale</button>
                 </div>
             </form>
