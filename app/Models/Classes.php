@@ -61,6 +61,14 @@ class Classes extends Model
     }
 
     /**
+     * Subjects currently assigned to this class.
+     */
+    public function subjects()
+    {
+        return $this->hasMany(Subject::class, 'class_id');
+    }
+
+    /**
      * Scope active classes
      */
     public function scopeActive($query)

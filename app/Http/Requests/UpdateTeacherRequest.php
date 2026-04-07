@@ -42,7 +42,7 @@ class UpdateTeacherRequest extends FormRequest
             'email' => ['required', 'email', 'unique:users,email,' . $userId],
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($userId)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['nullable', 'digits:10'],
             'employee_id' => [
                 'nullable',
                 'string',

@@ -28,7 +28,7 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\-()\s]+$/'],
+            'phone' => ['nullable', 'digits:10'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
             'current_password' => ['nullable', 'string', 'required_with:new_password'],
             'new_password' => ['nullable', 'string', 'max:255', 'confirmed', Password::defaults()],

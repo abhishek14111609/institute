@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Activities & Batch Type' : 'Institutional Syllabus & Modules')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Activities & Batch Type' : 'Syllabus & Subject')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -19,20 +19,21 @@
                     {{ auth()->user()->school->institute_type === 'sport' ? 'training framework.' : 'academic framework.' }}
                 </p>
             </div>
-            <a href="{{ route('school.subjects.create') }}"
-                class="btn btn-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
-                <i class="bi bi-journal-plus me-2"></i>
-                {{ auth()->user()->school->institute_type === 'sport' ? 'Add New Batch Type' : 'Construct New Module' }}
-            </a>
-        </div>
-
-        @if(session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div>{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            <div class="d-flex gap-2">
+                @if (auth()->user()->school->institute_type !== 'sport')
+                    <a href="{{ route('school.subject-templates.index') }}"
+                        class="btn btn-outline-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
+                        <i class="bi bi-collection me-2"></i>
+                        Course-wise Subjects
+                    </a>
+                @endif
+                <a href="{{ route('school.subjects.create') }}"
+                    class="btn btn-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
+                    <i class="bi bi-journal-plus me-2"></i>
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Add New Batch Type' : 'Add New Subject' }}
+                </a>
             </div>
-        @endif
+        </div>
 
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-body p-0">
@@ -63,7 +64,7 @@
                                             <div>
                                                 <div class="fw-bold text-dark">{{ $subject->name }}</div>
                                                 <small class="text-muted tiny">
-                                                    @if(auth()->user()->school->institute_type === 'sport' && $subject->schoolClass && $subject->schoolClass->course)
+                                                    @if (auth()->user()->school->institute_type === 'sport' && $subject->schoolClass && $subject->schoolClass->course)
                                                         {{ $subject->schoolClass->course->name }}
                                                     @else
                                                         MOD-{{ str_pad($subject->id, 4, '0', STR_PAD_LEFT) }}
@@ -74,13 +75,14 @@
                                     </td>
                                     <td class="border-0">
                                         <div class="small fw-bold text-muted">
-                                            @if(auth()->user()->school->institute_type === 'sport')
+                                            @if (auth()->user()->school->institute_type === 'sport')
                                                 {{ $subject->level->name ?? 'N/A' }}
                                             @else
                                                 {{ $subject->schoolClass->name }}
                                             @endif
                                         </div>
-                                        <small class="text-muted tiny">{{ auth()->user()->school->institute_type === 'sport' ? 'Level Category' : 'Grade Classification' }}</small>
+                                        <small
+                                            class="text-muted tiny">{{ auth()->user()->school->institute_type === 'sport' ? 'Level Category' : 'Grade Classification' }}</small>
                                     </td>
                                     <td class="border-0">
                                         <span

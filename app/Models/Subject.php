@@ -15,6 +15,7 @@ class Subject extends Model
         'school_id',
         'class_id',
         'level_id',
+        'subject_template_id',
         'name',
         'activity_name',
         'type',
@@ -48,6 +49,14 @@ class Subject extends Model
     public function level()
     {
         return $this->belongsTo(Level::class);
+    }
+
+    /**
+     * Template used to generate this subject for a class.
+     */
+    public function template()
+    {
+        return $this->belongsTo(CourseSubjectTemplate::class, 'subject_template_id');
     }
 
     /**

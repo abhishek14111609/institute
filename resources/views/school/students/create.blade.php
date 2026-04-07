@@ -61,7 +61,7 @@
                             <label class="form-label">Phone</label>
                             <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror"
                                 value="{{ old('phone') }}" data-ajax-validate="true" data-table="users"
-                                data-rules="nullable|numeric|min:10|max:10" placeholder="e.g. 9876543210 (10 digits)">
+                                data-rules="nullable|digits:10" placeholder="e.g. 9876543210 (10 digits)">
                             @error('phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -174,7 +174,7 @@
                             <input type="tel" name="parent_phone"
                                 class="form-control @error('parent_phone') is-invalid @enderror"
                                 value="{{ old('parent_phone') }}" data-ajax-validate="true" data-table="students"
-                                data-rules="nullable|numeric|min:10|max:10" placeholder="e.g. 9876543210 (10 digits)">
+                                data-rules="nullable|digits:10" placeholder="e.g. 9876543210 (10 digits)">
                             @error('parent_phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -402,8 +402,8 @@
                     // Remove any non-numeric characters
                     this.value = this.value.replace(/[^0-9]/g, '');
 
-                    if (this.value.length > 15) {
-                        this.value = this.value.slice(0, 15);
+                    if (this.value.length > 10) {
+                        this.value = this.value.slice(0, 10);
                     }
                 });
             }
@@ -413,8 +413,8 @@
             if (parentPhoneInput) {
                 parentPhoneInput.addEventListener('input', function(e) {
                     this.value = this.value.replace(/[^0-9]/g, '');
-                    if (this.value.length > 15) {
-                        this.value = this.value.slice(0, 15);
+                    if (this.value.length > 10) {
+                        this.value = this.value.slice(0, 10);
                     }
                 });
             }

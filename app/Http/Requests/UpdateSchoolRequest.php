@@ -26,7 +26,7 @@ class UpdateSchoolRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:schools,email,' . $schoolId],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['nullable', 'digits:10'],
             'address' => ['nullable', 'string'],
             'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],

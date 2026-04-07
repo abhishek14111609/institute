@@ -20,7 +20,7 @@
                         class="bi bi-calendar-event me-1"></i> {{ $event->event_date->format('M d, Y h:i A') }}</p>
             </div>
             <div class="d-flex gap-2">
-                @if($event->status !== 'completed' && $event->status !== 'cancelled')
+                @if ($event->status !== 'completed' && $event->status !== 'cancelled')
                     <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal"
                         data-bs-target="#addParticipantsModal">
                         <i class="bi bi-person-plus me-1"></i> Add Students
@@ -29,15 +29,6 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 alert-dismissible fade show p-4 mb-4" role="alert">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-check-circle-fill fs-4 me-3 text-success"></i>
-                    <div class="text-dark fw-bold">{{ session('success') }}</div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
 
         <div class="row g-4">
             <!-- Event Stats -->
@@ -67,12 +58,13 @@
                         <h6 class="fw-bold mb-3">Event Status</h6>
                         <div class="d-grid">
                             @php
-                                $statusClass = [
-                                    'upcoming' => 'info',
-                                    'ongoing' => 'warning',
-                                    'completed' => 'success',
-                                    'cancelled' => 'danger'
-                                ][$event->status] ?? 'secondary';
+                                $statusClass =
+                                    [
+                                        'upcoming' => 'info',
+                                        'ongoing' => 'warning',
+                                        'completed' => 'success',
+                                        'cancelled' => 'danger',
+                                    ][$event->status] ?? 'secondary';
                             @endphp
                             <span
                                 class="badge bg-{{ $statusClass }} py-2 rounded-pill fs-6">{{ ucfirst($event->status) }}</span>
@@ -102,29 +94,21 @@
                                     @forelse($event->students as $student)
                                         <tr>
                                             <td class="ps-4 border-0">
-                                                <div class="d-flex align-items-center">
-                                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($student->user->name) }}&background=random&color=fff&size=40"
-                                                        class="rounded-circle me-2 shadow-sm">
-                                                    <div>
-                                                        <div class="fw-bold text-dark">{{ $student->user->name }}</div>
-                                                        <small class="text-muted">{{ $student->batches->first()->name ?? optional($student->batch)->name ?? 'N/A' }}</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="border-0">
                                                 @php
-                                                    $pStatusClass = [
-                                                        'registered' => 'bg-info',
-                                                        'participated' => 'bg-success',
-                                                        'withdrawn' => 'bg-danger'
-                                                    ][$student->pivot->participation_status] ?? 'bg-secondary';
+                                                    $pStatusClass =
+                                                        [
+                                                            'registered' => 'bg-info',
+                                                            'participated' => 'bg-success',
+                                                            'withdrawn' => 'bg-danger',
+                                                        ][$student->pivot->participation_status] ?? 'bg-secondary';
                                                 @endphp
                                                 <span
                                                     class="badge rounded-pill {{ $pStatusClass }} px-3">{{ ucfirst($student->pivot->participation_status) }}</span>
                                             </td>
                                             <td class="border-0">
-                                                @if($student->pivot->rank)
-                                                    <span class="fw-bold text-warning"><i class="bi bi-award-fill me-1"></i> Rank
+                                                @if ($student->pivot->rank)
+                                                    <span class="fw-bold text-warning"><i class="bi bi-award-fill me-1"></i>
+                                                        Rank
                                                         #{{ $student->pivot->rank }}</span>
                                                 @else
                                                     <span class="text-muted small">Not set</span>
@@ -132,7 +116,8 @@
                                             </td>
                                             <td class="border-0 pe-4 text-end">
                                                 <div class="d-flex justify-content-end gap-1">
-                                                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3"
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-light border rounded-pill px-3"
                                                         onclick='openResultModal(@json($student->id), @json($student->user->name), @json($student->pivot->participation_status), @json($student->pivot->rank), @json($student->pivot->notes))'>
                                                         <i class="bi bi-pencil me-1"></i> Results
                                                     </button>
@@ -211,11 +196,14 @@
                                             <td class="border-0">
                                                 <span class="fw-bold student-name">{{ $student->user->name }}</span>
                                             </td>
-                                            <td class="border-0 small text-muted">{{ $student->batches->first()->name ?? optional($student->batch)->name ?? 'N/A' }}</td>
+                                            <td class="border-0 small text-muted">
+                                                {{ $student->batches->first()->name ?? (optional($student->batch)->name ?? 'N/A') }}
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" class="text-center py-4 text-muted small">No more students available
+                                            <td colspan="3" class="text-center py-4 text-muted small">No more students
+                                                available
                                                 for selection.</td>
                                         </tr>
                                     @endforelse
@@ -224,7 +212,8 @@
                         </div>
                     </div>
                     <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4"
+                            data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary rounded-pill px-4" id="submitAddBtn" disabled>Add
                             Selected Students</button>
                     </div>
@@ -256,11 +245,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-muted">RANK / POSITION (OPTIONAL)</label>
-                            <input type="number" class="form-control rounded-3 border-0 bg-light" name="rank" id="modalRank"
-                                placeholder="e.g. 1 for 1st place...">
+                            <input type="number" class="form-control rounded-3 border-0 bg-light" name="rank"
+                                id="modalRank" placeholder="e.g. 1 for 1st place...">
                         </div>
                         <div class="mb-0">
-                            <label class="form-label small fw-bold text-muted">COACHING NOTES / PERFORMANCE FEEDBACK</label>
+                            <label class="form-label small fw-bold text-muted">COACHING NOTES / PERFORMANCE
+                                FEEDBACK</label>
                             <textarea class="form-control rounded-3 border-0 bg-light" name="notes" id="modalNotes" rows="4"
                                 placeholder="How did the student perform? Any specific strengths or weaknesses..."></textarea>
                         </div>
@@ -296,11 +286,11 @@
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Search students
             const studentSearch = document.getElementById('studentSearch');
             if (studentSearch) {
-                studentSearch.addEventListener('keyup', function () {
+                studentSearch.addEventListener('keyup', function() {
                     const query = this.value.toLowerCase();
                     document.querySelectorAll('.student-row').forEach(row => {
                         const name = row.querySelector('.student-name').textContent.toLowerCase();
@@ -315,7 +305,7 @@
             const submitAddBtn = document.getElementById('submitAddBtn');
 
             if (selectAll) {
-                selectAll.addEventListener('change', function () {
+                selectAll.addEventListener('change', function() {
                     studentChecks.forEach(check => {
                         if (check.closest('.student-row').style.display !== 'none') {
                             check.checked = this.checked;
@@ -333,7 +323,8 @@
                 const checkedCount = document.querySelectorAll('.check-student:checked').length;
                 if (submitAddBtn) {
                     submitAddBtn.disabled = checkedCount === 0;
-                    submitAddBtn.textContent = checkedCount > 0 ? `Add Selected (${checkedCount})` : 'Add Selected Students';
+                    submitAddBtn.textContent = checkedCount > 0 ? `Add Selected (${checkedCount})` :
+                        'Add Selected Students';
                 }
             }
         });
@@ -345,7 +336,8 @@
             document.getElementById('modalNotes').value = notes || '';
 
             const form = document.getElementById('resultForm');
-            form.action = "{{ route('teacher.events.participants.update', [$event->id, ':studentId']) }}".replace(':studentId', studentId);
+            form.action = "{{ route('teacher.events.participants.update', [$event->id, ':studentId']) }}".replace(
+                ':studentId', studentId);
 
             new bootstrap.Modal(document.getElementById('resultModal')).show();
         }

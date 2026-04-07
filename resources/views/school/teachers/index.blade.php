@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Coach Registry' : 'Institutional
-    Faculty Registry')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Coach & Staff' : 'Faculty & Staff')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -21,17 +20,9 @@
             <a href="{{ route('school.teachers.create') }}"
                 class="btn btn-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
                 <i class="bi bi-person-plus-fill me-2"></i>
-                {{ auth()->user()->school->institute_type === 'sport' ? 'Recruit New Coach' : 'Recruit New Faculty' }}
+                {{ auth()->user()->school->institute_type === 'sport' ? 'Add New Coach' : 'Add New Faculty' }}
             </a>
         </div>
-
-        @if (session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div>{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
 
         <!-- Searching & Metrics -->
         <div class="row g-4 mb-4">

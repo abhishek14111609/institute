@@ -34,20 +34,6 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 alert-dismissible fade show p-4 mb-4"
-                role="alert">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-shield-check fs-2 me-3"></i>
-                    <div>
-                        <h6 class="fw-bold mb-0">Registry Synchronized</h6>
-                        <small>{{ session('success') }}</small>
-                    </div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         <!-- Control Deck: Filter Area -->
         <div class="row g-4 mb-4">
             <div class="col-12">

@@ -62,7 +62,7 @@
                                 <label for="phone" class="form-label">Phone</label>
                                 <input type="tel" class="form-control @error('phone') is-invalid @enderror"
                                     id="phone" name="phone" value="{{ old('phone', $student->user->phone) }}"
-                                    data-ajax-validate="true" data-table="users" data-rules="nullable|numeric|min:10|max:10"
+                                    data-ajax-validate="true" data-table="users" data-rules="nullable|digits:10"
                                     data-user-id="{{ $student->user_id }}" placeholder="e.g. 9876543210 (10 digits)">
                                 @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -186,7 +186,7 @@
                                 <input type="tel" class="form-control @error('parent_phone') is-invalid @enderror"
                                     id="parent_phone" name="parent_phone"
                                     value="{{ old('parent_phone', $student->parent_phone) }}" data-ajax-validate="true"
-                                    data-table="students" data-rules="nullable|numeric|min:10|max:10"
+                                    data-table="students" data-rules="nullable|digits:10"
                                     placeholder="e.g. 9876543210 (10 digits)">
                                 @error('parent_phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -375,7 +375,7 @@
                     if (input) {
                         input.addEventListener('input', function(e) {
                             this.value = this.value.replace(/[^0-9]/g, '');
-                            if (this.value.length > 15) this.value = this.value.slice(0, 15);
+                            if (this.value.length > 10) this.value = this.value.slice(0, 10);
                         });
                     }
                 });

@@ -43,6 +43,13 @@
             <span>{{ $label['courses'] }}</span>
         </a>
     </li>
+     <li class="nav-item">
+        <a href="{{ route('school.subjects.index') }}"
+            class="nav-link {{ request()->routeIs('school.subjects.*') ? 'active' : '' }}">
+            <i class="bi bi-journal-text"></i>
+            <span>{{ $label['subjects'] }}</span>
+        </a>
+    </li>
     @if ($isSport)
         <li class="nav-item">
             <a href="{{ route('school.levels.index') }}"
@@ -61,13 +68,7 @@
         </li>
     @endif
 
-    <li class="nav-item">
-        <a href="{{ route('school.subjects.index') }}"
-            class="nav-link {{ request()->routeIs('school.subjects.*') ? 'active' : '' }}">
-            <i class="bi bi-journal-text"></i>
-            <span>{{ $label['subjects'] }}</span>
-        </a>
-    </li>
+
     <li class="nav-item">
         <a href="{{ route('school.teachers.index') }}"
             class="nav-link {{ request()->routeIs('school.teachers.*') ? 'active' : '' }}">

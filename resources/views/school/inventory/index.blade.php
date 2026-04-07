@@ -8,20 +8,6 @@
 
 @section('content')
     <div class="container-fluid py-4 text-dark font-outfit">
-        @if (session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div class="small fw-bold">{{ session('success') }}</div>
-                @if (session('open_invoice_id'))
-                    <a href="{{ route('school.invoices.stream', session('open_invoice_id')) }}" target="_blank"
-                        class="btn btn-sm btn-light rounded-pill ms-3 px-3 fw-bold">
-                        <i class="bi bi-receipt me-1"></i> View Invoice
-                    </a>
-                @endif
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         @if (session('error'))
             <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
                 <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>

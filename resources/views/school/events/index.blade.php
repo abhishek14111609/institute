@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Athletic Calendar' : 'Institutional Event Calendar')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Athletic Calendar' :
+    'Institutional Event Calendar')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -11,22 +12,18 @@
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-5 pb-2">
             <div>
-                <h3 class="fw-bold mb-1 text-gradient">{{ auth()->user()->school->institute_type === 'sport' ? 'Events & Calendar' : 'Events & Calendar' }}</h3>
-                <p class="text-muted small mb-0">{{ auth()->user()->school->institute_type === 'sport' ? 'Manage sports meets, tournaments, and athletic coordination.' : 'Manage institutional events, assemblies, and coordination.' }}</p>
+                <h3 class="fw-bold mb-1 text-gradient">
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Events & Calendar' : 'Events & Calendar' }}
+                </h3>
+                <p class="text-muted small mb-0">
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Manage sports meets, tournaments, and athletic coordination.' : 'Manage institutional events, assemblies, and coordination.' }}
+                </p>
             </div>
             <a href="{{ route('school.events.create') }}"
                 class="btn btn-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center fw-bold">
                 <i class="bi bi-calendar-plus me-2"></i> Schedule New Event
             </a>
         </div>
-
-        @if(session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div class="small fw-bold">{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
 
         <!-- Searching & Filter Bar -->
         <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
@@ -37,14 +34,17 @@
                         <form action="{{ route('school.events.index') }}" method="GET">
                             <select name="status" class="form-select rounded-pill px-3 shadow-none border small fw-bold"
                                 onchange="this.form.submit()">
-                                <option value="">{{ auth()->user()->school->institute_type === 'sport' ? 'All Athletic Events' : 'All Institutional Events' }}</option>
+                                <option value="">
+                                    {{ auth()->user()->school->institute_type === 'sport' ? 'All Athletic Events' : 'All Institutional Events' }}
+                                </option>
                                 <option value="upcoming" {{ request('status') === 'upcoming' ? 'selected' : '' }}>Upcoming
                                     Schedule</option>
                                 <option value="ongoing" {{ request('status') === 'ongoing' ? 'selected' : '' }}>Currently
                                     Ongoing</option>
                                 <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Past
                                     Events</option>
-                                <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Archived /
+                                <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Archived
+                                    /
                                     Cancelled</option>
                             </select>
                         </form>
@@ -76,7 +76,9 @@
                                 <th class="ps-4 py-3 border-0">Event Identity</th>
                                 <th class="py-3 border-0">Temporal Logic</th>
                                 <th class="py-3 border-0">Institutional Location</th>
-                                <th class="py-3 border-0 text-center">{{ auth()->user()->school->institute_type === 'sport' ? 'Coach In-charge' : 'Faculty In-charge' }}</th>
+                                <th class="py-3 border-0 text-center">
+                                    {{ auth()->user()->school->institute_type === 'sport' ? 'Coach In-charge' : 'Faculty In-charge' }}
+                                </th>
                                 <th class="py-3 border-0 text-center">Lifecycle</th>
                                 <th class="pe-4 py-3 border-0 text-end">Action Control</th>
                             </tr>
@@ -97,7 +99,8 @@
                                         </div>
                                     </td>
                                     <td class="border-0">
-                                        <div class="small fw-bold text-dark">{{ $event->event_date->format('d M, Y') }}</div>
+                                        <div class="small fw-bold text-dark">{{ $event->event_date->format('d M, Y') }}
+                                        </div>
                                         <small class="text-muted tiny">
                                             <i class="bi bi-clock me-1"></i>
                                             {{ date('h:i A', strtotime($event->start_time)) }} -
@@ -106,11 +109,13 @@
                                     </td>
                                     <td class="border-0">
                                         <div class="small text-muted fw-bold"><i
-                                                class="bi bi-geo-alt-fill me-1 text-danger"></i> {{ $event->location }}</div>
+                                                class="bi bi-geo-alt-fill me-1 text-danger"></i> {{ $event->location }}
+                                        </div>
                                     </td>
                                     <td class="border-0 text-center">
                                         <div class="small fw-bold text-dark">{{ $event->coach->user->name }}</div>
-                                        <small class="text-muted tiny">{{ auth()->user()->school->institute_type === 'sport' ? 'Lead Coach' : 'Lead Coordinator' }}</small>
+                                        <small
+                                            class="text-muted tiny">{{ auth()->user()->school->institute_type === 'sport' ? 'Lead Coach' : 'Lead Coordinator' }}</small>
                                     </td>
                                     <td class="border-0 text-center">
                                         @php
@@ -121,7 +126,8 @@
                                                 'cancelled' => ['label' => 'VOID', 'color' => 'soft-danger'],
                                             ][$event->status] ?? ['label' => 'UNKNOWN', 'color' => 'soft-dark'];
                                         @endphp
-                                        <span class="badge bg-{{ $statusConfig['color'] }} rounded-pill px-3 py-1 tiny fw-bold">
+                                        <span
+                                            class="badge bg-{{ $statusConfig['color'] }} rounded-pill px-3 py-1 tiny fw-bold">
                                             {{ $statusConfig['label'] }}
                                         </span>
                                     </td>
@@ -142,7 +148,8 @@
                                             </button>
                                         </div>
                                         <form id="delete-form-{{ $event->id }}"
-                                            action="{{ route('school.events.destroy', $event) }}" method="POST" class="d-none">
+                                            action="{{ route('school.events.destroy', $event) }}" method="POST"
+                                            class="d-none">
                                             @csrf
                                             @method('DELETE')
                                         </form>
@@ -151,9 +158,11 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
-                                        <div class="opacity-25 mb-3"><i class="bi bi-calendar2-x" style="font-size: 5rem;"></i>
+                                        <div class="opacity-25 mb-3"><i class="bi bi-calendar2-x"
+                                                style="font-size: 5rem;"></i>
                                         </div>
-                                        <h5 class="text-muted fw-bold">No institutional events scheduled in the current window.
+                                        <h5 class="text-muted fw-bold">No institutional events scheduled in the current
+                                            window.
                                         </h5>
                                         <a href="{{ route('school.events.create') }}"
                                             class="btn btn-sm btn-primary rounded-pill px-4 mt-2">Create First Event</a>

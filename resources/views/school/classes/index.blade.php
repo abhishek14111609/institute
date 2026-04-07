@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Levels & Teams' : 'Class Management')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Institutional Levels & Teams' : 'Class
+    Management')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -13,7 +14,8 @@
             <div>
                 <h3 class="fw-bold mb-1 text-gradient">
                     {{ auth()->user()->school->institute_type === 'sport' ? 'Team Management' : 'Class Management' }}</h3>
-                <p class="text-muted small mb-0">{{ auth()->user()->school->institute_type === 'sport' ? 'Define organizational levels and track student distribution across teams.' : 'Manage student distribution and organizational structure across classes.' }}
+                <p class="text-muted small mb-0">
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Define organizational levels and track student distribution across teams.' : 'Manage student distribution and organizational structure across classes.' }}
                 </p>
             </div>
             <a href="{{ route('school.classes.create') }}"
@@ -22,14 +24,6 @@
                 {{ auth()->user()->school->institute_type === 'sport' ? 'Team' : 'Class' }}
             </a>
         </div>
-
-        @if(session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div>{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
 
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-body p-0">
@@ -100,7 +94,8 @@
                                             </button>
                                         </div>
                                         <form id="delete-form-{{ $class->id }}"
-                                            action="{{ route('school.classes.destroy', $class) }}" method="POST" class="d-none">
+                                            action="{{ route('school.classes.destroy', $class) }}" method="POST"
+                                            class="d-none">
                                             @csrf
                                             @method('DELETE')
                                         </form>
@@ -109,7 +104,8 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
-                                        <div class="opacity-25 mb-3"><i class="bi bi-collection-x" style="font-size: 4rem;"></i>
+                                        <div class="opacity-25 mb-3"><i class="bi bi-collection-x"
+                                                style="font-size: 4rem;"></i>
                                         </div>
                                         <h5 class="text-muted">No institutional
                                             {{ auth()->user()->school->institute_type === 'sport' ? 'teams' : 'classes' }}

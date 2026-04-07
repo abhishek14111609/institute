@@ -38,7 +38,7 @@ class StoreTeacherRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['nullable', 'digits:10'],
             'employee_id' => [
                 'nullable',
                 'string',

@@ -29,14 +29,6 @@
             </a>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div class="small fw-bold">{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         <!-- Selection Interface -->
         <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
             <div class="card-body p-4 bg-light bg-opacity-50">

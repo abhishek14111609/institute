@@ -24,11 +24,21 @@ class FeePaymentController extends Controller
      */
     public function collect(Request $request, ?\App\Models\Student $student = null)
     {
-        $students = \App\Models\Student::with('user')->active()->get();
+        $schoolId = auth()->user()->school_id;
+
+        if ($student && (int) $student->school_id !== (int) $schoolId) {
+            abort(404);
+        }
+
+        $studentsQuery = \App\Models\Student::with(['user', 'course'])
+            ->where('school_id', $schoolId);
+
+        $students = $studentsQuery->get()->sortBy(fn($s) => strtolower($s->user->name ?? ''))->values();
 
         $pendingFees = [];
         if ($student) {
             $pendingFees = Fee::where('student_id', $student->id)
+                ->where('school_id', $schoolId)
                 ->whereIn('status', ['pending', 'partial', 'overdue'])
                 ->with('batch')
                 ->get();
@@ -49,6 +59,8 @@ class FeePaymentController extends Controller
             'payments' => 'required|array|min:1|max:200',
             'payments.*.fee_id' => ['required', 'distinct', Rule::exists('fees', 'id')->where('school_id', $schoolId)],
             'payments.*.amount' => 'required|numeric|min:0|max:99999999.99',
+            'payments.*.discount' => 'nullable|numeric|min:0|max:99999999.99',
+            'payments.*.late_fee' => 'nullable|numeric|min:0|max:99999999.99',
             'payment_method' => 'required|string|in:cash,bank_transfer,card,cheque,upi',
             'paid_at' => 'required|date|before_or_equal:today',
             'transaction_id' => 'nullable|string|max:100',
@@ -74,11 +86,32 @@ class FeePaymentController extends Controller
             $paymentCount = 0;
 
             foreach ($validated['payments'] as $pData) {
-                if ($pData['amount'] <= 0)
+                $fee = Fee::where('id', $pData['fee_id'])
+                    ->where('school_id', $schoolId)
+                    ->where('student_id', $validated['student_id'])
+                    ->lockForUpdate()
+                    ->first();
+                if (!$fee) {
+                    throw new \RuntimeException('Invalid fee selected for this student.');
+                }
+
+                $fee->discount = isset($pData['discount']) ? (float) $pData['discount'] : (float) ($fee->discount ?? 0);
+                $fee->late_fee = isset($pData['late_fee']) ? (float) $pData['late_fee'] : (float) ($fee->late_fee ?? 0);
+                $fee->save();
+
+                $amount = (float) ($pData['amount'] ?? 0);
+                if ($amount <= 0) {
                     continue;
+                }
+
+                $remaining = (float) $fee->getRemainingAmount();
+                if ($amount > $remaining) {
+                    throw new \RuntimeException('Entered amount exceeds remaining balance after discount/late fee adjustments.');
+                }
+
                 $payment = $this->feeService->recordPayment([
                     'fee_id' => $pData['fee_id'],
-                    'amount' => $pData['amount'],
+                    'amount' => $amount,
                     'payment_method' => $validated['payment_method'],
                     'transaction_id' => $validated['transaction_id'],
                     'notes' => $validated['notes'],

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? ' Training Allocation' : ' Batch Scheduling')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Batch Handaling' : ' Batch Handling')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -20,17 +20,9 @@
             <a href="{{ route('school.batches.create') }}"
                 class="btn btn-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
                 <i class="bi bi-clock-history me-2"></i>
-                {{ auth()->user()->school->institute_type === 'sport' ? 'Create Dynamic Batch' : 'Create Dynamic Batch' }}
+                {{ auth()->user()->school->institute_type === 'sport' ? 'Create Batch' : 'Create Batch' }}
             </a>
         </div>
-
-        @if (session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div>{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
 
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-header bg-white border-0 py-4 px-4">

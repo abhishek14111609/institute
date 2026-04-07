@@ -121,8 +121,7 @@
                                         name="subject_id" required>
                                         <option value="">Select Subject</option>
                                         @foreach ($subjects as $subject)
-                                            <option value="{{ $subject->id }}"
-                                                data-class="{{ $subject->class_id }}"
+                                            <option value="{{ $subject->id }}" data-class="{{ $subject->class_id }}"
                                                 {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
                                                 {{ $subject->name }}
                                             </option>
@@ -163,7 +162,8 @@
 
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label for="end_time" class="form-label">End Time <span class="text-danger">*</span></label>
+                                <label for="end_time" class="form-label">End Time <span
+                                        class="text-danger">*</span></label>
                                 <input type="time" class="form-control @error('end_time') is-invalid @enderror"
                                     id="end_time" name="end_time" value="{{ old('end_time') }}" required>
                                 @error('end_time')
@@ -174,9 +174,11 @@
 
                         <div class="col-md-3">
                             <div class="mb-3">
-                                <label for="capacity" class="form-label">Capacity <span class="text-danger">*</span></label>
+                                <label for="capacity" class="form-label">Capacity <span
+                                        class="text-danger">*</span></label>
                                 <input type="number" class="form-control @error('capacity') is-invalid @enderror"
-                                    id="capacity" name="capacity" value="{{ old('capacity') }}" min="1" required>
+                                    id="capacity" name="capacity" value="{{ old('capacity') }}" min="1"
+                                    required>
                                 @error('capacity')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -230,37 +232,6 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label
-                            class="form-label">{{ auth()->user()->school->institute_type === 'sport' ? 'Assign Athletes' : 'Assign Students' }}</label>
-                        <div class="border rounded p-3 bg-light" style="max-height: 220px; overflow-y: auto;">
-                            @forelse($students as $student)
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input @error('student_ids') is-invalid @enderror"
-                                        type="checkbox" name="student_ids[]" value="{{ $student->id }}"
-                                        id="student_{{ $student->id }}"
-                                        {{ in_array($student->id, old('student_ids', [])) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="student_{{ $student->id }}">
-                                        {{ $student->user->name }}
-                                        @if ($student->roll_number)
-                                            <span class="text-muted small">({{ $student->roll_number }})</span>
-                                        @endif
-                                    </label>
-                                </div>
-                            @empty
-                                <div class="text-muted small">No active
-                                    {{ auth()->user()->school->institute_type === 'sport' ? 'athletes' : 'students' }}
-                                    found.</div>
-                            @endforelse
-                        </div>
-                        <small class="text-muted">Select one or more
-                            {{ auth()->user()->school->institute_type === 'sport' ? 'athletes' : 'students' }} by checking
-                            the boxes</small>
-                        @error('student_ids')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-check-circle"></i>
@@ -286,7 +257,7 @@
                 if (!classSelect || !courseSelect) return;
                 const selectedCourseId = courseSelect.value;
                 const currentClassId = classSelect.value;
-                
+
                 classSelect.innerHTML = '';
                 allClasses.forEach(option => {
                     if (option.value === "" || option.getAttribute('data-course') === selectedCourseId) {
@@ -306,7 +277,8 @@
                     // Sport mode: filter subjects by Course
                     const selectedCourseId = courseSelect.value;
                     allSubjects.forEach(option => {
-                        if (option.value === "" || option.getAttribute('data-course') === selectedCourseId) {
+                        if (option.value === "" || option.getAttribute('data-course') ===
+                            selectedCourseId) {
                             subjectSelect.appendChild(option.cloneNode(true));
                         }
                     });
@@ -344,7 +316,7 @@
                 // Clear previous validation states
                 startTimeInput.classList.remove('is-invalid');
                 endTimeInput.classList.remove('is-invalid');
-                
+
                 // Remove existing custom error messages
                 const existingErrors = document.querySelectorAll('.time-error-msg');
                 existingErrors.forEach(err => err.remove());

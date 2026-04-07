@@ -20,14 +20,6 @@
             </a>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div class="small fw-bold">{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         <!-- Search & Analysis Bar -->
         <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-4 bg-light bg-opacity-50">
@@ -105,7 +97,7 @@
                                                 'maintenance' => 'soft-warning',
                                                 'utilities' => 'soft-info',
                                                 'supplies' => 'soft-success',
-                                                'other' => 'soft-secondary'
+                                                'other' => 'soft-secondary',
                                             ];
                                             $catStyle = $colorMap[$expense->category] ?? 'soft-secondary';
                                         @endphp
@@ -152,7 +144,8 @@
                                     <td colspan="6" class="text-center py-5">
                                         <div class="opacity-10 mb-3"><i class="bi bi-box-seam" style="font-size: 5rem;"></i>
                                         </div>
-                                        <h5 class="text-muted fw-bold">No institutional expenditures identified in this cycle.
+                                        <h5 class="text-muted fw-bold">No institutional expenditures identified in this
+                                            cycle.
                                         </h5>
                                         <a href="{{ route('school.expenses.create') }}"
                                             class="btn btn-sm btn-danger rounded-pill px-4 mt-2">Log Initial Expense</a>

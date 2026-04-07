@@ -168,8 +168,22 @@
                 role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
                 {{ session('success') }}
+                @if (session('open_invoice_id'))
+                    <a href="{{ route('school.invoices.stream', session('open_invoice_id')) }}" target="_blank"
+                        class="btn btn-sm btn-light rounded-pill ms-3 px-3 fw-bold">
+                        <i class="bi bi-receipt me-1"></i> View Invoice
+                    </a>
+                @endif
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+        @endif
+
+        @if (session('open_invoice_id') && request()->routeIs('school.fees.show'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    window.open('{{ route('school.invoices.stream', session('open_invoice_id')) }}', '_blank');
+                });
+            </script>
         @endif
 
         @if (session('error'))

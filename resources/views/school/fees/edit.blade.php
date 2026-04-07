@@ -15,7 +15,7 @@
             </a>
         </div>
 
-        @if(session('error'))
+        @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show">
                 {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -25,19 +25,27 @@
         {{-- Student Info (read-only) --}}
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body py-3">
+                @php
+                    $student = $fee->student;
+                    $studentUser = $student?->user;
+                    $studentName = $studentUser?->name ?? 'Unknown Student';
+                    $studentRoll = $student?->roll_number ?? 'N/A';
+                    $studentBatchName = $student?->batch?->name ?? 'N/A';
+                @endphp
                 <div class="d-flex align-items-center gap-3">
                     <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
                         style="width:48px;height:48px;font-size:18px;font-weight:700;">
-                        {{ strtoupper(substr($fee->student->user->name, 0, 1)) }}
+                        {{ strtoupper(substr($studentName, 0, 1)) }}
                     </div>
                     <div>
-                        <h6 class="mb-0">{{ $fee->student->user->name }}</h6>
-                        <small class="text-muted">Roll No: {{ $fee->student->roll_number }}
-                            &nbsp;|&nbsp; Batch: {{ $fee->student->batch->name ?? 'N/A' }}
+                        <h6 class="mb-0">{{ $studentName }}</h6>
+                        <small class="text-muted">Roll No: {{ $studentRoll }}
+                            &nbsp;|&nbsp; Batch: {{ $studentBatchName }}
                         </small>
                     </div>
-                    <span class="ms-auto badge
-                                @if($fee->status === 'paid') bg-success
+                    <span
+                        class="ms-auto badge
+                                @if ($fee->status === 'paid') bg-success
                                 @elseif($fee->status === 'partial') bg-warning text-dark
                                 @elseif($fee->status === 'overdue') bg-danger
                                 @else bg-secondary @endif
@@ -67,14 +75,17 @@
                             <select class="form-select @error('batch_id') is-invalid @enderror" id="batch_id"
                                 name="batch_id">
                                 <option value="">— General / No Specific Session —</option>
-                                @foreach($fee->student->batches as $batch)
-                                    <option value="{{ $batch->id }}" {{ old('batch_id', $fee->batch_id) == $batch->id ? 'selected' : '' }}>
+                                @foreach ($student?->batches ?? [] as $batch)
+                                    <option value="{{ $batch->id }}"
+                                        {{ old('batch_id', $fee->batch_id) == $batch->id ? 'selected' : '' }}>
                                         {{ $batch->name }}
                                     </option>
                                 @endforeach
                             </select>
                             <div class="form-text small">Session this fee is associated with.</div>
-                            @error('batch_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('batch_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         {{-- Sport Level --}}
@@ -83,8 +94,9 @@
                             <select class="form-select @error('sport_level') is-invalid @enderror" id="sport_level"
                                 name="sport_level">
                                 <option value="">— Not applicable / General fee —</option>
-                                @foreach($levels as $level)
-                                    <option value="{{ $level->name }}" {{ old('sport_level', $fee->sport_level) === $level->name ? 'selected' : '' }}>
+                                @foreach ($levels as $level)
+                                    <option value="{{ $level->name }}"
+                                        {{ old('sport_level', $fee->sport_level) === $level->name ? 'selected' : '' }}>
                                         {{ $level->name }}
                                     </option>
                                 @endforeach
@@ -98,8 +110,9 @@
                         <div class="col-md-4 mb-3">
                             <label for="due_date" class="form-label fw-semibold">Due Date <span
                                     class="text-danger">*</span></label>
-                            <input type="date" class="form-control @error('due_date') is-invalid @enderror" id="due_date"
-                                name="due_date" value="{{ old('due_date', $fee->due_date->format('Y-m-d')) }}" required>
+                            <input type="date" class="form-control @error('due_date') is-invalid @enderror"
+                                id="due_date" name="due_date"
+                                value="{{ old('due_date', $fee->due_date->format('Y-m-d')) }}" required>
                             @error('due_date')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -122,8 +135,9 @@
                         {{-- Discount --}}
                         <div class="col-md-4 mb-3">
                             <label for="discount" class="form-label fw-semibold">Discount (₹)</label>
-                            <input type="number" class="form-control @error('discount') is-invalid @enderror" id="discount"
-                                name="discount" value="{{ old('discount', $fee->discount) }}" step="0.01" min="0">
+                            <input type="number" class="form-control @error('discount') is-invalid @enderror"
+                                id="discount" name="discount" value="{{ old('discount', $fee->discount) }}" step="0.01"
+                                min="0">
                             @error('discount')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -132,8 +146,9 @@
                         {{-- Late Fee --}}
                         <div class="col-md-4 mb-3">
                             <label for="late_fee" class="form-label fw-semibold">Late Fee (₹)</label>
-                            <input type="number" class="form-control @error('late_fee') is-invalid @enderror" id="late_fee"
-                                name="late_fee" value="{{ old('late_fee', $fee->late_fee) }}" step="0.01" min="0">
+                            <input type="number" class="form-control @error('late_fee') is-invalid @enderror"
+                                id="late_fee" name="late_fee" value="{{ old('late_fee', $fee->late_fee) }}" step="0.01"
+                                min="0">
                             @error('late_fee')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -152,7 +167,7 @@
                     </div>
 
                     {{-- Already paid warning --}}
-                    @if($fee->paid_amount > 0)
+                    @if ($fee->paid_amount > 0)
                         <div class="alert alert-warning">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>
                             <strong>Note:</strong> This fee already has ₹{{ number_format($fee->paid_amount, 2) }} paid.
@@ -163,8 +178,7 @@
                     {{-- Remarks --}}
                     <div class="mb-3">
                         <label for="remarks" class="form-label fw-semibold">Remarks / Notes</label>
-                        <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks"
-                            rows="3">{{ old('remarks', $fee->remarks) }}</textarea>
+                        <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks" rows="3">{{ old('remarks', $fee->remarks) }}</textarea>
                         @error('remarks')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -189,7 +203,10 @@
                 const lateFee = parseFloat(document.getElementById('late_fee').value) || 0;
                 const net = Math.max(0, total - discount + lateFee);
                 document.getElementById('net_preview').textContent =
-                    '₹' + net.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    '₹' + net.toLocaleString('en-IN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
             }
             ['total_amount', 'discount', 'late_fee'].forEach(id => {
                 document.getElementById(id)?.addEventListener('input', updatePreview);

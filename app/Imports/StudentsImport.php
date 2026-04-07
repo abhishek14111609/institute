@@ -77,6 +77,8 @@ class StudentsImport implements ToCollection, WithHeadingRow
                 'email' => ['required', 'email', 'unique:users,email'],
                 'username' => ['required', 'string', 'max:100', 'unique:users,username'],
                 'password' => ['required', 'string', 'min:8'],
+                'phone' => ['nullable', 'digits:10'],
+                'parent_phone' => ['nullable', 'digits:10'],
                 'admission_date' => ['required', 'date'],
                 'batch_id' => ['nullable', 'exists:batches,id'],
             ]);

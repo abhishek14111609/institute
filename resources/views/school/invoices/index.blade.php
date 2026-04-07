@@ -20,14 +20,6 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div>{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-body p-0">
                 <div class="table-responsive">

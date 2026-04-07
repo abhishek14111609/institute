@@ -90,6 +90,9 @@ Route::middleware(['auth', 'role:school_admin', 'check.subscription'])->prefix('
 
     // Subject Management
     Route::resource('subjects', School\SubjectController::class);
+    Route::resource('subject-templates', School\CourseSubjectTemplateController::class)
+        ->except(['show'])
+        ->parameters(['subject-templates' => 'subjectTemplate']);
 
     // Student Management
     Route::get('students/export', [School\StudentController::class, 'export'])->name('students.export');

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->school->institute_type === 'sport' ? 'Sports Catalog' : 'Academic Programs Catalog')
+@section('title', auth()->user()->school->institute_type === 'sport' ? 'Sports Catalog' : 'Course Details')
 
 @section('sidebar')
     @include('school.sidebar')
@@ -12,7 +12,7 @@
         <div class="d-flex justify-content-between align-items-center mb-5 pb-2">
             <div>
                 <h3 class="fw-bold mb-1 text-gradient">
-                    {{ auth()->user()->school->institute_type === 'sport' ? 'Sports' : 'Academic Programs' }}</h3>
+                    {{ auth()->user()->school->institute_type === 'sport' ? 'Sports' : 'Course Programs' }}</h3>
                 <p class="text-muted small mb-0">Define and manage the core
                     {{ auth()->user()->school->institute_type === 'sport' ? 'training tracks' : 'educational tracks' }} for
                     your institution.</p>
@@ -20,17 +20,9 @@
             <a href="{{ route('school.courses.create') }}"
                 class="btn btn-primary rounded-pill px-4 shadow-sm border-0 d-flex align-items-center">
                 <i class="bi bi-plus-lg me-2"></i>
-                {{ auth()->user()->school->institute_type === 'sport' ? 'Add Sport' : 'Configure New Program' }}
+                {{ auth()->user()->school->institute_type === 'sport' ? 'Add Sport' : 'Add Course' }}
             </a>
         </div>
-
-        @if (session('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
-                <div>{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
 
         <div class="row g-4">
             @forelse($courses as $course)

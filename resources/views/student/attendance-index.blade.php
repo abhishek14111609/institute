@@ -58,14 +58,6 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <div
-                class="alert alert-success border-0 shadow-sm rounded-4 fade-in bg-success bg-opacity-10 text-success mb-4 d-flex align-items-center">
-                <i class="bi bi-check-circle-fill fs-4 me-3"></i>
-                <div class="fw-semibold">{{ session('success') }}</div>
-            </div>
-        @endif
-
         <!-- Live Photo Attendance Upload Section -->
         <div class="card border-0 shadow-sm mb-5 bg-white rounded-4 overflow-hidden fade-in" style="animation-delay: 0.1s;">
             <div class="row g-0">
@@ -130,7 +122,7 @@
                             <form id="attendance-form" action="{{ route('student.attendance.store') }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
-                                @if($batch)
+                                @if ($batch)
                                     <input type="hidden" name="batch_id" value="{{ $batch->id }}">
                                 @endif
                                 <input type="file" name="photo" id="photo-input" class="d-none" required>
@@ -177,8 +169,9 @@
                     <div class="col-md-4">
                         <label class="form-label tiny fw-bold text-muted">BATCH</label>
                         <select name="batch_id" class="form-select rounded-pill border-0 shadow-sm px-4">
-                            @foreach($activeBatches as $activeBatch)
-                                <option value="{{ $activeBatch->id }}" {{ $batch && $batch->id === $activeBatch->id ? 'selected' : '' }}>
+                            @foreach ($activeBatches as $activeBatch)
+                                <option value="{{ $activeBatch->id }}"
+                                    {{ $batch && $batch->id === $activeBatch->id ? 'selected' : '' }}>
                                     {{ $activeBatch->name }}
                                 </option>
                             @endforeach
@@ -269,7 +262,7 @@
                                         <div class="d-flex align-items-center small text-muted">
                                             <i class="bi bi-clock-history me-2 text-primary"></i>
                                             {{ $attendance->batch && $attendance->batch->start_time ? $attendance->batch->start_time->format('h:i A') : 'N/A' }}
-                                            @if($attendance->batch && $attendance->batch->end_time)
+                                            @if ($attendance->batch && $attendance->batch->end_time)
                                                 - {{ $attendance->batch->end_time->format('h:i A') }}
                                             @endif
                                         </div>
@@ -324,7 +317,8 @@
                                     catch (err) {
                                         console.error("Camera access error:", err);
                                         alert(
-                                            "Secure access to camera failed. Please ensure permissions are granted.");
+                                            "Secure access to camera failed. Please ensure permissions are granted."
+                                            );
                                         startBtn.innerHTML =
                                             '<i class="bi bi-camera-video me-2"></i> Error (Retry)';
                                         startBtn.disabled = false;
