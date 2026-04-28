@@ -78,7 +78,7 @@
                                             @if (auth()->user()->school->institute_type === 'sport')
                                                 {{ $subject->level->name ?? 'N/A' }}
                                             @else
-                                                {{ $subject->schoolClass->name }}
+                                                {{ $subject->schoolClass?->name ?? 'N/A' }}
                                             @endif
                                         </div>
                                         <small
