@@ -180,6 +180,16 @@
                                     </td>
                                     <td class="pe-4 border-0 text-end">
                                         <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                                            <form action="{{ route('school.students.toggle-status', $student) }}"
+                                                method="POST" class="d-inline"
+                                                onsubmit="return confirm('{{ $student->is_active ? 'Deactivate this student account?' : 'Activate this student account?' }}')">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-white border-0"
+                                                    title="{{ $student->is_active ? 'Deactivate Student' : 'Activate Student' }}">
+                                                    <i
+                                                        class="bi {{ $student->is_active ? 'bi-person-x-fill text-danger' : 'bi-person-check-fill text-success' }}"></i>
+                                                </button>
+                                            </form>
                                             <a href="{{ route('school.payments.collect', $student) }}"
                                                 class="btn btn-sm btn-white border-0" title="Collect Fees">
                                                 <i class="bi bi-cash-coin text-success"></i>

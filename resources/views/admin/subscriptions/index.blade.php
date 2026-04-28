@@ -53,29 +53,35 @@
                                         <div class="d-flex align-items-center">
                                             <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold me-3"
                                                 style="width: 40px; height: 40px;">
-                                                {{ substr($sub->school->name, 0, 1) }}
+                                                {{ substr($sub->school->name ?? 'U', 0, 1) }}
                                             </div>
                                             <div>
-                                                <h6 class="mb-0 fw-bold text-dark">{{ $sub->school->name }}</h6>
-                                                <small class="text-muted">{{ $sub->school->email }}</small>
+                                                <h6 class="mb-0 fw-bold text-dark">
+                                                    {{ $sub->school->name ?? 'Unknown Institution' }}</h6>
+                                                <small
+                                                    class="text-muted">{{ $sub->school->email ?? 'Email unavailable' }}</small>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <span
                                             class="badge bg-indigo bg-opacity-10 text-indigo border border-indigo border-opacity-10 px-3 py-1 rounded-pill small">
-                                            {{ $sub->plan->name }}
+                                            {{ $sub->plan->name ?? 'Plan unavailable' }}
                                         </span>
                                     </td>
                                     <td>
                                         <div class="fw-bold text-dark">₹{{ number_format($sub->amount_paid, 2) }}</div>
-                                        <div class="tiny text-muted text-uppercase">{{ $sub->payment_method ?? 'Manual' }}</div>
+                                        <div class="tiny text-muted text-uppercase">{{ $sub->payment_method ?? 'Manual' }}
+                                        </div>
                                     </td>
                                     <td>
-                                        <div class="small text-dark fw-medium">{{ $sub->start_date->format('d M, Y') }}</div>
+                                        <div class="small text-dark fw-medium">{{ $sub->start_date->format('d M, Y') }}
+                                        </div>
                                         <div class="small text-{{ $sub->isExpired() ? 'danger' : 'muted' }} fw-bold">
                                             → {{ $sub->end_date->format('d M, Y') }}
-                                            @if($sub->isExpired()) [EXPIRED] @endif
+                                            @if ($sub->isExpired())
+                                                [EXPIRED]
+                                            @endif
                                         </div>
                                     </td>
                                     <td>
@@ -85,7 +91,7 @@
                                         </span>
                                     </td>
                                     <td class="text-end pe-4">
-                                        @if($sub->invoice_number)
+                                        @if ($sub->invoice_number)
                                             <a href="{{ route('admin.subscriptions.download', $sub) }}"
                                                 class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold"
                                                 title="Generate Invoice">
@@ -102,7 +108,8 @@
                                         <div class="opacity-25 mb-3"><i class="bi bi-credit-card-2-front d-block"
                                                 style="font-size: 4rem;"></i></div>
                                         <h5 class="text-muted">No Subscription History</h5>
-                                        <p class="text-muted small">Subscription records will materialize here upon activation.
+                                        <p class="text-muted small">Subscription records will materialize here upon
+                                            activation.
                                         </p>
                                     </td>
                                 </tr>
@@ -111,7 +118,7 @@
                     </table>
                 </div>
             </div>
-            @if($subscriptions->hasPages())
+            @if ($subscriptions->hasPages())
                 <div class="card-footer bg-white border-top-0 py-4">
                     {{ $subscriptions->links() }}
                 </div>

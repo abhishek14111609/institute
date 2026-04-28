@@ -145,7 +145,8 @@ if ($role->name == 'super_admin') {
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="text-muted fw-medium">{{ $user->created_at->format('M d, Y') }}</span>
+                                        <span
+                                            class="text-muted fw-medium">{{ $user->created_at?->format('M d, Y') ?? 'N/A' }}</span>
                                     </td>
                                     <td class="text-end pe-4">
                                         <div class="btn-group">

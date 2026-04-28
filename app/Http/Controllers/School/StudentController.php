@@ -191,4 +191,22 @@ class StudentController extends Controller
         return redirect()->route('school.students.index')
             ->with('success', 'Student restored successfully.');
     }
+
+    /**
+     * Toggle active/inactive lifecycle status for a student.
+     */
+    public function toggleStatus(Student $student)
+    {
+        abort_unless((int) $student->school_id === (int) auth()->user()->school_id, 404);
+
+        $newStatus = !$student->is_active;
+
+        $student->update(['is_active' => $newStatus]);
+        if ($student->user) {
+            $student->user->update(['is_active' => $newStatus]);
+        }
+
+        return redirect()->route('school.students.index')
+            ->with('success', $newStatus ? 'Student activated successfully.' : 'Student deactivated successfully.');
+    }
 }

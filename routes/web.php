@@ -96,6 +96,7 @@ Route::middleware(['auth', 'role:school_admin', 'check.subscription'])->prefix('
 
     // Student Management
     Route::get('students/export', [School\StudentController::class, 'export'])->name('students.export');
+    Route::post('students/{student}/toggle-status', [School\StudentController::class, 'toggleStatus'])->name('students.toggle-status');
     Route::get('students/import-template', [School\StudentController::class, 'importTemplate'])->name('students.import-template');
     Route::post('students/import', [School\StudentController::class, 'import'])->name('students.import');
     Route::post('students/{id}/restore', [School\StudentController::class, 'restore'])->name('students.restore');
